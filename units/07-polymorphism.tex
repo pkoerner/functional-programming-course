@@ -1,0 +1,165 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[ngerman]{babel}
+\usepackage[TS1,T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+\usepackage{theorem}
+\usepackage[scaled=0.9]{helvet}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{stmaryrd}
+\usepackage{pgf,tikz}
+\usepackage{relsize}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{algpseudocode,amsmath,xifthen}
+
+\newcounter{numb}
+\theoremstyle{break}
+\theorembodyfont{\upshape}
+   	\newtheorem{aufgabe}{Aufgabe}[numb]
+\setcounter{numb}{7}
+\setlength{\oddsidemargin}{0cm}
+\setlength{\textwidth}{16cm}
+\setlength{\textheight}{23cm}
+\setlength{\topmargin}{-2cm}
+
+\usetikzlibrary{shapes,arrows,automata,positioning,decorations.fractals}
+\renewcommand\familydefault{\sfdefault}
+
+
+\begin{document}
+
+\begin{minipage}[b]{\textwidth}
+\parbox[t]{5cm}{%
+\includegraphics[width=4cm]{unilogo}
+\hfill
+}
+\parbox[b]{11cm}{%
+%\scshape%
+Heinrich-Heine-Universit\"at D\"usseldorf\\
+Institut f\"ur Informatik\\
+Lehrstuhl Softwaretechnik und Programmiersprachen\\
+%Professor Dr.\ M.\ Leuschel
+Philipp K\"orner
+}
+
+%%date
+%\hfill 1.\@ August 2017\rule{0mm}{6mm}\quad\ %% <--
+\end{minipage}
+\begin{center}
+\bf
+Funktionale Programmierung -- WS 2020 / 2021\\
+Reading Guide 7: Polymorphismus
+\end{center}
+
+\pagestyle{empty}
+
+\paragraph{Zeitliche Orientierung:} Diese Lerneinheit sollte bis zum 14.01.2021 abgeschlossen werden.
+%\paragraph{Abgabe des Lerntagebuchs} \"uber das ILIAS bis zum 16.5.2020 mit unbegrenzt Material, Nachfrist bis zum 23.5.2020 mit zwei Seiten A4.
+
+\section{Material} 
+
+\begin{itemize}
+\item Clojure for the Brave and True, Kapitel 13
+\item Clojure Reference: Multimethods \url{https://clojure.org/reference/multimethods}
+\item Clojure Reference: Protocols \url{https://clojure.org/reference/protocols}
+\item Philip Wadler: The Expression Problem \url{http://homepages.inf.ed.ac.uk/wadler/papers/expression/expression.txt}
+\item 06\_concurrency.clj
+\end{itemize}
+
+
+\section{Lernziele}
+
+Nach dem Bearbeiten dieser Lerneinheit sollten Sie in der Lage sein
+
+\begin{itemize}
+    \item das Expression Problem zu beschreiben.
+    \item Einsatzgebiete sowie Vor- und Nachteile von Wrappern und Monkey Patching zu benennen.
+    \item zu erkl\"aren, wie Multimethoden und Protokolle das Expression Problem l\"osen.
+    \item Multimethoden und Protokolle zu verwenden.
+    \item die M\"achtigkeit (expressivity) von Multimethoden und Protokollen zu vergleichen.
+    \item die Performance zwischen Multimethoden und Protokollen zu kennen und zu vergleichen.
+\end{itemize}
+
+\section{Highlights}
+
+\begin{itemize}
+    \item Expression Problem
+    \item Multimethod
+    \item Protokolle
+    \item Funktionen / Macros: \verb|defmulti|, \verb|defmethod|, \verb|defprotocol|, \verb|extend-protocol|, \verb|extend-type|, \verb|extend|
+\end{itemize}
+
+
+
+\section{Aufgaben}
+
+
+\begin{aufgabe}[Marsrover]
+In dieser Aufgabe soll eine vereinfachte Version des Marsrover-Katas implementiert werden.
+Sie sollen daf\"ur die Steuerungssoftware f\"ur einen Roboter schreiben,
+der auf dem Mars gelandet ist.
+Der Roboter hat dazu schon einen rechteckigen Bereich abgescannt,
+der leider von Hindernissen umgeben ist, sodass er diesen nicht verlassen kann.
+Die Anforderungen lauten wie folgt:
+
+\begin{itemize}
+    \item Es wird eine Oberfl\"ache gegeben, z.B.
+        \begin{verbatim}
+      [["x" "x" "x" "x"]
+       ["x" " " " " "x"]
+       ["x" " " " " "x"]
+       ["x" "x" "x" "x"]]
+\end{verbatim}
+
+        Die Datenstruktur ist eine Sequenz von Sequenzen, die die Karte mit Hindernissen vorgeben.
+        Die erste enthaltene Sequenz (Zeile) ist die n\"ordlichste Linie der Oberfl\"ache, der
+        linkeste Eintrag entspricht der westlichsten Koordinate.
+        Eintr\"age, die der String "x" sind, sind Hindernisse, String mit einem Leerzeichen
+        sind analog freie (befahrbare) Felder.
+    \item Es wird eine initiale Position des Rovers und dessen Orientierung (\verb|:north|, \verb|:south|, \verb|:east|, \verb|:west|) gegeben.
+    \item Die Signatur Initialisierung lautet also: \verb|(init! x y orientation surface)|
+    \item Es sollen Befehle implementiert werden, um den Rover vorw\"arts (f) und r\"uckw\"arts (b) zu bewegen.
+    \item Es sollen Befehle implementiert, um den Rover um 90 Grad nach links oder rechts zu drehen (l, r).
+    \item Der Rover wird mit einem String gesteuert (z.B. "flffr").
+    \item Es soll mit \verb|(execute! stringsequence)| der Zustand ver\"andert werden.
+    \item Falls ein Hindernis im Weg liegt, soll der Rover die Befehlsequenz abbrechen
+        und die Position des Hindernisses melden.
+    \item Die Funktion \verb|rover-status| soll das Tupel \verb|[x y direction]| mit den derzeitigen Informationen \"uber den Rover zur\"uckgeben.
+    \item Es muss m\"oglich sein, zu\"atzliche Befehle hinzuzuf\"ugen,
+        \emph{ohne dass bestehender Code ver\"andert werden muss}.
+\end{itemize}
+
+        Hinweis: Verwenden Sie Multimethoden.
+\end{aufgabe}
+
+
+\begin{aufgabe}[Lazy Searching - 4clojure Nr. 108]
+
+Implementieren Sie eine Funktion, die beliebig viele aufsteigend sortierte Sequenzen
+als Eingabe bekommt und das kleinste Elemente zur\"uckgibt,
+das in allen Sequenzen vorkommt.
+Die Eingaben k\"onnen unendliche Sequenzen sein.
+
+\begin{verbatim}
+(common-min [3 4 5])
+=> 3
+(common-min [1 2 3 4 5 6 7] [0.5 3/2 4 19])
+=> 4
+(common-min (range) (range 0 100 7/6) [2 3 5 7 11 13])
+=> 7
+(common-min (map (fn [x] (* x x x)) (range)) ;; Kubikzahlen
+            (filter (fn [x] (zero? (bit-and x (dec x)))) (range)) ;; Zweierpotenzen
+            (iterate inc 20)) ;; Zahlen groesser/gleich 20
+=> 64
+\end{verbatim}
+
+\end{aufgabe}
+
+\section*{Fragen}
+Bei Fragen wenden Sie sich bitte an Philipp K"orner (\texttt{p.koerner@hhu.de}).
+\end{document}
+

@@ -1,0 +1,158 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[ngerman]{babel}
+\usepackage[TS1,T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+\usepackage{theorem}
+\usepackage[scaled=0.9]{helvet}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{stmaryrd}
+\usepackage{pgf,tikz}
+\usepackage{relsize}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{upquote}
+\usepackage{algpseudocode,amsmath,xifthen}
+
+\newcounter{numb}
+\theoremstyle{break}
+\theorembodyfont{\upshape}
+   	\newtheorem{aufgabe}{Aufgabe}[numb]
+\setcounter{numb}{10}
+\setlength{\oddsidemargin}{0cm}
+\setlength{\textwidth}{16cm}
+\setlength{\textheight}{23cm}
+\setlength{\topmargin}{-2cm}
+
+\usetikzlibrary{shapes,arrows,automata,positioning,decorations.fractals}
+\renewcommand\familydefault{\sfdefault}
+
+
+\begin{document}
+
+\begin{minipage}[b]{\textwidth}
+\parbox[t]{5cm}{%
+\includegraphics[width=4cm]{unilogo}
+\hfill
+}
+\parbox[b]{11cm}{%
+%\scshape%
+Heinrich-Heine-Universit\"at D\"usseldorf\\
+Institut f\"ur Informatik\\
+Lehrstuhl Softwaretechnik und Programmiersprachen\\
+%Professor Dr.\ M.\ Leuschel
+Philipp K\"orner
+}
+
+%%date
+%\hfill 1.\@ August 2017\rule{0mm}{6mm}\quad\ %% <--
+\end{minipage}
+\begin{center}
+\bf
+Funktionale Programmierung -- WS 2020 / 2021\\
+Reading Guide 10: clojure.spec
+\end{center}
+
+\pagestyle{empty}
+
+\paragraph{Zeitliche Orientierung:} Diese Lerneinheit sollte bis zum 04.02.2021 abgeschlossen werden.
+%\paragraph{Abgabe des Lerntagebuchs} \"uber das ILIAS bis zum 16.5.2020 mit unbegrenzt Material, Nachfrist bis zum 23.5.2020 mit zwei Seiten A4.
+
+\section{Material} 
+
+\begin{itemize}
+    \item Getting Clojure, Kapitel 15
+\item 14\_spec.clj
+\item Clojure Guide: spec \url{https://clojure.org/guides/spec}
+\item Rich Hickey: clojure.spec \url{https://vimeo.com/195711510}
+\item Stuart Halloway: Agility \& Robustness: clojure.spec \url{https://www.youtube.com/watch?v=VNTQ-M_uSo8}
+\end{itemize}
+
+
+\section{Lernziele}
+
+Nach dem Bearbeiten dieser Lerneinheit sollten Sie in der Lage sein
+
+\begin{itemize}
+    \item Vor- und Nachteile der clojure.spec Bibliothek zu diskutieren.
+    \item Specs zu lesen und Beispielwerte anzugeben.
+    \item selbst Specs zu schreiben.
+\end{itemize}
+
+\section{Highlights}
+
+\begin{itemize}
+    \item spec: \verb|def|, \verb|fdef|, \verb|valid?|,
+    \item spec regex: \verb|cat|, \verb|alt|, \verb|+|, \verb|*|, \verb|?|, \verb|&|, \verb|spec|
+    \item Specs kombinieren: \verb|and|, \verb|or|, \verb|map-of|, \verb|coll-of|, \verb|keys|
+    \item conformed/unformed values
+\end{itemize}
+
+
+
+\section{Aufgaben}
+\begin{aufgabe}[Specs]
+\begin{enumerate}[label=\alph*)]
+\item
+Geben Sie eine Spec f\"ur einen Spieler in einem Kartenspiel an,
+die in etwa wie folgt aussehen soll:
+
+\begin{verbatim}
+{:cards/name "Philipp"
+ :cards/hand [[3 :clubs] [:ace :spades]]} 
+\end{verbatim}
+
+Als Name ist jeder beliebige String erlaubt.
+Unter \verb|:cards/hand| ist eine nicht-leere Sequenz von 2-Tupeln assoziiert.
+Der erste Eintrag ist der Wert der Karte, der zweite die Farbe.
+
+\item
+Schreiben Sie eine Funktion \verb|discard|,
+die eine Reihe an Spielern,
+sowie einen Namen und eine Spielkarte erh\"alt.
+Ist diese Spielkarte tats\"achlich in der Hand
+des genannten Spielers, wird diese daraus entfernt.
+
+\item
+Annotieren Sie \verb|discard| mit Specs,
+die sicherstellen soll,
+dass bei korrektem Aufruf wieder eine Reihe
+an Spielern zur\"uckgegeben wird.
+
+\item
+Kann man mit generierten Tests ein Problem feststellen?
+
+Anmerkung: man kann die Gr\"o\ss{}e der generierten Werte beispielsweise mit\\
+\verb|(stest/check `discard {:clojure.spec.test.check/opts {:max-elements 4 :max-size 3}})|
+limitieren. Ansonsten kann das Testing sehr lange dauern.
+\end{enumerate}
+\end{aufgabe}
+
+\begin{aufgabe}[Specs II]
+    In Aufgabe 9.2 wurden mit einem test.check Generator Benutzer mit Kennungen generiert.
+    Schreiben Sie eine Spec f\"ur einen Benutzer.
+
+    Ein Benutzer wird durch eine Map repr\"asentiert,
+    die Vor- und Nachname sowie eine Kennung enth\"alt.
+    Die Kennung besteht aus den ersten zwei Zeichen des Vornamens
+    und den ersten drei Zeichen des Nachnamens und drei Ziffern.
+    Ein Beispiel f\"ur einen validen Benutzer ist 
+    
+    \verb|{:vorname "John", :nachname "Wayne", :kennung "joway142"}|.
+
+    Invalide Werte sind beispielsweise:
+    \begin{itemize}
+        \item \verb|42|
+        \item \verb|{:vorname "John", :nachname "Wayne", :kennung "cowboystud69"} ; falsche Kennung|
+        \item \verb|{:vorname "John", :last-name "Wayne", :kennung "joway142"} ; :last-name ist ungültig|
+    \end{itemize}
+\end{aufgabe}
+
+
+\section*{Fragen}
+Bei Fragen wenden Sie sich bitte an Philipp K"orner (\texttt{p.koerner@hhu.de}).
+\end{document}
+

@@ -1,0 +1,167 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[ngerman]{babel}
+\usepackage[TS1,T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+\selectlanguage{ngerman}
+\usepackage{theorem}
+\usepackage[scaled=0.9]{helvet}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{stmaryrd}
+\usepackage{pgf,tikz}
+\usepackage{relsize}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{algpseudocode,amsmath,xifthen}
+
+\newcounter{numb}
+\theoremstyle{break}
+\theorembodyfont{\upshape}
+   	\newtheorem{aufgabe}{Aufgabe}[numb]
+\setcounter{numb}{0}
+\setlength{\oddsidemargin}{0cm}
+\setlength{\textwidth}{16cm}
+\setlength{\textheight}{23cm}
+\setlength{\topmargin}{-2cm}
+
+\usetikzlibrary{shapes,arrows,automata,positioning,decorations.fractals}
+\renewcommand\familydefault{\sfdefault}
+
+
+\begin{document}
+
+\begin{minipage}[b]{\textwidth}
+\parbox[t]{5cm}{%
+\includegraphics[width=4cm]{unilogo}
+\hfill
+}
+\parbox[b]{11cm}{%
+%\scshape%
+Heinrich-Heine-Universit\"at D\"usseldorf\\
+Institut f\"ur Informatik\\
+Lehrstuhl Softwaretechnik und Programmiersprachen\\
+%Professor Dr.\ M.\ Leuschel
+Philipp K\"orner
+}
+
+%%date
+%\hfill 1.\@ August 2017\rule{0mm}{6mm}\quad\ %% <--
+\end{minipage}
+\begin{center}
+\bf
+Funktionale Programmierung -- WS 2020 / 2021\\
+Reading Guide 0: \"Uberblick
+\end{center}
+
+\pagestyle{empty}
+
+%\paragraph{Abgabe des Lerntagebuchs} \"uber das ILIAS bis zum 16.5.2020 mit unbegrenzt Material, Nachfrist bis zum 23.5.2020 mit zwei Seiten A4.
+
+\section*{Hinweise}
+Die Lernziele stecken exakt ab, was Sie in der Klausur erwartet.
+Es ist prinzipiell egal, welches Material Sie heranziehen, um die Lernziele zu erreichen und wann Sie diese erreichen.
+Die zeitliche Orientierung dient dazu, dass Sie an den \"Ubungen sinnvoll teilnehmen k\"onnen.
+
+Die Bearbeitung aller Aufgaben ist freiwillig.
+Die Aufgaben auf diesem Blatt stellen Werkzeuge dar und sind somit elementar wichtig, um sp\"ater das vorgeschlagene Kursmaterial durchzuarbeiten.
+Des Weiteren helfen diese Werkzeuge bei den \"Ubungen deutlich.
+
+Sie dürfen gerne bereits mit der nächsten Lerneinheit beginnen, sobald Sie diese abgeschlossen haben.
+
+\paragraph{Zeitliche Orientierung:} Diese Lerneinheit sollte bis zum 05.11.2020 abgeschlossen werden.
+
+\section{Material} 
+
+\begin{itemize}
+    \item The Joy of Clojure, Kapitel 1 - Clojure Philosophy\footnote{Seien Sie nicht demotiviert, wenn Sie nicht direkt alles aus dem Kapitel verstehen. Das Buch ist nicht besonders f\"ur Anf\"anger geeignet, gibt aber einen ganz guten \"Uberblick \"uber viele der Themen, mit denen wir uns befassen werden.}
+    \item 00-syntax.clj
+    \item Leiningen \url{https://github.com/technomancy/leiningen}
+    \item Clojure Cheatsheet \url{https://clojure.org/api/cheatsheet}
+    \item Clojure Newbie Guide \url{http://www.clojurenewbieguide.com/}
+\end{itemize}
+
+
+\section{Lernziele}
+
+Nach dem Bearbeiten dieser Lerneinheit sollten Sie in der Lage sein
+
+\begin{itemize}
+    \item Charakteristika von funktionaler Programmierung zu benennen.
+    \item Nachteile objektorientierter Programmierung zu erkl\"aren.
+    \item einen Editor mit einem REPL-Plugin und Paredit zu bedienen.
+    \item einige Clojure-Funktionen und ihre Funktionalität aufzuzählen.
+\end{itemize}
+
+\section{Aufgaben}
+
+
+\begin{aufgabe}[Leiningen]
+    Installieren Sie Leiningen (\url{https://github.com/technomancy/leiningen}).
+    Verwenden Sie dazu bitte die Installationsanweisung von der verlinkten Seite
+    um sicherzustellen, dass Sie eine aktuelle Version nutzen.
+
+    Finden Sie heraus, wie man ein neues Projekt anlegt
+    und machen Sie sich mit der Ver\-zeich\-nis\-struk\-tur vertraut.
+    Starten Sie auch mal eine REPL Sitzung.
+\end{aufgabe}
+
+
+\begin{aufgabe}[Paredit]
+    Paredit ist ein wichtiges Hilfsmittel bei der Programmierung in einem Lisp.
+    F\"ur die meisten Editoren gibt es ein Paredit-Plugin.
+    Stellen Sie sicher, dass Ihr Editor der Wahl ein solches Plugin hat
+    und installieren bzw. aktivieren Sie es.
+
+
+    Paredit garantiert, dass Klammern immer balanciert sind.
+    Um effizient arbeiten zu k\"onnen, sollen Sie daher
+    die Tastenk\"urzel herausfinden, die folgende Manipulationen erm\"oglichen
+    (Copy \& Paste oder erneutes Eintippen ist nicht erlaubt!):
+
+    \begin{enumerate}[label=\alph*)]
+\item
+  \texttt{(foo (bar) baz)} $\longrightarrow$ \texttt{(foo (bar baz))} \textit{(Right Slurp)}
+\item
+  \texttt{(foo (bar baz))} $\longrightarrow$ \texttt{(foo bar (baz))} \textit{(Left Barf)}
+\item
+  \texttt{(foo bar (baz))} $\longrightarrow$ \texttt{(foo (bar baz))} \textit{(Left Slurp)}
+\item
+  \texttt{(foo (bar baz))} $\longrightarrow$ \texttt{(foo (bar) baz)} \textit{(Right Barf)}
+\item
+  \texttt{(foo) (bar)} $\longrightarrow$ \texttt{(foo bar)} \textit{(Join)}
+\item
+  \texttt{(foo bar)} $\longrightarrow$ \texttt{(foo) (bar)} \textit{(Split)}
+\item
+  \texttt{foo} $\longrightarrow$ \texttt{(foo)} \textit{(Wrap)}
+\item
+  \texttt{(foo (bar baz))} $\longrightarrow$ \texttt{(foo bar baz)} \textit{(Splice)}
+\item
+  \texttt{(foo (bar baz))} $\longrightarrow$ \texttt{(foo)} \textit{(Delete / Killing)}
+\end{enumerate}
+
+\end{aufgabe}
+
+\begin{aufgabe}[REPL-Plugin]
+    Viele Editoren bieten auch ein Plugin an,
+    um zu einer ge\"offnete REPL Sitzung zu verbinden
+    und darin Code auszuwerten.
+
+    Finden Sie heraus, ob es f\"ur Ihren Editor ein solches Plugin gibt,
+    starten Sie eine REPL Sitzung und werten Sie in ihrem Editor folgenden
+    Code aus (Sie m\"ussen den Code zu diesem Zeitpunkt noch nicht verstehen!):
+
+\begin{verbatim}
+(def fib-seq
+  (lazy-cat [0 1] (map + (rest fib-seq) fib-seq)))
+
+(take 10 fib-seq)
+\end{verbatim}
+\end{aufgabe}
+
+
+\section*{Fragen}
+Bei Fragen wenden Sie sich bitte an Philipp K"orner (\texttt{p.koerner@hhu.de}).
+\end{document}
+

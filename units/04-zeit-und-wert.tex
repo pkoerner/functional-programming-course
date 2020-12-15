@@ -1,0 +1,130 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[ngerman]{babel}
+\usepackage[TS1,T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+\usepackage{theorem}
+\usepackage[scaled=0.9]{helvet}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{stmaryrd}
+\usepackage{pgf,tikz}
+\usepackage{relsize}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{algpseudocode,amsmath,xifthen}
+
+\newcounter{numb}
+\theoremstyle{break}
+\theorembodyfont{\upshape}
+   	\newtheorem{aufgabe}{Aufgabe}[numb]
+\setcounter{numb}{4}
+\setlength{\oddsidemargin}{0cm}
+\setlength{\textwidth}{16cm}
+\setlength{\textheight}{23cm}
+\setlength{\topmargin}{-2cm}
+
+\usetikzlibrary{shapes,arrows,automata,positioning,decorations.fractals}
+\renewcommand\familydefault{\sfdefault}
+
+
+\begin{document}
+
+\begin{minipage}[b]{\textwidth}
+\parbox[t]{5cm}{%
+\includegraphics[width=4cm]{unilogo}
+\hfill
+}
+\parbox[b]{11cm}{%
+%\scshape%
+Heinrich-Heine-Universit\"at D\"usseldorf\\
+Institut f\"ur Informatik\\
+Lehrstuhl Softwaretechnik und Programmiersprachen\\
+%Professor Dr.\ M.\ Leuschel
+Philipp K\"orner
+}
+
+%%date
+%\hfill 1.\@ August 2017\rule{0mm}{6mm}\quad\ %% <--
+\end{minipage}
+\begin{center}
+\bf
+Funktionale Programmierung -- WS 2020 / 2021\\
+Reading Guide 4: Zeit und Wert (Praxis)
+\end{center}
+
+\pagestyle{empty}
+
+\paragraph{Zeitliche Orientierung:} Diese Lerneinheit sollte bis zum 03.12.2020 abgeschlossen werden.
+%\paragraph{Abgabe des Lerntagebuchs} \"uber das ILIAS bis zum 16.5.2020 mit unbegrenzt Material, Nachfrist bis zum 23.5.2020 mit zwei Seiten A4.
+
+\section{Material} 
+
+\begin{itemize}
+    \item 03\_concurrency.clj
+    \item The Joy of Clojure, Kapitel 10.1 bis 10.4
+    \item Clojure for the Brave and True, Kapitel 9
+    \item Clojure for the Brave and True, Kapitel 10
+    \item Clojure Reference: Atoms \url{https://clojure.org/reference/atoms}
+    \item Clojure Reference: Refs and Transactions \url{https://clojure.org/reference/refs}
+    \item Clojure Reference: Agents \url{https://clojure.org/reference/agents}
+\end{itemize}
+
+
+\section{Lernziele}
+
+Nach dem Bearbeiten dieser Lerneinheit sollten Sie in der Lage sein
+
+\begin{itemize}
+    \item die Semantik von Konstrukten f\"ur Zeitmanagement zu beschreiben und zu vergleichen.
+    \item das Konfliktverhalten von den Konstrukten f\"ur Zeitmanagement zu erl\"autern.
+    \item fehlerhafte Verwendungen von Konstrukten f\"ur Zeitmanagement zu erkennen.
+    \item jeweils Einsatzgebiete von Atomen, Refs und Agents zu identifizieren.
+    \item jeweils Atome, Refs und Agenten konsistent zu verwenden.
+    \item das Problem des write skews zu erkennen, zu beschreiben und zu l\"osen.
+    \item die M\"achtigkeit (expressivity) von Atomen und Refs zu vergleichen.
+    \item die Performance von Atomen und Refs zu kennen und zu vergleichen.
+\end{itemize}
+
+\section{Highlights}
+
+\begin{itemize}
+    \item Atoms, Refs, Agents
+    \item Transaktionen
+    \item write skew
+    \item Macros: \verb|dosync|
+    \item Funktionen: \verb|swap!|, \verb|reset!|, \verb|alter|, \verb|ref-set|, \verb|ensure|, \verb|deref|, \verb|send|, \verb|send-off|, \verb|await|
+\end{itemize}
+
+
+
+\section{Aufgaben}
+
+\begin{aufgabe}[Minesweeper]
+Implementieren Sie Minesweeper (siehe auch \url{https://de.wikipedia.org/wiki/Minesweeper}, \url{https://www.youtube.com/watch?v=LHY8NKj3RKs}). 
+
+Mindestens folgende Funktionen sollen auf der REPL zur Verf\"ugung stehen:
+
+\begin{itemize}
+\item \texttt{(init! height width amount-of-mines)} soll das Spielfeld mit entsprechender H\"ohe, Breite und Minenanzahl initialisieren.
+Weiterhin soll \texttt{(init!)} 30 als Standardwert f\"ur die H\"ohe, 16 f\"ur die Breite und 99 f\"ur die Minenanzahl verwenden.
+\emph{Hinweis:} die Funktion \verb|shuffle| kann n\"utzlich sein.
+\item \texttt{(reveal! x y)} deckt das Feld an der Koordinate (x,y) auf. Befindet sich dort eine Mine, ist das Spiel verloren.
+Befindet sich keine Mine in der direkten Umgebung dieses Feld, sollen automatisch alle Felder darum herum aufgedeckt werden
+(und analog f\"ur diese Felder diese Nachbarn, wenn es dort auch keine Minen in der N\"ahe gibt).
+\item \texttt{(flag! x y)} soll das Feld (x,y) als Mine markieren oder diese Markierung entfernen, falls es bereits markiert ist.
+Markierte Felder k\"onnen nicht mit \texttt{reveal!} aufgedeckt werden.
+\item \texttt{(print-board!)} soll das Spielfeld in einem sinnvollen Format ausgeben.
+\end{itemize}
+
+\emph{Hinweis:} Sie ben\"otigen ein Konstrukt um Zustand zu managen. Achten Sie darauf, dass es zu keinen Inkonsistenzen kommt.
+
+\end{aufgabe}
+
+
+\section*{Fragen}
+Bei Fragen wenden Sie sich bitte an Philipp K"orner (\texttt{p.koerner@hhu.de}).
+\end{document}
+

@@ -1,0 +1,163 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[ngerman]{babel}
+\usepackage[TS1,T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+\usepackage{theorem}
+\usepackage[scaled=0.9]{helvet}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{stmaryrd}
+\usepackage{pgf,tikz}
+\usepackage{relsize}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{algpseudocode,amsmath,xifthen}
+
+\newcounter{numb}
+\theoremstyle{break}
+\theorembodyfont{\upshape}
+   	\newtheorem{aufgabe}{Aufgabe}[numb]
+\setcounter{numb}{3}
+\setlength{\oddsidemargin}{0cm}
+\setlength{\textwidth}{16cm}
+\setlength{\textheight}{23cm}
+\setlength{\topmargin}{-2cm}
+
+\usetikzlibrary{shapes,arrows,automata,positioning,decorations.fractals}
+\renewcommand\familydefault{\sfdefault}
+
+
+\begin{document}
+
+\begin{minipage}[b]{\textwidth}
+\parbox[t]{5cm}{%
+\includegraphics[width=4cm]{unilogo}
+\hfill
+}
+\parbox[b]{11cm}{%
+%\scshape%
+Heinrich-Heine-Universit\"at D\"usseldorf\\
+Institut f\"ur Informatik\\
+Lehrstuhl Softwaretechnik und Programmiersprachen\\
+%Professor Dr.\ M.\ Leuschel
+Philipp K\"orner
+}
+
+%%date
+%\hfill 1.\@ August 2017\rule{0mm}{6mm}\quad\ %% <--
+\end{minipage}
+\begin{center}
+\bf
+Funktionale Programmierung -- WS 2020 / 2021\\
+Reading Guide 3: Zeit und Wert (Theorie)
+\end{center}
+
+\pagestyle{empty}
+
+\paragraph{Zeitliche Orientierung:} Diese Lerneinheit sollte bis zum 26.11.2020 abgeschlossen werden.
+%\paragraph{Abgabe des Lerntagebuchs} \"uber das ILIAS bis zum 16.5.2020 mit unbegrenzt Material, Nachfrist bis zum 23.5.2020 mit zwei Seiten A4.
+
+\section{Material} 
+
+\begin{itemize}
+\item Rich Hickey: Are We There Yet? \\ \url{https://www.infoq.com/presentations/Are-We-There-Yet-Rich-Hickey/}
+\item Rich Hickey: Clojure Concurrency \url{https://youtu.be/nDAfZK8m5_8} (bis 1:16:05)
+\end{itemize}
+
+
+\section{Lernziele}
+
+Nach dem Bearbeiten dieser Lerneinheit sollten Sie in der Lage sein
+
+\begin{itemize}
+    \item die Begriffe Identit\"at, Wert, Zeit, Beobachter und Zustand zu definieren und zuzuordnen.
+    \item das epochale Zeit-Modell zu beschreiben und auf verschiedene Implementierungen von Zustandsmanagement anzuwenden.
+    \item compare-and-swap (CAS)-Semantik zu beschreiben.
+    \item die Rolle von persistenen Datenstrukturen unter Nebenl\"aufigkeit zu beschreiben.
+\end{itemize}
+
+
+\section{Aufgaben}
+
+\paragraph{Anmerkung:} da diese Lerneinheit sich nur mit theoretischen Aspekten befasst, gibt es hier die Gelegenheit zur \"Ubung und Wiederholung der alten Einheiten.
+
+\begin{aufgabe}[Newton Verfahren]
+Das Newton Verfahren ist ein Verfahren um f"ur eine Funktion f eine L"osung c der Gleichung $f(c)=0$  n"aherungsweise zu berechnen.
+Das Verfahren verwendet die Folge $$x_{n+1} = x_{n} - \frac{f(x_n)}{f'(x_n)}$$ 
+Es wird abgebrochen, wenn $|x_{n+1} - x_n| < \epsilon$ f"ur ein gegebenes $\epsilon > 0$ ist.
+
+\begin{enumerate}[label=\alph*)]
+
+  \item Schreiben Sie eine Funktion \texttt{(defn newton [f f'] ...)}, die die Funktion und deren Ableitung als Parameter bekommt. Die Funktion soll dann eine Funktion zur"uckgeben, die einen Startwert $x$ und eine Genauigkeit $eps$ bekommt und die L"osung f"ur $f(x)=0 \pm eps$ mit Hilfe des Newton Verfahrens berechnet. 
+  
+    \item Die Quadratwurzel einer Zahl K ist eine L"osung f"ur die Gleichung $c^2 - K = 0$. Wir k\"onnen also das Newton Verfahren mit der Funktion $f(x) = x^2 - K$ anwenden. Schreiben sie eine Funktion \texttt{(defn sqrt [n] ...)}, die die Quadratwurzel von n mit Hilfe des Newton Verfahrens berechnet, als Startwert und Genauigkeit k\"onnen Sie $10^{-5}$ festsetzen.
+    
+%  \item Das Newton Verfahren ist ein Fixpunktalgorithmus. Schreiben Sie eine Funktion \texttt{(defn fixedpoint [F guess eps?] ...)}, das ausgehend von einem Startwert guess einen Fixpunkt von F berechnet. Die Genauigkeit eps? soll selber eine Funktion sein, die zwei Eingaben (den neuen Wert und den alten Wert) bekommt und true liefert, falls die beiden Eingaben hinreichend gut \"ubereinstimmen.
+% \item Schreiben Sie das Newton Verfahren als Instanz dieser Fixpunkt-Funktion.
+
+\end{enumerate}
+\end{aufgabe}
+
+
+\begin{aufgabe}[Higher Order Functions]
+\begin{enumerate}[label=\alph*)]
+
+ \item Schreiben Sie eine Funktion \texttt{flip}, die die Argumente einer Funktion umdreht.
+ Beispiele:
+ \begin{verbatim}
+user=> (nth [3 4 5 6] 2)
+5
+user=> ((flip nth) 2 [3 4 5 6])
+5
+user=> (- 3 2 1)
+0
+user=> ((flip -) 1 2 3)
+0
+user=> (drop 2 [4 5 6 7])
+(6 7)
+user=> ((flip drop) [4 5 6 7] 2)
+(6 7) \end{verbatim}
+\item Die Clojure Funktion \texttt{comp} kann man benutzen um die Komposition aus Funktionen zu erzeugen. Das Resultat des Aufrufs \texttt{((comp f g) x)} ist das Gleiche wie das Resultat des Aufrufs \texttt{(f (g x)))}. Implementieren Sie eine eigene Version von \texttt{comp}. Ihre Version soll nur den allgemeinsten Fall \texttt{(defn mycomp [\& fs] ...)} abdecken und nicht wie die Clojure Version auf verschiedene kleine Arit"aten optimiert sein.  
+
+\begin{verbatim}
+user=> ((mycomp inc (fn [x] (* x x))) 4)
+17
+user=> ((mycomp (fn [x] (* x x)) inc) 4)
+25 \end{verbatim}
+
+
+
+\item Implementieren Sie die Clojure Funktion \texttt{juxt}, die Funktionen als Parameter bekommt und eine neue Funktion erzeugt. Diese Funktion bekommt eine Eingabe, wendet jede der Funktionen auf die Eingabe an und erzeugt einen Vektor mit den Resultaten. Implementieren Sie die allgemeinste Version von \texttt{juxt}.
+
+\begin{verbatim}
+user=> ((myjuxt inc dec (fn [x] (* x x))) 3)
+[4 2 9] \end{verbatim}
+
+\end{enumerate}
+\end{aufgabe}
+
+
+
+\begin{aufgabe}[\texttt{every?}]
+    \texttt{(fn every? [f c])} ist eine Higher Order Function, die eine Funktion f und eine Collection c als Parameter nimmt.
+    Der R\"uckgabewert ist \texttt{true}, wenn die Funktion auf jedes Element der Collection angewandt einen truthey Wert zur\"uckgibt und ansonsten \texttt{false}.
+
+    \begin{verbatim}
+(every? even? [1 2 3 4]) 
+=> false
+(every? even? [2 4])
+=> true \end{verbatim}
+
+    Implementieren Sie \texttt{every?} selbst.
+\end{aufgabe}
+
+\end{document}
+
+
+\section*{Fragen}
+Bei Fragen wenden Sie sich bitte an Philipp K"orner (\texttt{p.koerner@hhu.de}).
+\end{document}
+
