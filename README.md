@@ -23,6 +23,7 @@ Each unit groups material related to a topic as well as all expected learning ou
 
 - [ ] figure out licence
 - [ ] translate units
+  - [x] readings guide 0
   - [ ] readings guide 1
   - [ ] readings guide 2
   - [ ] readings guide 3
@@ -35,7 +36,7 @@ Each unit groups material related to a topic as well as all expected learning ou
   - [ ] readings guide 10
   - [ ] readings guide 11
 - [ ] translate REPL sessions
-  - [ ] 00_syntax.clj
+  - [x] 00_syntax.clj
   - [ ] 01_intro.clj
   - [ ] 02_data.clj
   - [ ] 03_concurrency.clj

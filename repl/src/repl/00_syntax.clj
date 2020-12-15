@@ -1,136 +1,137 @@
-(ns repl.00-syntax) ;; Namespace Macro - wird später genauer untersucht
+(ns repl.00-syntax) ;; Namespace macro - is going to be examined in greater detail later on
 
-; (Zeilen-)Kommentare werden von ; eingeleitet
+; (Single line-)comments are preceded by ';'
 
-;; Hinweis: falls das Editor-Plugin ein Literal alleine nicht auswerten möchte: in do verpacken
+;; Note: In case an editor-plugin cannot evaluate a literal wrap it in a do
 (do 3)
 
 
-;; Zahlen
+;; Numbers
 3
-; ganze Zahlen sind standardmäßig Logs
+; Integral numbers are longs by default
 (type 3)
-; außer es passt nicht (siehe N am Ende)
-;; Literale werden automatisch in einen passenden Typ gelesen
+; unless the value does not fit into a long (Note the 'N' at the end of the number)
+;; Literals are automatically of the suitable type
 12345678901234567890
 (type 12345678901234567890)
-; ...N ist das Literal, das einen BigInt erzwingt
+; ...N is the literal that forces a BigInt
 3N
 
-;; andere Basen
-;; hexadezimal
+;; Other bases
+;; hexadecimal
 0x33
-;; oktal
+;; octal
 012
-;; binär
+;; binary
 2r1011
-;; Basis 7
+;; base 7
 7r666
-;; Basis 36
+;; base 36
 36rCrazy
-;; Literalsyntax für alle Basen <= 36
-;; Warum 36? danach gehen einem die Buchstaben aus...
+;; Literalsyntax exist for all bases <= 36
+;; Why 36? Afterwards we run out of letters of the alphabet...
 
 
 
 3.141529
-;; Gleitkommazahlen sind Doubles
+;; Floating-point number literals are doubles
 (type 3.141529)
 3.14159265359
-;; Fließkommazahlen werden nicht in einen passenden Typ gelesen
+;; Floating-point number literals are not automatically of the suitable type
 3.141592653589793238
-;; präziser wird es mit einem BigDecimal (-M Suffix)
+;; More precision can be attained from a BigDecimal (-M suffix)
 3.141592653589793238M
 (type 3.141592653589793238M)
 
 
-;; Brüche sind Literale mit Integerwert links und rechts vom /
+;; Fractions are literals with integers left and right of a '/'
 1/4
-;; und werden vollständig gekürzt
+;; and are fully reduced
 4/8
-;; syntaktischer Murks:
-;; (+ 1 2)/3 oder 3.14/2 oder 3N/42
-;; erlaubt große Zahlen:
+;; syntactical nonsense
+;; (+ 1 2)/3 or 3.14/2 or 3N/42
+;; Fractions permit large numbers
 438750928436573298756238497653487563289523/43657493825642387956432987562349875643
-;; Warnung: Rechnen mit Brüchen kann sehr langsam werden, da sie Zahlen exakt über Zähler und Nenner repräsentieren.
-;; Sie werden zwar gekürzt, aber können nach vielen Schritten sehr große Zähler und Nenner produzieren.
-;; Oft sind Doubles präzise genug und sind signifikant schneller
+;; Warning: Calculations with fractions can be slow as they represent numbers exactly by counter and denominator
+;; They are reduced, but can stil produce large counter and denominator values after many steps 
+;; Often doubles are precise enough and significantly faster
 
 
 
-;; Strings, Character
+;; Strings, characters
 "foo"
-;; Clojure Strings sind Java Strings
+;; Clojure strings are Java strings
 (type "foo")
-;; auch in Multi-Line
+;; Multi-Line, too
 "foo
 bar"
-;; oder mit gutem, altem Escaping drin
+;; or with good ol' escaping
 "foo\nbar"
 
-;; Character 'x' mit Backslash vorm Zeichen
+;; The char 'x' is obtained with backslash preceding the character
 \x
-;; Character sind Java Character
+;; Characters are Java characters
 (type \f)
-;; Spezialfälle, an die man sich gewöhnen muss
+;; Some special cases you have to get used to
 \space
-\newline ;; \n ist schon das Zeichen 'n'
-;; Unicode Characters
+\newline ;; \n is the char 'n'
+;; Unicode characters
 \u03bb
 
 
 
 
 ;; Keywords
-;; einfaches Keyword
+;; Simple keyword
 :hi
-;; zwei Doppelpunkte: Keyword in einem Namespace (eindeutiger Identifier im Projekt)
-::ich-bin-genamespaced
-;; synaktischer Murks: drei Doppelpunkte
+;; Two double colons: keyword in a namespace (unique identifier in a namespace)
+::i-am-namespaced
+;; syntactical nonsense: Three double colons
 ; :::test
 
-;; Symbole
-;; Symbol + steht für ein Funktionsobjekt
+;; Symbols
+;; Symbol + stands for a function object
 +
-(comment kaboom!) ;; nicht definiert, also Exception
-;; mit einem Quote werden Symbole nicht aufgelöst
+(comment kaboom!) ;; not defined, thus an exception
+;; with a preceding quote symbols are not resolved
 'kaboom?
 
-;; Listen
-;; mit runde Klammern
-;; leere Liste:
+;; Lists
+;; with parentheses
+;; empty list:
 ()
-;; Liste mit Elementen müssen gequoted werden, um sie von Funktionsaufrufen zu unterscheiden (sonst wird es ausgewertet)
+;; Lists with elements must be quoted to differentiate them from function calls (otherwise they are evaluated)
 '(1 2 3)
-;; Vorsicht: mit einem ' wird innen nichts mehr ausgewertet!
+;; Careful: When quoting via ' nothing within an expression is evaluated!
 '(1 2 (+ 1 2))
 
-;; Vektoren
-;; eckige Klammern
-[] ;; leer
-[1 2 3] ;; darf man ohne Quote hinschreiben
+;; Vectors
+;; brackets
+[] ;; empty
+[1 2 3] ;; No quote is needed
 
 ;; Maps
-;; geschwungene Klammern assoziativer Container
+;; Braces, associative container
 {:key :value, 1 2, true [1], '(1) false}
-;; Kommas sind übrigens Whitespace, werden nur zur Lesbarkeit eingefügt
+;; Commas are whitespace by the way and are only used for readability
 {:key :value 1 2,,,,,,, true [1] '(1) false}
-;; syntaktischer Murks: zweimal vom selben Schlüssel auf etwas abzubilden
+;; syntactical nonsense: mapping to values from the same key twice
+;; 
 ; {:a :b, :a :c}
 
 
 ;; Sets
-;; Hashtag mit geschwungenen Klammern
+;; Hash (Number sign, Pound sign, Hashtag) followed by braces
 #{1 2 3}
-;; synaktischer Murks: Sets mit Duplikaten
+;; syntactical nonsense: Sets with duplicates
 ; #{1 1 1}
 
-;; null in Java heißt hier nil
+;; null in Java is named nil here
 nil
 
 
-;; Funktionsaufrufe sind Listen!
-;; das erste Element ist die Funktion, der Rest die Argumente
+;; Function calls are lists!
+;; The first element is the function, the rest are the arguments
 (identity :x)
 (inc 1)
 (range 1 5)
