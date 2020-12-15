@@ -54,6 +54,7 @@ Each unit groups material related to a topic as well as all expected learning ou
   - [ ] 21_transients.clj
   - [ ] 22_ebt.clj
 - [ ] add bonus item: core.async
+- [ ] add ILIAS tests?
 
 
 ## Licence
