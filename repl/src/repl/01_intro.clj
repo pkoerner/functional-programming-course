@@ -717,7 +717,7 @@
   (doc last)
   (source last)
 
-;; cumbersome, but this is how to access the last element of a vector efficiently
+;; cumbersome, but this is how to access the last element of a vector efficiently (or use 'peek')
   (time (nth x (dec (count x))))
 
 ;; This may change in a future clojure version...
