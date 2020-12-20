@@ -1,53 +1,23 @@
 \documentclass[11pt,a4paper]{article}
-
-\usepackage[ngerman]{babel}
-\usepackage[TS1,T1]{fontenc}
-\usepackage[utf8x]{inputenc}
-\usepackage{theorem}
-\usepackage[scaled=0.9]{helvet}
-\usepackage{amsmath}
-\usepackage{amssymb}
-\usepackage[T1]{fontenc}
-\usepackage{hyperref}
-\usepackage{stmaryrd}
-\usepackage{pgf,tikz}
-\usepackage{relsize}
-\usepackage{enumitem}
-\usepackage{graphicx}
-\usepackage{algpseudocode,amsmath,xifthen}
-
-\newcounter{numb}
-\theoremstyle{break}
-\theorembodyfont{\upshape}
-   	\newtheorem{aufgabe}{Aufgabe}[numb]
+\input{header.tex}
 \setcounter{numb}{1}
-\setlength{\oddsidemargin}{0cm}
-\setlength{\textwidth}{16cm}
-\setlength{\textheight}{23cm}
-\setlength{\topmargin}{-2cm}
-
-\usetikzlibrary{shapes,arrows,automata,positioning,decorations.fractals}
-\renewcommand\familydefault{\sfdefault}
 
 
 \begin{document}
 
 \begin{minipage}[b]{\textwidth}
-\parbox[t]{5cm}{%
-\includegraphics[width=4cm]{unilogo}
-\hfill
-}
-\parbox[b]{11cm}{%
-%\scshape%
-Heinrich-Heine-Universit\"at D\"usseldorf\\
-Institut f\"ur Informatik\\
-Lehrstuhl Softwaretechnik und Programmiersprachen\\
-%Professor Dr.\ M.\ Leuschel
-Philipp K\"orner
-}
-
-%%date
-%\hfill 1.\@ August 2017\rule{0mm}{6mm}\quad\ %% <--
+	\parbox[t]{5cm}{%
+		\includegraphics[width=4cm]{unilogo}
+		\hfill
+	}
+	\parbox[b]{11cm}{%
+		%\scshape%
+		Heinrich-Heine-University D\"usseldorf\\
+		Computer Science Department\\
+		Software Engineering and Programming Languages\\
+		%Professor Dr.\ M.\ Leuschel
+		Philipp K\"orner
+	}
 \end{minipage}
 \begin{center}
 \bf
@@ -113,7 +83,7 @@ Sie k\"onnen die Symbole zun\"achst mit \verb|(declare seq-e fibonacci remove-du
 um Exceptions loszuwerden, die darauf zur\"uckzuf\"uhren sind, dass die globalen Variablen oder Funktionen noch nicht definiert sind.
 Alternativ k\"onnen Sie auch einzelne Tests ausf\"uhren (vgl. \verb|lein help test|).
 
-\begin{aufgabe}[Sequenzen]
+\begin{exercise}[Sequenzen]
 
 In dieser Aufgabe sollen Sie einfache Sequenzen erzeugen. Ein Beispiel: Wenn die Aufgabe ist die Sequenz zu definieren, die die Zahlen zwischen -100 und 100 beinhaltet, k\"onnte Ihre L\"osung so aussehen: \texttt{(def beispiel-seq (range -100 101))}
   
@@ -131,22 +101,22 @@ In dieser Aufgabe sollen Sie einfache Sequenzen erzeugen. Ein Beispiel: Wenn die
   
     
   \end{enumerate}
-\end{aufgabe}
+\end{exercise}
 
-\begin{aufgabe}[Fibonacci]
+\begin{exercise}[Fibonacci]
 Die Folge der Fibonacci Zahlen beginnt mit $F_0=0$ und $F_1=1$. Jedes weitere Folgenglied ist die Summe der beiden vorangehenden Glieder: $F_{n}=F_{n-1}+F_{n-2}$ 
 \begin{enumerate}[label=\alph*)]
   \item Schreiben Sie eine Funktion \verb|fibonacci|, die eine ganze  Zahl $z$ als Eingabe bekommt und eine Sequenz mit den ersten $z$ Fibbonaccizahlen erzeugt.
   \item Testen Sie Ihre Funktion auch einmal mit 100.
   \end{enumerate}
-\end{aufgabe}
+\end{exercise}
 
 
 
 
 
 
-\begin{aufgabe}[Duplikate entfernen]
+\begin{exercise}[Duplikate entfernen]
 Gegeben sei ein Vektor $v$, der Duplikate enthalten kann. Schreiben Sie eine Funktion \texttt{remove-duplicates}, die alle Duplikate aus dem Vektor entfernt, dabei aber die Reihenfolge der Elemente nicht modifiziert. 
 
 Die Funktion soll beispielsweise so aufgerufen werden:
@@ -162,7 +132,7 @@ user=> (remove-duplicates [1 2 3 "dd" 2 :a 3])
 \end{verbatim}
 
 Es ist nur wichtig, dass das Ergebnis eine sequentielle Kollektion ist. Der genaue Datentyp ist irrelevant.
-\end{aufgabe}
+\end{exercise}
 
 
 \section*{Fragen}
