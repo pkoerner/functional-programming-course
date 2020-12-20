@@ -37,7 +37,7 @@ Each unit groups material related to a topic as well as all expected learning ou
   - [ ] readings guide 11
 - [ ] translate REPL sessions
   - [x] 00_syntax.clj
-  - [ ] 01_intro.clj
+  - [x] 01_intro.clj
   - [ ] 02_data.clj
   - [ ] 03_concurrency.clj
   - [ ] 04_destructuring.clj
