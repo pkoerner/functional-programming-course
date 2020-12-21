@@ -24,7 +24,7 @@ Each unit groups material related to a topic as well as all expected learning ou
 - [ ] figure out licence
 - [ ] translate units
   - [x] readings guide 0
-  - [ ] readings guide 1
+  - [x] readings guide 1
   - [ ] readings guide 2
   - [ ] readings guide 3
   - [ ] readings guide 4

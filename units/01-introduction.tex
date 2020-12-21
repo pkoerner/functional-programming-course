@@ -20,81 +20,79 @@
 	}
 \end{minipage}
 \begin{center}
-\bf
-Funktionale Programmierung -- WS 2020 / 2021\\
-Reading Guide 1: Einf\"uhrung und Syntax
+	\bf
+	Functional Programming -- WISE 2020 / 2021\\
+	Reading Guide 1: Introduction and syntax
 \end{center}
 
 \pagestyle{empty}
 
-%\paragraph{Abgabe des Lerntagebuchs} \"uber das ILIAS bis zum 16.5.2020 mit unbegrenzt Material, Nachfrist bis zum 23.5.2020 mit zwei Seiten A4.
-
 \section{Material} 
 
 \begin{itemize}
-\item Clojure for the Brave and True, Kapitel 3
+\item Clojure for the Brave and True, chapter 3
 \item 01\_intro.clj
 \item 07\_java\_interop.clj
 \item 08\_namespaces.clj
-\item Rich Hickey: Clojure for Java Programmers \url{https://www.youtube.com/watch?v=P76Vbsk_3J0} (bis 1:35:38)
-%\item Rich Hickey: Clojure for Java Programmers Part 2 \url{https://www.youtube.com/watch?v=hb3rurFxrZ8} (Übersicht über weitere Themen der Veranstaltung)
+\item Rich Hickey: Clojure for Java Programmers \url{https://www.youtube.com/watch?v=P76Vbsk_3J0} (until 1:35:38)
+%\item Rich Hickey: Clojure for Java Programmers Part 2 \url{https://www.youtube.com/watch?v=hb3rurFxrZ8} (Overview over further topics of the lecture)
 \end{itemize}
 
-\paragraph{Zeitliche Orientierung:} Diese Lerneinheit sollte bis zum 12.11.2020 abgeschlossen werden.
+\paragraph{Deadline:} This unit should be completed by 12.11.2020.
 
-\section{Lernziele}
+\section{Learning Objectives}
 
-Nach dem Bearbeiten dieser Lerneinheit sollten Sie in der Lage sein
+After finishing this unit you should be able to
 
 \begin{itemize}
-    \item die Reihenfolge von Aufrufen bei der Funktionsauswertung zu bestimmen.
-    \item selbst Funktionen mit lokalen Bindings zu definieren.
-    \item die grunds\"atzlichen Kontrollstrukturen in einfachen Funktionen zu verwenden.
-    \item eingebaute higher-order functions zu verwenden.
-    \item selbst higher-order functions zu schreiben.
-    \item grundlegende Sequenzoperationen aus der Standardbibliothek kennen.
+	\item determine the evaluation order of elements in a function call.
+    \item define functions with local bindings.
+    \item use the fundamental control structures in small functions.
+    \item use built-in higher-order functions.
+    \item write higher-order functions.
+    \item recall fundamental sequence operations provided by the standard library.
 \end{itemize}
 
 \section{Highlights}
 
 \begin{itemize}
-    \item $\beta$-Reduktion als Auswertungsmechanismus
-    \item Listen und Sequenzen
-    \item Higher-Order Funktionen: Konzept, \verb|map|, \verb|filter|, \verb|reduce|, \verb|apply|
-    \item Special Forms: \verb|def|, \verb|fn|, \verb|if|, \verb|let|, \verb|do|
-    \item Sequenzoperationen: \verb|first|, \verb|rest|, \verb|range|, \verb|cons|, \verb|conj|, \verb|assoc|, \verb|dissoc|, \verb|disj|
+    \item $\beta$-reduction as evaluation-mechanism
+    \item Lists and sequences
+    \item Higher-Order functions: concept, \verb|map|, \verb|filter|, \verb|reduce|, \verb|apply|
+    \item Special forms: \verb|def|, \verb|fn|, \verb|if|, \verb|let|, \verb|do|
+    \item Sequence operations: \verb|first|, \verb|rest|, \verb|range|, \verb|cons|, \verb|conj|, \verb|assoc|, \verb|dissoc|, \verb|disj|
     \item Macros: \verb|ns|, \verb|for|, \verb|cond|, \verb|and|, \verb|or|
 \end{itemize}
 
 
 
-\section{Aufgaben}
+\section{Exercises}
 
-\paragraph{Anmerkungen}
-Die Bearbeitung der Aufgaben ist freiwillig.
-F\"ur die Klausurzulassung sind ausschlie\ss{}lich die Tests im ILIAS relevant.
-Da in der Klausur aber auch programmiert werden muss,
-empfehle ich sehr, dass Sie sich mit den Programmieraufgaben auseinandersetzen.
+\paragraph{Notes}
+Solving the exercises is voluntary.
+Admission to the exam is solely based on passing the tests in the ILIAS.
+Since programming is required in the exam
+it is highly recommended to work on the exercises.
 
-Im ILIAS finden Sie unter Lerneinheiten > projektskelette.zip Vorlagen f\"ur die Leiningen Projekte.
-Dort enthalten sind auch Tests der Funktionalit\"at, die Sie mit \verb|lein test| ausf\"uhren k\"onnen\footnote{In Kombination ist das Plug-in \url{https://github.com/weavejester/lein-auto} n\"utzlich.}.
+In the ILIAS you can find templates for leiningen projects under Lerneinheiten > projektskelette.zip.
+Included there you will find functionality tests, which you can execute with \verb|lein test|\footnote{The Plug-in \url{https://github.com/weavejester/lein-auto} is useful in combination with this.}.
 
-Sie k\"onnen die Symbole zun\"achst mit \verb|(declare seq-e fibonacci remove-duplicates)| definieren,
-um Exceptions loszuwerden, die darauf zur\"uckzuf\"uhren sind, dass die globalen Variablen oder Funktionen noch nicht definiert sind.
-Alternativ k\"onnen Sie auch einzelne Tests ausf\"uhren (vgl. \verb|lein help test|).
+You can initially define symbols with \verb|(declare seq-e fibonacci remove-duplicates)|
+to get rid of exceptions which are caused by the tests trying to reference undefined global variables and functions.
+Alternatively you can execute tests individually (see \verb|lein help test|).
 
-\begin{exercise}[Sequenzen]
+\begin{exercise}[Sequences]
 
-In dieser Aufgabe sollen Sie einfache Sequenzen erzeugen. Ein Beispiel: Wenn die Aufgabe ist die Sequenz zu definieren, die die Zahlen zwischen -100 und 100 beinhaltet, k\"onnte Ihre L\"osung so aussehen: \texttt{(def beispiel-seq (range -100 101))}
+In the following exercise simply define the described sequences. As Example: If you are to define the sequence of numbers between -100 and 100, a valid solution is: \texttt{(def example-seq (range -100 101))}
   
 
 \begin{enumerate}[label=\alph*)]
-  \item Definieren Sie die Sequenz \verb|seq-a|, die alle ganzen Zahlen von 100 bis -100 in absteigender Reihenfolge beinhaltet.
-%  \item Definieren Sie die Sequenz, die alle geraden Zahlen von 0 bis 1000 beinhaltet.
-  \item Definieren Sie die Sequenz \verb|seq-b|, die alle Quadratzahlen zwischen 0 bis 1000 beinhaltet.
-  \item Definieren Sie die Sequenz \verb|seq-c|, die alle Zahlen von 0 bis 1000 beinhaltet, die nicht durch 3 teilbar sind.
-  \item Definieren Sie die Sequenz \verb|seq-d|, die alle Tupel [n, m] von ganzen Zahlen beinhaltet f\"ur die gilt: $0 < n < 1000 \wedge n^2 < m \wedge \text{m ist minimal}$. Die Sequenz beginnt also mit [1,2], [2,5], [3,10].
-  \item Definieren Sie die Sequenz \verb|seq-e|, die alle Zahlen mit genau 5 Ziffern (dargestellt als 5 Tupel), die ein Palindrom sind enth\"alt, es soll au\ss{}erdem gelten, dass die Ziffern bis zur mittleren Zahl strikt aufsteigend sind. [0 2 3 2 0] ist also Teil der Sequenz, aber nicht [0 3 2 3 0] oder [1 1 1 1 1].
+  \item Define the sequence \verb|seq-a|, containing all integers from 100 to -100 in descending order.
+% \item Define the sequence containing all even numbers from 0 to 1000.
+  \item Define the sequence \verb|seq-b|, containing all square integers between 0 and 1000.
+  \item Define the sequence \verb|seq-c|, containing all integers between 0 and 1000, which are not evenly divisible by 3.
+  \item Define the sequence \verb|seq-d|, containing all tuples [n, m] of integers for which the following holds: $0 < n < 1000 \wedge n^2 < m \wedge \text{m is minimal}$.  The sequence begins with tuples [1,2], [2,5], [3,10].
+  \item Define the sequence \verb|seq-e|, containing all integers with 5 digits (represented as 5 tuple), which are palindromes. Additionally the digits should be strictly ascending up to the middle digit. [0 2 3 2 0] is part of the sequence, but [0 3 2 3 0] is not, neither is [1 1 1 1 1].
 %  (defn palin []
 %  (for [a (range 0 10) b (range 0 10) c (range 0 10) :when (< a b c)]
 %    [a b c b a]))
@@ -104,10 +102,10 @@ In dieser Aufgabe sollen Sie einfache Sequenzen erzeugen. Ein Beispiel: Wenn die
 \end{exercise}
 
 \begin{exercise}[Fibonacci]
-Die Folge der Fibonacci Zahlen beginnt mit $F_0=0$ und $F_1=1$. Jedes weitere Folgenglied ist die Summe der beiden vorangehenden Glieder: $F_{n}=F_{n-1}+F_{n-2}$ 
+The Fibonacci sequence begins with $F_0=0$ and $F_1=1$. Every subsequent number is the sum of the two preceding ones: $F_{n}=F_{n-1}+F_{n-2}$ 
 \begin{enumerate}[label=\alph*)]
-  \item Schreiben Sie eine Funktion \verb|fibonacci|, die eine ganze  Zahl $z$ als Eingabe bekommt und eine Sequenz mit den ersten $z$ Fibbonaccizahlen erzeugt.
-  \item Testen Sie Ihre Funktion auch einmal mit 100.
+  \item Define a function \verb|fibonacci|, which takes an integer $z$ as input and generates the first $z$ Fibbonacci numbers.
+  \item Test your function with an input of 100.
   \end{enumerate}
 \end{exercise}
 
@@ -116,10 +114,10 @@ Die Folge der Fibonacci Zahlen beginnt mit $F_0=0$ und $F_1=1$. Jedes weitere Fo
 
 
 
-\begin{exercise}[Duplikate entfernen]
-Gegeben sei ein Vektor $v$, der Duplikate enthalten kann. Schreiben Sie eine Funktion \texttt{remove-duplicates}, die alle Duplikate aus dem Vektor entfernt, dabei aber die Reihenfolge der Elemente nicht modifiziert. 
+\begin{exercise}[Removing duplicates]
+Given a vector $v$, which can contain duplicate elements, write a function \texttt{remove-duplicates} that removes all duplicates from the vector, maintaining the original order of the elements.
 
-Die Funktion soll beispielsweise so aufgerufen werden:
+Following are some example calls of this function:
 \begin{verbatim}
 user=> (remove-duplicates [])
 ()
@@ -131,11 +129,11 @@ user=> (remove-duplicates [1 2 3 "dd" 2 :a 3])
 (1 2 3 "dd" :a)
 \end{verbatim}
 
-Es ist nur wichtig, dass das Ergebnis eine sequentielle Kollektion ist. Der genaue Datentyp ist irrelevant.
+It is only important that the result is a sequential collection. The specific data structure is irrelevant.
 \end{exercise}
 
 
-\section*{Fragen}
-Bei Fragen wenden Sie sich bitte an Philipp K"orner (\texttt{p.koerner@hhu.de}).
+\section*{Questions}
+If you have any questions, please contact Philipp K"orner (\texttt{p.koerner@hhu.de}).
 \end{document}
 
