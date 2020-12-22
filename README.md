@@ -25,7 +25,7 @@ Each unit groups material related to a topic as well as all expected learning ou
 - [ ] translate units
   - [x] readings guide 0
   - [x] readings guide 1
-  - [ ] readings guide 2
+  - [x] readings guide 2
   - [ ] readings guide 3
   - [ ] readings guide 4
   - [ ] readings guide 5
