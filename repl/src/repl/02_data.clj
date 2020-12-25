@@ -1,37 +1,37 @@
 (ns repl.02-data)
 
 (comment
-;; besonders wichtig, wenn wir mit unendlichen Datenstrukturen arbeiten
+;; Especially important if we work with infinite data structures
 
 (set! *print-length* 20)
 
-;; Datenstrukturen in Clojure
+;; Data structures in Clojure
 
 
 ;; ---------------------------------------------------------
-;; Funktionen / Higher Order Functions
+;; Functions / Higher Order Functions
 ;; ---------------------------------------------------------
 
 
-;; Wiederholung: apply
+;; Revision: apply
 
-;; geht nicht: Typfehler (Liste statt Integer)
+;; does not work: Type error (List instead of Integer)
 (+ 4 [1 2 3])
 
-;; apply packt die Liste aus
+;; apply unpacks the collection
 (apply + 4 [1 2 3])
 
 
-;; apply kann auch mehrere Argumente "fest verdrahten"
+;; apply can take 'ordinary' arguments for the function (in this case +) ahead of the collection to unpack
 (apply + 4 1 2 3 [42])
 
-;; das letzte muss aber eine Liste sein
+;; the last one has to be a collection however
 (apply + 4 1 2 3)
 
 
-;; Def: Higher Order Function - Funktion, die eine Funktion als Parameter bekommt oder zurückgibt
+;; Def: Higher Order Function - A function that takes a function as a parameter and/or returns one
 
-;; Standard-Beispiele (bereits gesehen): map filter reduce
+;; Standard examples (already seen): map filter reduce
 
 (map inc (range 2 7))
 (map + [1 2 3] [3 4 5] [4 6])
@@ -42,81 +42,81 @@
 (reduce * (range 2 7))
 
 
-;; reduce bezeichnet man als "Mutter aller HOF"
-;; es kann verwendet werden, um z.B. eine Version von map und filter zu erstellen
+;; reduce is described as 'the mother of all HOF'
+;; and can be used to define a version of map and filter
 
 (defn mymap [f c]
-  (reduce (fn [a e] ;; a steht für Akkumulator, e für Element
+  (reduce (fn [a e] ;; a stands for accumulator, e for element
             (conj a (f e)))
           []
           c))
 (mymap inc [1 2 3])
 
 
-;; gibt einen Vektor anstatt einer Liste zurück, aber gut genug
+;; returns a vector instead of a list, but decent enough
 (type (mymap inc [1 2 3]))
-;; das echte Map ist auch noch lazy, unseres nicht
+;; the real map is additionally lazy, while ours is not
 (type (map inc [1 2 3]))
 
 
-;; Filter geht auch
+;; Filter is possible, too
 (defn myfilter [pred c]
   (reduce (fn [a e]
             (if (pred e)
-              (conj a e) ;; einfügen
-              a)) ;; nicht einfügen
+              (conj a e) ;; keep the element
+              a)) ;; drop the element
           []
           c))
 (myfilter even? [1 2 3 4])
 
-;; mapcat ist map + concat auf den Ergebnissen
+;; mapcat is map + concat on the resulting elements
 (map (fn [e] (range 1 e)) [2 3 4])
 (mapcat (fn [e] (range 1 e)) [2 3 4])
 
-;; also das gleiche wie
+;; so the same as
 (apply concat
        (map (fn [e] (range 1 e)) [2 3 4]))
 
-;; Übung: mit reduce schreiben
+;; Exercise: Define mapcat using reduce
 
 
 
 
 ;; ---------------------------------------------------------
-;; Lazyness Selbst gemacht
+;; Homemade Laziness
 ;; ---------------------------------------------------------
 
-;; Range mit Datenstrukturen
+;; Range with data structures
 
-;; folgende API, etwas anders als (range)
+;; note the following API, which differs from 'range'
  ; (ranje 0) ; (0 1 2 3 4 ...)
  ; (ranje 10) ; (10 11 12 ...)
-;; ranje soll also etwas zurückgeben, was alle Zahlen ab dem Startwert gibt
+;; ranje returns something which contains all integers starting from an initial value
 
-;; also eher sowas wie
+;; So something closer to this
   (drop 10 (range))
 
-;; das definieren wir wie folgt:
-;; es wird nur das erste Element ausgewertet.
-;; den Rest verzögern wir mit Hilfe einer Funktion
+;; We define this as such:
+;; Only the first element is evaluated
+;; we delay the rest of the elements with a function
 (defn ranje [n]
   {:first n
    :rest (fn [] (ranje (inc n)))})
-;; entweder wir nehmen das erste Element
+;; either we take the first element
 (defn head [r]
   (:first r))
-;; oder rufen die Funktion auf, die den rest generiert
+;; or call the function that generates the rest
 (defn tail [r]
   ((:rest r)))
 
-(head (tail  (tail (ranje 0))))
+(head (tail (tail (ranje 0))))
 
-;; hier verwenden wir noch irgendwelche Datenstrukturen (die Map)
-;; im nächsten Schritt werden wir die jetzt los
+;; We are using a data structure here (the map)
+;; We will get rid of that in the next step
 
-;; Range a la Houdini - jetzt mit 20 % mehr magic
+;; Range a la Houdini - now with 20 % more magic
 
-;; wir verstecken die Auswertung vom tail immer noch hinter einer Funktion
+;; We still delay the evaluation of the tail through the use of a function
 (defn ranje2 [head]
   (fn [head?] (if head? 
                 head 
@@ -128,18 +128,18 @@
 (defn tail2 [ranje-fn]
   (ranje-fn false))
 
-(head2 (tail2  (tail2 (ranje2 0))))
+(head2 (tail2 (tail2 (ranje2 0))))
 
-;; grundsätzliche Idee:
-;; eine lazy Datenstruktur hält einen Pointer auf den Rest und weiß,
-;; was für Funktionen noch auf den Elementen aufgerufen werden müssen
+;; General idea:
+;; A lazy data structure keeps a pointer to the rest of the sequence and knows
+;; which functions have to be applied to those elements
 
 
 
-;; Was man beachten muss:
-;;   1. Keine Seiteneffekte
+;; What to keep in mind:
+;;   1. No side effects
 
-;; lazyness funktioniert, wie man es erwartet
+;; laziness works as expected
 (def lz (map (fn [e] (println :doh) (inc e))
              (take 100 (range))))
 (nth lz 4)
@@ -147,28 +147,28 @@
 (nth lz 31)
 (nth lz 32)
 
-;; wir definieren dieselbe Sequenz etwas anders
+;; Let us define the same sequence differently
 (def lz (map (fn [e] (println :dah) (inc e))
              (range 0 100)))
 
 
 (nth lz 4)
 (nth lz 4)
-;; huch
+;; huh?
 (nth lz 31)
 (nth lz 32)
 
 
-;; 32 Elemente auf einmal zu verarbeiten ist auf aktuellen Prozessoren in der Regel effizienter
-;; es ist aber nicht offensichtlich, wann dieses 32er-Chunking passiert.
-;; das hängt von der Datenstruktur ab!
-;; das heißt aber auch, dass manchmal viele Seiteneffekte auf einmal feuern...
-;; also ganz vermeiden!
+;; Processing 32 elements at once is usually more efficient on current processors
+;; but it is not obvious when this chunking happens
+;; It depends on the data structure!
+;; Which also means that sometimes a lot of side effects trigger at once...
+;; So avoid this completely!
 
 
-;;   2. Bestimmte Fragen bei unendlichen Sequenzen vermeinden:
-;;      - Was ist das letzte Element? (last (range)) dauert ein wenig...
-;;      - Wie lang ist die Sequenz? (count (range)) dauert auch...
+;;   2. Avoid certain operations for infinite sequences
+;;      - What is the last element? (last (range)) takes a while...
+;;      - How long is the sequence? (count (range)) also takes a while...
 
 
 
