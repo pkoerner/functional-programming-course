@@ -39,7 +39,7 @@ Each unit groups material related to a topic as well as all expected learning ou
   - [x] 00_syntax.clj
   - [x] 01_intro.clj
   - [x] 02_data.clj
-  - [ ] 03_concurrency.clj
+  - [x] 03_concurrency.clj
   - [ ] 04_destructuring.clj
   - [ ] 05_recursion.clj
   - [ ] 06_polymorphism.clj
