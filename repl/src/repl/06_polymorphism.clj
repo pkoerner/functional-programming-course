@@ -1,13 +1,13 @@
 (ns repl.06-polymorphism
   (:use [clojure.repl])
-  (:require [instaparse.core :refer [parser]])) ;; für ein Beispiel
-;; benötigt instaparse in der project.clj
+  (:require [instaparse.core :refer [parser]])) ;; used for an example
+;; requires the instaparse library (cf. project.clj)
 
 
-;; heute neu:
-;; Multimethoden: defmulti, defmethod
-;; Bibliothek: instaparse: parser
-;; clojure.core: defrecord, ->Typkonstruktor,
+;; new content in this session
+;; Multimethods defmulti, defmethod
+;; Libraries: instaparse (generates parsers)
+;; clojure.core: defrecord, ->TypeConstructors,
 ;;               defmulti, defmethod, prefer-method
 ;;               defprotocol, extend-type, extend-protocol, extend
 ;;               isa?
@@ -15,29 +15,28 @@
 
 (comment
 
-  ;; zuerst: Das Expression Problem
+  ;; first: the expression problem (Philip Wadler)
 
 
-  ;; nun: zwei Lösungen für das Expression Problem
+  ;; we will see two solutions for the expression problem
 
-  ;; mit defrecord besorgen wir uns eine neue Java Klasse
-  ;; eine Instanz des Records hat garantiert die angegebenen Felder
-  (defrecord KlausurAufgabe [aufgabe punkte])
+  ;; defrecord will generate a new Java class
+  ;; an instance of that record guarantees that the specified fields will be present
+  (defrecord ExamQuestion [question score])
 
-  ;; dazu geschenkt bekommt man den Konstruktor mit ->..., 
-  ;; der die Werte in Reihenfolge in die Felder schreibt
-  (def aufgabe1 (->KlausurAufgabe 1 10))
-  ;; Instanzen sind immutable
-  ;; und verhalten sich wie Maps
+  ;; we get a new constructor-macro ->... for free
+  ;; it writes the provided values in the given order to the fields
+  (def question1 (->ExamQuestion 1 10))
+  ;; the instances are immutable and behave like Clojure maps
 
-  ;; ist aber eine echte neue Klasse
-  (class aufgabe1)
+  ;; but it really is a new class
+  (class question1)
 
-  (:punkte aufgabe1)
-  ;; sieht auch fast wie eine Map aus
-  aufgabe1
-  (assoc aufgabe1 :foo 12)
-  (dissoc aufgabe1 :punkte) ;; keine KlausurAufgabe mehr!
+  (:score question1)
+  ;; it even looks like a map
+  question1
+  (assoc question1 :foo 12)
+  (dissoc question1 :score) ;; missing a required key does *not* yield an instance of ExamQuestion
 
 
 
@@ -46,58 +45,59 @@
 
   ;; multimethod = multi + method
   (defmulti get-columns class) ;; "Interface"-ish
-  (defmulti get-columns ;; Funktionsname (beliebig wählbar)
-            class)      ;; Dispatchfunktion
+  (defmulti get-columns ;; function name (arbitrary)
+            class)      ;; dispatch function
 
-  (defmethod get-columns KlausurAufgabe [_] ["Aufgabe","Punkte"]) ;; konkrete Implementierung
-  (defmethod get-columns ;; Funktionsname (muss zum defmulti passen)
-             KlausurAufgabe ;; Ergebnis der Dispatchfunktion
-             [this] ;; Argumentvektor
-             ["Aufgabe","Punkte"]) ;; Body
-  (get-columns aufgabe1)
+  (defmethod get-columns ExamQuestion [_] ["Question","Score"]) ;; concrete implementation
+  ;; or more detailed:
+  (defmethod get-columns ;; function name (matches the defmulti)
+             ExamQuestion ;; result of the dispatch function
+             [this] ;; argument vector
+             ["Question","Score"]) ;; body
+  (get-columns question1)
 
 
-  ;; auf Strings ist die Multimethode (noch) nicht definiert
+  ;; the multimethod does not support Strings (yet)
   (get-columns "sss")
 
-  ;; also machen wir das einfach - was passiert, ist uns grad egal
-  (defmethod get-columns String [s] (println :juhu s))
+  ;; we can extend the multimethod for Strings though - the implementation does not matter for now
+  (defmethod get-columns String [s] (println :yay s))
 
   (get-columns "sss")
 
-  ;; genauso definieren kann man die value-Funktion
+  ;; analogously to get-columns, one can define a function for values
   (defmulti get-values class)
-  (defmethod get-values KlausurAufgabe [k] [(:aufgabe k) (:punkte k)])
+  (defmethod get-values ExamQuestion [k] [(:aufgabe k) (:score k)])
 
 
-  (get-values aufgabe1)
+  (get-values question1)
 
-  ;; geht natürlich nicht auf Vektoren...
+  ;; naturally, it does not work with vectors...
   (def b ["1","2"])
   (get-values b)
 
-  ;; aber das können wir implementieren!
+  ;; again, we can just extend the implementation
   (class b)
   (defmethod get-columns clojure.lang.PersistentVector [k] k)
   (defmethod get-values clojure.lang.PersistentVector [k] k)
 
   (get-values b)
 
-  ;; nil ist nichts Besonderes!
+  ;; nil is not special here
   (class nil)
   (defmethod get-values nil [_] ["empty"])
   (get-values nil)
 
 
-  ;; Ganzzahlen genauso...
+  ;; neither are integer values
   (get-values -3)
   (defmethod get-values Long [_] ["foo"])
 
 
   (get-values -3.14)
-  ;; fangen wir mal alles ab:
-  ;; :default ist hier tatsächlich mal wieder ein Keyword!
-  ;; alternative Werte kann man aber im defmulti setzen
+  ;; implementing a catch-all:
+  ;; :default is a "real" keyword here that is part of the syntax!
+  ;; a different value can be specified in the corresponding defmulti
   (defmethod get-values :default [x]
     (println "get-values not implemented for" x "oop! oop! oop!"))
   (get-values -3.14)
@@ -105,20 +105,20 @@
 
 
 
-  ;; die Dispatchfunktion kann komplizierter sein, als nach der Klasse zu fragen:
+  ;; the dispatch function can be more sophisticated than getting the class:
   (defmulti cred (fn [c] (> 5 (count c))))
 
-  ;; man kann JEDE beliebige Funktion fürs Dispatching verwenden
+  ;; actually, ANY function can be used:
 
-  (defmethod cred true [c] (println "Kurze Liste"))
-  (defmethod cred false [c] (println "Lange Liste!!!"))
+  (defmethod cred true [c] (println "short list"))
+  (defmethod cred false [c] (println "long list!!!"))
 
 
   (cred [1 2 3 4 5 6])
   (cred [1])
 
 
-  ;; Dispatching on multiple inputs
+  ;; Dispatching on multiple inputs (https://clojure.org/about/runtime_polymorphism)
 
   (def simba {:species :lion})
   (def clarence {:species :lion})
@@ -126,10 +126,10 @@
   (def bugs {:species :bunny})
   (def donnie {:species :bunny})
 
-  ;; dann wird die Dispatchfunktion halt länger mit mehr Argumenten
+  ;; the dispatch function simply takes more arguments
   (defmulti encounter (fn [a b] [(:species a) (:species b)]))
 
-  ;; und das Verhalten dazu
+  ;; the matching behaviour:
   (defmethod encounter [:bunny :lion] [x y] :run-away)
   (defmethod encounter [:lion :lion] [x y] :fight )
   (defmethod encounter [:bunny :bunny] [x y] :mate)
@@ -143,7 +143,7 @@
 
 
 
-  ;; Reversible auf Strings lösen
+  ;; adding a "Reversible" interface to Strings:
   (defn reverse-a-string-java-style [s]
     (clojure.string/join (reverse s)))
 
@@ -151,26 +151,25 @@
   (reverse-a-string-java-style -3)
 
 
-  ;; Das ist das Pendant zu new Dispatcher(new IFunction() {...})
+  ;; in Java, a solution would look like new Dispatcher(new IFunction() {...})
   (defmulti reversr (fn [object] (class object)))
 
 
-  ;; Das Pendant zu reverse.register(String.class, new IFunction() {...})
+  ;; and this is the same as reverse.register(String.class, new IFunction() {...})
   (defmethod reversr String [s] (reverse-a-string-java-style s))
 
 
   (reversr "foo")
 
-  ;; und auf Long, und was auch immer wir wollen!
+  ;; we can add our reverse-function to anything we want, e.g., Long values
   (reversr 15)
 
   (defmethod reversr Long [l] (- l))
 
   (reversr 15)
 
-  ;; Vorteil: Datenrepräsentation (Typ) und dispatching (defmulti) sind nicht mehr complected
-  ;; Vorteil: defmethods können in anderen Namespaces beliebig erweitert werden (insbesondere, wenn das defmulti in einer Bilbiothek steht)
-
+  ;; pro: data representation (data types) and dispatching (defmulti) are not complected any more
+  ;; pro: defmethods can be extended in any arbitrary namespace (especially useful if the defmulti is shipped as part of a library)
 
 
 
@@ -183,8 +182,8 @@
   (time (dotimes [i 10000000] (m1 [1])))
   (time (dotimes [i 10000000] (m2 [1])))
 
-  ;; Zwischen Funktionsaufruf und Multimethods gibt es eine Faktor von ca. 8
-  ;; Funktionen sind auch noch etwas langsamer als direkte Methodenaufrufe in Java
+  ;; a Clojure function-call is about eight times faster than calling a multimethod
+  ;; Clojure functions are also a tiny bit slower than direct Java method-calls
 
 
 
@@ -193,35 +192,35 @@
 
 
 
-  ;; Fallbeispiel
-  ;; Wir implementieren einene Interpreter für Squarejure
+  ;; case study:
+  ;; Let's write an interpreter for Squarejure
   ;; related: Clochure (http://clochure.org/)
 
-  ;; die Sprache sieht so aus:
+  ;; the language should look like this:
   [:add [:int 4] [:int 9]]
-  ;; Funktionsaufrufe gehen mit eckigen Klammern.
-  ;; wir müssen dann noch built-ins für :add, :int, etc. implementieren
+  ;; function calls are square brackets
+  ;; we need to implement built-ins :add, :int, etc.
 
-  ;; wir dispatchen also auf dem ersten Element eines Vektors...
+  ;; we will dispatch on the first element of a vector...
   (defmulti squarejure (fn [[e & _]] e))
 
-  ;; für Integer nehmen wir Clojure-Longs...
+  ;; Integer values will be repesented as Clojure-Longs...
   (defmethod squarejure :int [[_ v]] v)
 
   (squarejure [:int 6])
 
-  ;; addieren ist dann auch einfach
+  ;; a simple addition
   (defmethod squarejure :add [[_ a b]]
     (+ (squarejure a) (squarejure b)))
 
   (squarejure [:add [:int 4] [:int 9]])
 
 
-  ;; und wir können den Interpreter (und damt die Sprache) später beliebig erweitern
+  ;; and we can extend the interpeter (and, thus, the language) later on
   (defmethod squarejure :sum [[_ & args]]
     (apply + (map squarejure args)))
 
-  ;; Was mit Funktionen geht, geht auch mit Multimethods
+  ;; we can map multimethods the same way as regular functions
 
   (squarejure [:sum [:add [:int 3] [:int 7]]
                     [:int 6]
@@ -236,21 +235,21 @@
   ")
 
 
-  ;; parser stammt aus der Instaparse-Bibliothek
-  ;; Die Bibliothek ist ziemlich cool - sie generiert Parser für ziemlich alle Typen an Grammatiken,
-  ;; insbesondere nichtdeterministische Grammatiken (dann kriegt man alle Parsebäume)
+  ;; parser is part of the Instaparse-library
+  ;; This library is pretty awesome - it generates parsers for pretty much any type of grammars,
+  ;; in particular non-deterministic ones (it generatres all parse trees)
   (def parse (parser ebnf))
 
 
 
-  ;; der Syntaxbaum sieht so aus
+  ;; a syntax tree looks like that:
   (parse "3+5")
   (parse "3+9+12")
-  ;; warum die Liste außen rum?
-  ;; es ist die Sequenz aller Parsebäume!
+  ;; why is it wrapped in a list?
+  ;; it's the sequence of *all* parse trees!
 
 
-  ;; wir machen den Syntaxbaum abstrakt und verstecken mit <...> ein paar Symbole, die uns nicht interessieren
+  ;; with <...>, we can hide symbols we do not care for and generate an abstract syntax tree instead
   (def ebnf2 "
     <S> = add
     add = int <'+'> S | int <'+'> int
@@ -263,33 +262,33 @@
   (parse "3+9+12")
 
 
-  ;; der erste Syntaxbaum ist gut genug.
+  ;; the first syntax tree is good enough
   (defn sqeval [prog] (squarejure (first (parse prog))))
 
-  ;; read-string transformiert Strings in Clojure-Datenstrukturen
+  ;; read-string transforms Strings into Clojure data structures
   (read-string "8")
   (read-string "[:a :b]")
 
-  ;; falls wir ein Literal haben, ist es ein String und muss noch in einen Clojure Long transformiert werden
+  ;; if we encounter a literal, it will be a String and has to be translated into a Clojure Long
   (defmethod squarejure :int [[_ e]] (if (string? e) (read-string e) e))
 
   (sqeval "8+9")
   (sqeval "2+2+2")
 
-  ;; das war ziemlich wenig Code für einen erweiterbaren Interpreter!
+  ;; that's very little code for an entire, extensible interpreter!
 
 
-  ;; Multimethoden können auch mit Hierarchien umgehen.
-  ;; Eine Standardhierarchie ist die Superklassen-Beziehung:
+  ;; Multimethods can handle hierarchies.
+  ;; A default hierarchy is the superclass-relationshop:
 
   (defmulti hierarchy-taist class)
   (defmethod hierarchy-taist java.util.Collection [x] (count x))
 
-  ;; die Klasse Vektor ist nicht das Interface Collection
+  ;; the vector class is not the collection interface
 
   (class [1 2 3])
   (= (class [1 2 3]) java.util.Collection)
-  ;; aber es implementiert das Interface und klappt damit trotzdem!
+  ;; but it implements the interface, and thus it works!
   (hierarchy-taist [1 2 3])
 
 
@@ -299,11 +298,11 @@
   (isa? [1 2 3] [1 2 3])
 
   (doc isa?)
-  ;; wahr, bei
-  ;; - Gleichheit
-  ;; - Typvererbung (Java)
-  ;; - abgeleitete Werte (Stichworte: die Funktionen derive, make-hierarchy)
-  ;; das letzte (drive/make-hierarchy) lassen wir aus - es ist unschön, unhandlich und brauchen wir hier nicht.
+  ;; true, on
+  ;; - equality
+  ;; - inheritance (Java)
+  ;; - derived values (see: functions derive, make-hierarchy)
+  ;; we'll skip (derive/make-hierarchy) - it's not really pretty, a bit awkward and we won't need it here.
 
 
 
@@ -322,7 +321,7 @@
   ;; defprotocol - Expression Problem, Haskell Style
 
 
-  ;; Definition eines Interfaces. Das Protocol beschreibt einen Satz von Funktionen
+  ;; Definition of an interface. A protocol describes a set of functions:
   (defprotocol TheCount ;; ahh, ahh, ahh!
     (cnt [v]))
 
@@ -331,28 +330,28 @@
   ;; error
   (cnt "foo")
 
-  ;; String implementiert das Protocol nicht - dann sorgen wir dafür, dass es das tut!
+  ;; again, String does not implement our new protocol - let's make it!
   (extend-type String
     TheCount
-    (cnt [s] (.length s))) ;; ruft die Java-Methode s.length() auf
+    (cnt [s] (.length s))) ;; simply call the Java method s.length()
 
   (cnt "foo")
 
-  ;; nil ist wieder nichts besonderes
+  ;; again, nil is not special
   (cnt nil)
 
-  ;; andere Geschmacksrichtung: extend-protocol
-  ;; Typ und Interface sind vertauscht
+  ;; a different flavour:  extend-protocol
+  ;; it simply swaps type and interface:
   (extend-protocol TheCount
     nil
     (cnt [_] 0))
 
   (cnt nil)
 
-  ;; und nun Vektoren...
+  ;; now for vectors
   (cnt [1 3])
 
-  ;; noch eine Version: extend
+  ;; yet another version: extend
   (extend java.util.Collection
     TheCount
     {:cnt (fn [k] (count k))})
@@ -363,7 +362,7 @@
   (cnt #{1})
   (cnt {1 2, 3 4})
 
-  ;; Maps sind keine Collections, aber zumindest Counted
+  ;; Maps are not Collections, but they are Counted
 
 
   (extend clojure.lang.Counted
@@ -374,14 +373,14 @@
 
 
 
-  ;; extend-protocol ist eigentlich extend-type
+  ;; extend-protocol is extend-type
   (macroexpand-1
    '(extend-protocol TheCount
       java.io.File
       (cnt [f] (if (.exists f) (.length f) 0))))
 
 
-  ;; extend-type ist eigentlich extend
+  ;; extend-type is extend
   (macroexpand-1
    '(extend-type java.io.File
       TheCount
@@ -390,21 +389,21 @@
 
 
 
-  ;; die Dokumentation erklärt genau, was man wofür nimmt
+  ;; the documentation explains exactly when to use which function:
   (doc extend-type)
-  ;; mit extend-type man kann einen Typen auch um mehrere Protokolle erweitern
+  ;; extend-type allows extension of a single type with several protocols
 
   (doc extend-protocol)
-  ;; mit extend-protocol kann man ein Protokoll zu mehreren Typen hinzufügen
+  ;; extend-protocol allows us to extend many types by the same protocol
 
   (doc extend)
-  ;; extend ist die Basis mit der hässlichen Syntax ;-)
+  ;; extend is the foundation with an ugly syntax ;-)
 
 
 
 
 
-  ;; Performance: Multimethoden vs. normalen Funktionen vs. Protokolle
+  ;; Performance: Multimethods vs. regular Functions vs. Protocols
 
   (defmulti m1 class)
   (defmethod m1 clojure.lang.PersistentVector [k] (count k))
@@ -426,44 +425,44 @@
 
   ;; Protocols vs. Multimethods
 
-  ;; 1) Multimethods sind viel flexibler!
-  ;;   - Dispatch-Funktion ist praktisch frei wählbar.
-  ;;   - Bei Protocol: type auf dem ersten Argument
+  ;; 1) Multimethods are way more flexible!
+  ;;   - Dispatch-Function can be chosen arbitrarily.
+  ;;   - Protocols are a special case: type of the first argument
 
-  ;; 2) Protocol ist deutlich schneller!
-  ;;   - Protocol ist fast auf Augenhöhe mit direkten Methodenaufrufen
-  ;;   - Multimethods sind ~ Faktor 8 (?) langsamer
-  ;;   - Es gibt keinen Grund Multimethods zu verwenden, wenn die Dispatchfunktion type/class ist
-
-
+  ;; 2) Protocols are way faster!
+  ;;   - Protocols are almost as fast as regular function calls
+  ;;   - Multimethods are around eight times slower
+  ;;   - There is no reason to use a multimethod if the distach function is type/class
 
 
 
-  ;; a propos Typen und Performance:
+
+
+  ;; a propos types and performance:
   ;; type hints
 
-  ;; wenn man diese Flag hier auf wahr setzt, meckert der Compiler, wenn Reflection verwendet wird,
-  ;; um eine Java Methode oder ein Attribut zu finden.
-  ;; Das ist nämlich voll langsam!
+  ;; if we set this flag to true, the compiler will warn us
+  ;; if reflection is used to resolve Java methods oder fields.
+  ;; That's very slow!
   (set! *warn-on-reflection* true)
 
   ;; REPL
   (defn len [x]
-    (.length x)) ;; length kann nicht gefunden werden, also werden wir nun gewarnt
+    (.length x)) ;; length cannot be resolved, so now we get a warning
 
-  ;; funktioniert aber
+  ;; but it still works....
   (len "trololo")
 
 
-  ;; und dauert ein Weilchen
+  ;; it takes quite a while
   (time (reduce + (map len (repeat 1000000 "foo"))))
 
 
-  ;; hier versprechen wir dem Compiler, dass x ein String ist
+  ;; we can promise the compiler that x will be a String
   (defn lenny [x]
-    (.length ^String x)) ;; keine Reflection-Warnung!
+    (.length ^String x)) ;; no Reflection-Warning!
 
-  ;; viel, viel schneller!
+  ;; much faster!
   (time (reduce + (map lenny (repeat 1000000 "foo")))) 
 
 
