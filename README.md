@@ -15,7 +15,7 @@ Each unit groups material related to a topic as well as all expected learning ou
 ## Contributors
 
 - Jens Bendisposto (initial creation of the lecture and exercises)
-- Philipp Körner (lecture, exercises, self-study course, tests)
+- Philipp Körner (lecture, exercises, self-study course, tests, translation)
 - Nikita Hasert (exercises, tests, translation)
 
 
@@ -42,7 +42,7 @@ Each unit groups material related to a topic as well as all expected learning ou
   - [ ] 03_concurrency.clj
   - [ ] 04_destructuring.clj
   - [ ] 05_recursion.clj
-  - [ ] 06_polymorphism.clj
+  - [x] 06_polymorphism.clj
   - [ ] 07_java_interop.clj
   - [ ] 08_namespaces.clj
   - [ ] 09_evaluation_order.clj
