@@ -279,7 +279,7 @@
 
 
   ;; Multimethods can handle hierarchies.
-  ;; A default hierarchy is the superclass-relationshop:
+  ;; A default hierarchy is the superclass-relationship:
 
   (defmulti hierarchy-taist class)
   (defmethod hierarchy-taist java.util.Collection [x] (count x))
