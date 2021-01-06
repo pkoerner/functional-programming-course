@@ -67,7 +67,7 @@
 
   ;; analogously to get-columns, one can define a function for values
   (defmulti get-values class)
-  (defmethod get-values ExamQuestion [k] [(:aufgabe k) (:score k)])
+  (defmethod get-values ExamQuestion [k] [(:exercise k) (:score k)])
 
 
   (get-values question1)
