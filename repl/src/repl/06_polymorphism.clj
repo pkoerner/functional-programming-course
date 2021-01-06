@@ -292,7 +292,7 @@
   (hierarchy-taist [1 2 3])
 
 
-  ;; multimethods verwenden isa? für den Dispatch
+  ;; multimethods use isa? for the dispatch
   (isa? (class [1 2 3]) java.util.Collection)
   (isa? [1 2 3] java.util.Collection)
   (isa? [1 2 3] [1 2 3])
