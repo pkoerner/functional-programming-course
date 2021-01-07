@@ -64,9 +64,9 @@ It terminates if  $|x_{n+1} - x_n| < \epsilon$ holds for a given $\epsilon > 0$.
   
    \item The square root of a number $K$ is a solution for the equation $c^2 - K = 0$. So we can apply Newton's Method to the function $f(x) = x^2 - K$. Write a function \texttt{(defn sqrt [n] ...)} which approximates the square root of $n$ using Newton's method. You can use $10^{-5}$ as both initial value and precision.
     
-%  \item Newton's method is a fixed-point algorithm. Write a function \texttt{(defn fixedpoint [F guess eps?] ...)}, which calculates a fixedpoint starting from an initial value $guess$. The accuracy $eps?$ should itself be a funciton that recieves two inputs: (the new and old value) and returns true if the two values match sufficiently well.
+%  \item Newton's method is a fixed-point algorithm. Write a function \texttt{(defn fixedpoint [F guess eps?] ...)}, which calculates a fixed point starting from an initial value $guess$. The accuracy $eps?$ should itself be a function that receives two inputs: (the new and old value) and returns true if the two values match sufficiently well.
 
-% \item Write Newton's method as instance of this fixed-point function.
+% \item Write Newton's method as instance of this fixed point function.
 
 \end{enumerate}
 \end{exercise}
