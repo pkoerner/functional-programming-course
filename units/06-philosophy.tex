@@ -1,65 +1,33 @@
 \documentclass[11pt,a4paper]{article}
-
-\usepackage[ngerman]{babel}
-\usepackage[TS1,T1]{fontenc}
-\usepackage[utf8x]{inputenc}
-\usepackage{theorem}
-\usepackage[scaled=0.9]{helvet}
-\usepackage{amsmath}
-\usepackage{amssymb}
-\usepackage[T1]{fontenc}
-\usepackage{hyperref}
-\usepackage{stmaryrd}
-\usepackage{pgf,tikz}
-\usepackage{relsize}
-\usepackage{enumitem}
-\usepackage{graphicx}
-\usepackage{upquote}
-\usepackage{algpseudocode,amsmath,xifthen}
-
-\newcounter{numb}
-\theoremstyle{break}
-\theorembodyfont{\upshape}
-   	\newtheorem{aufgabe}{Aufgabe}[numb]
+\input{header.tex}
 \setcounter{numb}{6}
-\setlength{\oddsidemargin}{0cm}
-\setlength{\textwidth}{16cm}
-\setlength{\textheight}{23cm}
-\setlength{\topmargin}{-2cm}
-
-\usetikzlibrary{shapes,arrows,automata,positioning,decorations.fractals}
-\renewcommand\familydefault{\sfdefault}
 
 
 \begin{document}
 
 \begin{minipage}[b]{\textwidth}
-\parbox[t]{5cm}{%
-\includegraphics[width=4cm]{unilogo}
-\hfill
-}
-\parbox[b]{11cm}{%
-%\scshape%
-Heinrich-Heine-Universit\"at D\"usseldorf\\
-Institut f\"ur Informatik\\
-Lehrstuhl Softwaretechnik und Programmiersprachen\\
-%Professor Dr.\ M.\ Leuschel
-Philipp K\"orner
-}
-
-%%date
-%\hfill 1.\@ August 2017\rule{0mm}{6mm}\quad\ %% <--
+	\parbox[t]{5cm}{%
+		\includegraphics[width=4cm]{unilogo}
+		\hfill
+	}
+	\parbox[b]{11cm}{%
+		%\scshape%
+		Heinrich-Heine-University D\"usseldorf\\
+		Computer Science Department\\
+		Software Engineering and Programming Languages\\
+		%Professor Dr.\ M.\ Leuschel
+		Philipp K\"orner
+	}
 \end{minipage}
 \begin{center}
-\bf
-Funktionale Programmierung -- WS 2020 / 2021\\
-Reading Guide 6: Philosophie
+	\bf
+	Functional Programming -- WISE 2020 / 2021\\
+	Reading Guide 6: Philosophie
 \end{center}
 
 \pagestyle{empty}
 
-\paragraph{Zeitliche Orientierung:} Diese Lerneinheit sollte bis zum 17.12.2020 abgeschlossen werden.
-%\paragraph{Abgabe des Lerntagebuchs} \"uber das ILIAS bis zum 16.5.2020 mit unbegrenzt Material, Nachfrist bis zum 23.5.2020 mit zwei Seiten A4.
+\paragraph{Deadline:} This unit should be completed by 17.12.2020.
 
 \section{Material} 
 
@@ -70,25 +38,25 @@ Reading Guide 6: Philosophie
 \end{itemize}
 
 
-\section{Lernziele}
+\section{Learning Outcomes}
 
-Nach dem Bearbeiten dieser Lerneinheit sollten Sie in der Lage sein
+After completing this unit you should be able to
 
 \begin{itemize}
-    \item die Kosten eines Bugs in verschiedenen Entwicklungsphasen einzuordnen.
-    \item Design in Bezug auf mentale Kapazit\"aten einzusch\"atzen.
-    \item Trade-offs in der Entwicklung eines bestimmten Projekts explizit zu machen.
-    \item ein Programm mit der wissenschaftlichen Methode zu debuggen.
-    \item einzusch\"atzen, f\"ur welche Probleme funktionale Sprachen und insbesondere Clojure sinnvoll sind.
+    \item classify the cost of a bug at different stages of development.
+    \item assess architectural design in terms of mental capacity.
+    \item explicitly specify trade-offs in the development of a particular project.
+    \item debug a program using the scientific method.
+    \item assess for which problems functional languages and Clojure in particular are useful.
 \end{itemize}
 
 
 
-\section{Aufgaben}
+\section{Exercises}
 
-\begin{aufgabe}[Funktionen]
+\begin{exercise}[Functions]
 \begin{enumerate}[label=\alph*)]
-\item Die Clojure Funktion \texttt{interleave} funktioniert so:
+\item The Clojure function \texttt{interleave} works as follows:
 \begin{verbatim}
 user=> (interleave [1 3 5] [2 4 6])
 (1 2 3 4 5 6)
@@ -96,7 +64,7 @@ user=> (interleave [1 4] [2 5] [3 6])
 (1 2 3 4 5 6)
 \end{verbatim}
 
-Schreiben Sie eine Funktion \texttt{(defn rev-interleave [s n] ...)}, die interleave r"uckg"angig macht. 
+Write a function \texttt{(defn rev-interleave [s n] ...)}, that acts as \texttt{interleave}'s inverse function. 
 \begin{verbatim}
 user=> (rev-interleave [1 2 3 4 5 6] 2)
 ((1 3 5) (2 4 6))
@@ -104,8 +72,8 @@ user=> (rev-interleave [1 2 3 4 5 6] 3)
 ((1 4) (2 5) (3 6))
 \end{verbatim}
 
-Falls sich die Eingabesequenz \texttt{s} nicht in \texttt{n} Sequenzen gleicher L"ange zerlegen l"asst, darf Ihre Funktion sich beliebig verhalten, muss aber terminieren.
-\item Die Clojure Funktion \texttt{flatten} funktioniert so:
+If an input \texttt{s} cannot be split into \texttt{n} sequences of equal length, your function may behave arbitrarily, but it must terminate.
+\item The Clojure function \texttt{flatten} works as follows:
 \begin{verbatim}
 user=> (flatten '[[1 2] 3 (4 [5 6])])
 (1 2 3 4 5 6)
@@ -114,41 +82,41 @@ user=> (flatten ["a" ["b"] "c"])
 user=> (flatten [1 [[[[[[[[[[[[2]]]]]]]]]]]]])
 (1 2)
 \end{verbatim}
-Implementieren Sie eine eigene Version der \texttt{flatten} Funktion, die auch den folgenden Testcase erf\"ullt:
+Implement your own version of \texttt{flatten}, that additionally satisfies the following test case:
 \begin{verbatim}
 user=> (my-flatten [:a #{:b}])
 (:a :b)
 \end{verbatim}
 
-Hinweis: Um festzustellen, ob es sich um einen skalaren Wert oder eine Collection handelt, ist die Funktion \verb|coll?| n\"utzlich.
+Note: The function \verb|coll?| is useful to determine whether something is a scalar value or a collection.
 
 
 \end{enumerate}
 
-\end{aufgabe}
+\end{exercise}
 
-\begin{aufgabe}[Collatz-Sequenz]
-Zu einer beliebigen nat\"urlichen Zahl n l\"asst sich die sogenannte Collatz-Folge berechnen.
-Dabei gilt die Vorschrift $x_{i+1} = c(x_i)$ mit:
+\begin{exercise}[Collatz sequence]
+For any natural number n, the so-called Collatz sequence can be calculated.
+The next term $x_{i+1} = c(x_i)$ in the sequence is obtained from the previous one by applying the following function:
 \begin{equation*}
    c(n) =
    \begin{cases}
-     3n+1 & \text{f"ur } n \text{ ungerade} \\
-     n/2  & \text{f"ur } n \text{ gerade} \\
+     3n+1 & \text{if } n \text{ odd} \\
+     n/2  & \text{if } n \text{ even} \\
    \end{cases}
 \end{equation*}
 
-Schreiben Sie eine Funktion \texttt{(defn collatz [n] ...)}, die eine Sequenz [n, c(n), c(c(n)), ..., 4, 2, 1] zur\"uckgibt. Beispielsweise soll ein Aufruf so aussehen:
+Write a function \texttt{(defn collatz [n] ...)}, which returns a sequence [n, c(n), c(c(n)), ..., 4, 2, 1]. For example, a call should look like this:
 
 \begin{verbatim}
 (collatz 11)
 => (11 34 17 52 26 13 40 20 10 5 16 8 4 2 1)
 \end{verbatim}
-\end{aufgabe}
+\end{exercise}
 
-\begin{aufgabe}[Kombinationen]
+\begin{exercise}[Combinations]
 
-Implementieren Sie eine Funktion, die zu einer Sequenz alle Kombinationen von zwei ihrer Elemente bestimmt. Duplikate in der Eingabe m\"ussen nicht betrachtet werden.
+Implement a function that returns a sequence of all combinations of pairs of its elements. Duplicates need not be considered.
 
 \begin{verbatim}
 (combinations [1 2 3])
@@ -157,9 +125,9 @@ Implementieren Sie eine Funktion, die zu einer Sequenz alle Kombinationen von zw
 => #{(1 2) (1 3) (1 4) (2 3) (2 4) (3 4)}
 
 \end{verbatim}
-\end{aufgabe}
+\end{exercise}
 
-\section*{Fragen}
-Bei Fragen wenden Sie sich bitte an Philipp K"orner (\texttt{p.koerner@hhu.de}).
+\section*{Questions}
+If you have any questions, please contact Philipp K"orner (\texttt{p.koerner@hhu.de}).
 \end{document}
 
