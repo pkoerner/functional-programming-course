@@ -28,7 +28,7 @@ Each unit groups material related to a topic as well as all expected learning ou
   - [x] readings guide 2
   - [x] readings guide 3
   - [x] readings guide 4
-  - [ ] readings guide 5
+  - [x] readings guide 5
   - [ ] readings guide 6
   - [ ] readings guide 7
   - [ ] readings guide 8
