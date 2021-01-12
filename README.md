@@ -41,7 +41,7 @@ Each unit groups material related to a topic as well as all expected learning ou
   - [x] 02_data.clj
   - [x] 03_concurrency.clj
   - [x] 04_destructuring.clj
-  - [ ] 05_recursion.clj
+  - [x] 05_recursion.clj
   - [x] 06_polymorphism.clj
   - [ ] 07_java_interop.clj
   - [ ] 08_namespaces.clj

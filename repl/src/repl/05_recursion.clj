@@ -1,42 +1,45 @@
 (ns repl.05-recursion
   (:use [clojure.tools.trace]))
 
-;; benötigt tools.trace in der project.clj
-;; heute new:
-;; debugging Library: clojure.tools.trace: deftrace
+;; requires tools.trace in project.clj
+;; new today:
+;; debugging library: clojure.tools.trace: deftrace
 ;; clojure.core: recur, loop
 
 (comment
 
-  ;; deftrace ist ein defn, was noch Debug-Informationen zu den Aufrufen ausgibt
+  ;; deftrace is a defn, which outputs debug-informationen for calls
   (deftrace ! [n]
     (if (= 1 n)
       n
       (*' n (! (dec n)))))
 
-  ;; man sieht, wie sich die Stackframes aufbauen
+  ;; you can see the stack frames build up
   (! 8)
 
-  ;; aus Prolog (und einigen anderen Sprachen) kennen wir vielleicht:
-  ;; ist der letzte Aufruf in einer Funktion wieder dieselbe Funktion,
-  ;; dann muss kein neuer Stackframe erzeugt werden, sondern der alte kann wiederwendet werden.
-  ;; dies nennt man Tail-Call Optimisation (TCO)
+  ;; from Prolog (and some other languages) we know:
+  ;; If the last call in a function is the same function again,
+  ;; then no new stack frame must be allocated, instead the old
+  ;; one can be reused.
+  ;; This is called tail-call optimization (TCO)
 
-  ;; Version mit Akkumulator, der das bisherige Produkt speichert. Jetzt ist es tail recursive:
+  ;; A version with an accumulator, which saves the product so far.
+  ;; Now this function is tail recursive:
   (deftrace !
     ([n] (! n 1))
     ([n a] (if (= 1 n)
              a
              (! (dec n) (*' a n)))))
 
-  ;; immer noch stackframes
+  ;; stack frames are still created
   (! 8)
 
-  ;; Clojure hat keine automatische TCO.
-  ;; Die JVM bietet keine sinnvolle Möglichkeit dafür.
+  ;; Clojure has no automatic TCO.
+  ;; The JVM does not provide a reasonable way to do this.
 
-  ;; Rich Hickey hat sich dagegen entschieden, dass manchmal magisch eine Optimierung greift und manchmal nicht.
-  ;; Deshalb muss man explizit recur dranschreiben.
+  ;; Rich Hickey decided against optimizations that sometimes
+  ;; magically take effect and sometimes do not
+  ;; This is why you have to explicitly write 'recur'.
 
   (deftrace !
     ([n] (! n 1))
@@ -46,9 +49,10 @@
 
   (! 8)
 
-  ;; Version ohne trace!
-  ;; fn / defn erzeugt eine Rücksprungmarke:
-  ;; wenn die Anzahl der Argumente an recur passt, wird die Funktion also erneut aufgerufen.
+  ;; A version without trace!
+  ;; fn / defn create a recursion point:
+  ;; if the number of arguments passed to recur matches the ones
+  ;; of the recursion point, the function is called again
   (defn !
     ([n] (! n 1))
     ([n a] (if (= 0 n)
@@ -57,15 +61,16 @@
 
   (! 10000)
 
-  ;; recur geht nicht überall:
-  ;; es MUSS der letzte Aufruf sein, der gemacht wird, sonst wird der Compiler traurig
+  ;; recur cannot be used everywhere:
+  ;; it HAS to be the last call made, otherwise the compiler gets sad
   (defn ! [n]
     (if (= 1 n)
       n
       (*' n (recur (dec n)))))
 
-  ;; loop setzt eine weitere Rücksprungmarke für recur, die anstelle der Funktion verwendet wird:
-  ;; recur setzt dann die Bindings von den in loop definierten Symbolen um
+  ;; loop marks another recursion point for recur,
+  ;; which is used instead of the one provided by the function itself:
+  ;; recur then sets the bindings of the symbols defined by loop
   (defn ! [n]
     (loop [n n
            a 1]
@@ -81,65 +86,66 @@
   ;; mutual recursion
 
 
-  ;; alle Symbole müssen à la C definiert sein, bevor sie verwendet werden
-  ;; Vorwärtsdeklaration macht declare:
+  ;; all symbols have to be defined before their use à la C
+  ;; use 'declare' for forward declarations
   (declare my-odd? my-even?)
   (macroexpand-1 '(declare my-odd? my-even?))
 
-  ;; so kriegt man Funktionen hin, die voneinander abhängen
-  ;; 0 ist gerade.
-  ;; 1 ist nicht gerade.
-  ;; Eine Zahl n ist gerade, wenn n-1 ungerde ist.
+  ;; this way you can define functions that depend on each other
+  ;; 0 is even.
+  ;; 1 is not even.
+  ;; A number n is even, if n-1 is not even.
   (defn my-even? [n]
     (cond (= 0 n)  true
           (= 1 n)  false
           :otherwise (my-odd? (dec n))))
 
-  ;; analoge Definition von ungerade.
+  ;; analogous definition of odd.
   (defn my-odd? [n]
     (cond (= 0 n) false
           (= 1 n) true
           :otherwise (my-even? (dec n))))
 
-  ;; das funktioniert auch...
+  ;; this works...
   (my-even? 6)
   (my-even? 5)
   (my-odd? 5)
   (my-odd? 6)
-
-  ;; ...nur nicht, wenn die Zahl groß wird
+  
+  ;; ...unless the input is too large
   (my-even? 100000)
 
 
-  ;; recur geht nicht, weil wir eine andere Funktion aufrufen wollen!
+  ;; We cannot use recur since we call another function!
  
-  ;; die Lösung ist trampoline:
-  ;; trampoline nimmt einen Aufruf entgegen, den es auswertet.
-  ;; ist die Rückgabe keine Funktion, wird diese zurückgegeben.
-  ;; ist die eine Rückgabe eine Funktion, wird diese ohne Parameter aufgerufen (und so weiter, und so weiter)
+  ;; the solution is 'trampoline':
+  ;; trampoline takes a call, which it evaluates.
+  ;; if the return value is not a function it is returned,
+  ;; otherwise if it is a function it is called without parameters (and so on, and so on)
 
-  ;; also geben wir eine Funktion zurück, statt die gegenseitige Rekursion zu triggern:
+  ;; so we return a function in place of triggering the mutual recursion
   (defn my-even? [n]
     (cond (= 0 n)  true
           (= 1 n)  false
           :otherwise (fn [] (my-odd? (dec n)))))
 
-  ;; hier auch...
+  ;; ditto...
   (defn my-odd? [n]
     (cond (= 1 n)  true
           (= 0 n)  false
           :otherwise (fn [] (my-even? (dec n)))))
 
   
-  ;; und der Aufruf geht via trampoline
+  ;; and the call is wrapped by trampoline
   (trampoline (my-even? 5))
   (trampoline (my-even? 100000))
-  (trampoline (my-even? 100000111)) ;; dauert etwas
+  (trampoline (my-even? 100000111)) ;; takes a while
 
 
-  ;; Achtung! Was ist, wenn das berechnete Ergebnis der gegenseitigen Rekursion selbst eine Funktion ist?
+  ;; Beware! What if the ultimate return value of the mutual recursion is itself
+  ;; a function?
 
-  ;; Dann muss man die in eine Datenstruktur (Liste, Vektor) einpacken, damit sie nicht aufgerufen wird,
-  ;; und außen wieder auspacken.
+  ;; Then you have to wrap it in a data structure (e.g. list, vector)
+  ;; to avoid the function call by trampoline and unwrap it afterwards
 
 )
