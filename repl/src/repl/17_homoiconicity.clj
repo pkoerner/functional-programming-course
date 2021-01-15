@@ -9,24 +9,23 @@
 (myfunction-please-provide-int "foo")
 
 
-;; Die Syntax von dem Precondition-Check ist eine Map.
-;; Postconditions gehen mit :post und einer Funktion, die das Resultat der Funktion
-;; bekommt und validiert.
+;; Syntactically, the precondition is expressed as part of a map.
+;; Postconditions can be added via :post and a function that takes the result
+;; as an argument and validates it.
 
-;; In Clojure ist *alles* an Code genau in Datenstrukturen der Sprache ausgedrückt.
-;; Solche Programmiersprachen bezeichnet man als "homoikonisch".
-;; Ein anderes Beispiel für eine homoikonische Sprache ist Prolog.
-
+;; All code in Clojure is expressed in data structures of the language (often dubbed as "code is data (is code)").
+;; Such programming languages are called "homoiconic".
+;; Another homoiconic language is Prolog.
 
 ;; ---------------------------------------------------------
 ;; REPL - Read - Eval - Print - Loop
 ;; ---------------------------------------------------------
 
 
-;; Am Anfang war der Text
-(read-string "(+ 1 2 3)")  ;; Text -> Reader -> Datenstruktur
-(eval (read-string "(+ 1 2 3)")) ;; Datenstruktur (Liste) -> Eval -> Datenstruktur (Zahl)
-(println (eval (read-string "(+ 1 2 3)"))) ;; Datenstruktur (Zahl) -> Printer -> Text
+;; In the beginning, there was text
+(read-string "(+ 1 2 3)")  ;; text -> reader -> data structure
+(eval (read-string "(+ 1 2 3)")) ;; data structure (list) -> eval -> data structure (number)
+(println (eval (read-string "(+ 1 2 3)"))) ;; data structure (number) -> printer -> text
 
 (eval (list + 1 2 3))
 
@@ -37,44 +36,44 @@
 ;; "[1 2 a]" -> Reader -> Datastructure -> Eval -> Value -> Print
 (read-string "[1 2 3]")
 (eval [1 2 3])
-;; a ist nicht definiert und kann daher nicht evaluiert werden
+;; a is undefined and cannot be evaluated
 (eval (read-string "[1 2 a]"))
-;; ein Quote verhindert eine Evaluation
+;; quoting circumvents evaluation
 (read-string "'[1 2 a]")
 (eval (read-string "'[1 2 a]"))
 
 (type (read-string "5"))
 
 
-;; Die Homoikonizität erlaubt eine simple Implementierung einer REPL.
-;; Zudem werden Macros ermöglicht:
-;; Macros in Clojure sind keine Textersetzung (à la C-Präprozessor),
-;; sondern source-to-source Transformationen,
-;; die von Funktionen berechnet werden (Daten zu Daten).
-;; Diese Funktionen können sehr einfach sein (wie if-not),
-;; oder unendlich kompliziert (wie clojure.core.async/go).
+;; Homoiconicty allows simple implementations of a REPL.
+;; Additionally, we get macros:
+;; Macros in Clojure are not text-replacement (à la C-preprocessor),
+;; but rather source-to-source transformations
+;; that are calculcated via functions (data to data).
+;; Such functions can be really simple (e.g. if-not)
+;; oder really sophisticated and involved (e.g. clojure.core.async/go).
 
 
-;; Beispiele für Macros:
+;; Macro examples:
 
-;; (defn ...) wird zu (def ... (fn ...))
+;; (defn ...) is expanded to (def ... (fn ...))
 (macroexpand '(defn foo [x] x))
 
-;; -> schleift das Ergebnis der Expression in das erste Argument der nächsten Form mit
+;; -> threads the result of an expression into the first argument of the next form
 (-> 3
     (+  ,,, 5)
     inc ,,,
     (*  ,,, 2))
-;; ist das gleiche wie
+;; is the same as
 (* (inc (+ 3 5)) 2)
 
-;; Beweis:
+;; Proof:
 (macroexpand '(-> 3
                   (+ 5)
                   inc
                   (* 2)))
 
-;; ->> schleift das Ergebnis der Expression in das letzte Argument der nächsten Form mit
+;; ->> threads the result of an expression into the last argument of the next form
 (->> 3
      (- 5 ,,,)
      inc ,,,
@@ -82,7 +81,7 @@
 ;; wird also zu
 (* 2 (inc (- 5 3)))
 
-;; as-> gibt dem Ergebnis einen Namen, der in jeder weiteren Form an das Ergebnis vorher gebunden wird
+;; as-> assign a name to the result, which is bound in every following form to the result from the expression before
 (as-> 3 expr
     (+ expr 5)
     (inc expr)
@@ -93,9 +92,9 @@
                 (inc expr)
                 (* 2 expr)))
 
-;; for ist ein kompliziertes Macro
+;; for is a very complicated macro
 (macroexpand '(for [x [1 2 3]] x))
 
 
-;; Macros erlauben uns, angenehmeren Code zu schreiben (also (quasi) eine DSL),
-;; indem wir angeben, wie der Code in "echten" Clojure Code übersetzt wird.
+;; Macros allow us to write easier code (more or less DSLs),
+;; by specifiying how the DSL Code is translated into "real" Clojure code

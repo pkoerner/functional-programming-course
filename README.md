@@ -51,7 +51,7 @@ Each unit groups material related to a topic as well as all expected learning ou
   - [ ] 14_spec.clj
   - [ ] 15_test_check.clj
   - [ ] 16_transducer.clj
-  - [ ] 17_homoiconicity.clj
+  - [x] 17_homoiconicity.clj
   - [ ] 21_transients.clj
   - [ ] 22_ebt.clj
 - [ ] add bonus item: core.async
