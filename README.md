@@ -32,7 +32,7 @@ Each unit groups material related to a topic as well as all expected learning ou
   - [x] readings guide 6
   - [x] readings guide 7
   - [x] readings guide 8
-  - [ ] readings guide 9
+  - [x] readings guide 9
   - [ ] readings guide 10
   - [ ] readings guide 11
 - [ ] translate REPL sessions

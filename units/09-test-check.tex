@@ -1,88 +1,57 @@
 \documentclass[11pt,a4paper]{article}
-
-\usepackage[ngerman]{babel}
-\usepackage[TS1,T1]{fontenc}
-\usepackage[utf8x]{inputenc}
-\usepackage{theorem}
-\usepackage[scaled=0.9]{helvet}
-\usepackage{amsmath}
-\usepackage{amssymb}
-\usepackage[T1]{fontenc}
-\usepackage{hyperref}
-\usepackage{stmaryrd}
-\usepackage{pgf,tikz}
-\usepackage{relsize}
-\usepackage{enumitem}
-\usepackage{graphicx}
-\usepackage{csquotes}
-\usepackage{algpseudocode,amsmath,xifthen}
-
-\newcounter{numb}
-\theoremstyle{break}
-\theorembodyfont{\upshape}
-   	\newtheorem{aufgabe}{Aufgabe}[numb]
+\input{header.tex}
 \setcounter{numb}{9}
-\setlength{\oddsidemargin}{0cm}
-\setlength{\textwidth}{16cm}
-\setlength{\textheight}{23cm}
-\setlength{\topmargin}{-2cm}
-
-\usetikzlibrary{shapes,arrows,automata,positioning,decorations.fractals}
-\renewcommand\familydefault{\sfdefault}
+\usepackage{csquotes}
 
 
 \begin{document}
 
 \begin{minipage}[b]{\textwidth}
-\parbox[t]{5cm}{%
-\includegraphics[width=4cm]{unilogo}
-\hfill
-}
-\parbox[b]{11cm}{%
-%\scshape%
-Heinrich-Heine-Universit\"at D\"usseldorf\\
-Institut f\"ur Informatik\\
-Lehrstuhl Softwaretechnik und Programmiersprachen\\
-%Professor Dr.\ M.\ Leuschel
-Philipp K\"orner
-}
-
-%%date
-%\hfill 1.\@ August 2017\rule{0mm}{6mm}\quad\ %% <--
+	\parbox[t]{5cm}{%
+		\includegraphics[width=4cm]{unilogo}
+		\hfill
+	}
+	\parbox[b]{11cm}{%
+		%\scshape%
+		Heinrich-Heine-University D\"usseldorf\\
+		Computer Science Department\\
+		Software Engineering and Programming Languages\\
+		%Professor Dr.\ M.\ Leuschel
+		Philipp K\"orner
+	}
 \end{minipage}
 \begin{center}
-\bf
-Funktionale Programmierung -- WS 2020 / 2021\\
-Reading Guide 10: Generatives Testing
+	\bf
+	Functional Programming -- WISE 2020 / 2021\\
+	Reading Guide 10: Generative Testing
 \end{center}
 
 \pagestyle{empty}
 
-\paragraph{Zeitliche Orientierung:} Diese Lerneinheit sollte bis zum 28.01.2021 abgeschlossen werden.
-%\paragraph{Abgabe des Lerntagebuchs} \"uber das ILIAS bis zum 16.5.2020 mit unbegrenzt Material, Nachfrist bis zum 23.5.2020 mit zwei Seiten A4.
+\paragraph{Deadline:} This unit should be completed by 28.01.2021.
 
 \section{Material} 
 
 \begin{itemize}
-    \item Getting Clojure, Kapitel 14
-\item 21\_transients.clj
-\item 22\_ebt.clj
-\item 15\_test\_check.clj
-\item Reid Draper: Powerful Testing with test.check \url{https://www.youtube.com/watch?v=JMhNINPo__g}
-\item Gary Fredericks: Building test.check Generators \url{https://www.youtube.com/watch?v=F4VZPxLZUdA}
-\item John Hughes: Testing the Hard Stuff and Staying Sane \url{https://www.youtube.com/watch?v=zi0rHwfiX1Q}
+    \item Getting Clojure, chapter 14
+	\item 21\_transients.clj
+	\item 22\_ebt.clj
+	\item 15\_test\_check.clj
+	\item Reid Draper: Powerful Testing with test.check \url{https://www.youtube.com/watch?v=JMhNINPo__g}
+	\item Gary Fredericks: Building test.check Generators \url{https://www.youtube.com/watch?v=F4VZPxLZUdA}
+	\item John Hughes: Testing the Hard Stuff and Staying Sane \url{https://www.youtube.com/watch?v=zi0rHwfiX1Q}
 \end{itemize}
 
 
-\section{Lernziele}
+\section{Learning Outcomes}
 
-Nach dem Bearbeiten dieser Lerneinheit sollten Sie in der Lage sein
+After completing this unit you should be able to
 
 \begin{itemize}
-    \item Transients korrekt zu verwenden.
-    \item example-based Tests in Clojure zu schreiben.
-    \item generative Tests in Clojure zu schreiben.
-    \item Vor- und Nachteile von example-based und generativen Tests zu diskutieren.
+    \item use transients correctly.
+    \item write example-based tests in Clojure.
+    \item write generative tests in Clojure.
+    \item discuss advantages and disadvantages of example-based and generative tests.
 \end{itemize}
 
 \section{Highlights}
@@ -90,52 +59,54 @@ Nach dem Bearbeiten dieser Lerneinheit sollten Sie in der Lage sein
 \begin{itemize}
     \item Transients: \verb|transient|, \verb|persistent!|, \verb|conj!|, \verb|disj!|, \verb|assoc!|, \verb|dissoc!|, \verb|disj!|
     \item Testing: \verb|deftest|, \verb|is|, \verb|are|
-    \item test.check: Generator-Namespace, \verb|for-all|, \verb|quick-check|
+    \item test.check: generator-namespace, \verb|for-all|, \verb|quick-check|
 \end{itemize}
 
 
 
-\section{Aufgaben}
+\section{Exercises}
 
-\begin{aufgabe}[\texttt{test.check}]
+\begin{exercise}[\texttt{test.check}]
 
-In den Dateien zur \"Ubung finden Sie den Namespace \verb|blatt9.edit-distance|.
-Betrachten Sie dort die Funktionen \verb|levenshtein| und \verb|levenschtein|.
+In the files for the exercise you will find the namespace \verb|blatt9.edit-distance|.
+Have a look at the functions \verb|levenshtein| and \verb|levenschtein|.
 
 \begin{enumerate}[label=\alph*)]
-    \item Erzeugen Sie einen Namespace im test-Verzeichnis,
-        der auf die beiden Funktionen zugreifen kann.
+    \item
+    	Create a namespace in the test directory,
+    	that can access both functions.
 
-    \item Schreiben Sie eine \verb|test.check| Property,
-        die fehlschl\"agt, wenn zwei nicht-leere
-        Strings als Eingabe unterschiedliche Ergebnisse bei den beiden Funktionen liefern.
-        Welche Implementierung ist falsch?
-        Was ist der Fehler? 
+    \item
+    	Write a \verb|test.check| property,
+        which fails if two non-empty
+        input-strings return different output for both functions.
+        Which implementation is faulty?
+        What is the error?
         
-        Anmerkung: Sie m\"ussen die fehlerhafte Implementierung nicht reparieren.
+        Note: You do not need to repair the faulty implementation.
 
-    \item 
-        Schreiben Sie einen Generator \verb|user-generator|, der Benutzer an der Uni generiert.
-        Ein Benutzer wird durch eine Map repr\"asentiert,
-        die Vor- und Nachname sowie eine Kennung enth\"alt.
-        Die Kennung besteht aus den ersten zwei Zeichen des Vornamens
-        und den ersten drei Zeichen des Nachnamens und drei Ziffern.
-        Ein Beispiel f\"ur einen Benutzer, der generiert wird, ist
+    \item
+    	Write a generator \verb|user-generator|, which generates users at a university.
+        A user is represented by a map,
+        containing the first- and last name as well as the ID of the user.
+        The ID consists of the first two characters of the first name,
+        the first three characters of the last name and three digits.
+        An example of a generated user is:
         
-        \verb|{:vorname "John", :nachname "Wayne", :kennung "joway142"}|.
+        \verb|{:first-name "John", :last-name "Wayne", :id "joway142"}|.
 
-        Ist ein Name nicht lang genug, werden in der Kennung so viele Zeichen wie m\"oglich verwendet, zum Beispiel
-        ist die Kennung von \enquote{Mr. X} dann \verb|mrx666|.
-        
+		If a name is not long enough, as many characters as possible are used in the ID,
+		for example one possible ID of \enquote{Rich X} would be \verb|rix666|
 
-		Sie k\"onnen aus einer festen Menge an Namen ausw\"ahlen.
-        Dazu k\"onnen Sie zum Beispiel die Namenslisten aus
-        \url{https://github.com/dominictarr/random-name} verwenden.
+
+		You can choose from a fixed set of names.
+        For this purpose, you can use the name lists from
+        \url{https://github.com/dominictarr/random-name}.
 \end{enumerate}
-\end{aufgabe}
+\end{exercise}
 
-\begin{aufgabe}[Teure Wege]
-Gegeben soll ein Dreieck in Form eines Vektors von Vektoren. Es soll ein m"oglichst billiger Pfad von der Spitze des Dreiecks zum Boden gesucht werden. Es darf in jedem Schritt nur ein adjazentes Folgefeld in der n"achst tieferliegenden Reihe gew"ahlt werden
+\begin{exercise}[Shortest path problem]
+Given a triangle in the form of a vector of vectors we want to find the shortest possible path from the top of the triangle to the bottom, such that the sum of the weights is minimized. In each step, only one adjacent field in the next lower row may be selected.
 
 \enlargethispage{2\baselineskip}
 \begin{verbatim}
@@ -153,26 +124,24 @@ user=> (path [    [3]
 20 ;; ; 3 + 4 + 3 + 2 + 7 + 1
 
 \end{verbatim}
-\end{aufgabe}
+\end{exercise}
 
-\begin{aufgabe}[Trampoline (4clojure Nr. 78) und Rekursion]
-Wir haben bereits gesehen, dass bei Selbstrekursion in Tail-Position
-der Einsatz von \verb|recur| daf\"ur sorgt, dass keine zus\"atzlichen Stackframes
-pro Rekursionsschritt aufgebaut werden.
-Dieser Ansatz funktioniert nicht, wenn zwei (oder mehr) Funktionen sich gegenseitig
-aufrufen sollen.
+\begin{exercise}[Trampoline (4clojure No. 78) and recursion]
+We have already seen that self-recursion in tail position
+using \verb|recur| ensures that no additional stack frames are used per recursion step.
+This approach does not work if two (or more) functions call each other.
 
-Die Higher-Order Function \verb|trampoline| nimmt eine Funktion
-und beliebig viele Werte entgegen.
-Diese Funktion wird dann mit den Werten als Parameter aufgerufen.
-Ist die R\"uckgabe selbst wieder eine Funktion, wird diese ohne Parameter aufgerufen.
-Solange die so resultierenden R\"uckgaben Funktionen sind, werden diese weiter aufgerufen,
-ansonsten wird die R\"uckgabe von \verb|trampoline| zur\"uckgegeben.
+The higher-order function \verb|trampoline| receives a function
+and an arbitrary amount of values.
+The function is then called with the given values as parameters.
+If the return value itself is a function again, it is called without parameters.
+As long as the resulting return values are functions, they will continue to be called,
+otherwise the value is returned by \verb|trampoline|.
 
 \begin{enumerate}[label=\alph*)]
     \item
-Implementieren Sie eine Funktion, die sich wie \verb|trampoline| verh\"alt.
-Insbesondere soll die Rekursion keine weiteren Stackframes aufbauen.
+    	Implement a function that behaves like \verb|trampoline|.
+    	In particular, the recursion should not use any more stack frames.
 
 \begin{verbatim}
 (letfn [(triple [x] (fn [] (sub-two (* 3 x))))
@@ -187,21 +156,21 @@ Insbesondere soll die Rekursion keine weiteren Stackframes aufbauen.
 => [true false true false true false]
 \end{verbatim}
 
-Hinweis:
-Mit \verb|fn?| kann man \"uberpr\"ufen, ob ein Wert eine Funktion ist oder nicht.
+Note:
+You can use \verb|fn?| to check if a value is a function or not.
 
-Anmerkung: \verb|partial| ist eine Funktion h\"oherer Ordnung,
-die eine Funktion \verb|f| und einen Teil der Argumente $a_1$, \dots, $a_i$
-entgegennimmt, und eine Funktion zur\"uckgibt, die weitere Parameter $a_{i+1}, \dots, a_n$ ($i \leq n$) nimmt
-und \verb|f| mit $a_1$ bis $a_n$ aufruft.
-\verb|letfn| ist ein besonderes \verb|let| f\"ur Funktionen.
+Additonal note: \verb|partial| is a higher order function,
+which receives a function \verb|f| and a part of its arguments $a_1$, \dots, $a_i$
+and returns a function which accepts further parameters $a_{i+1}, \dots, a_n$ ($i \leq n$)
+and then calls \verb|f| with parameters $a_1$ to $a_n$.
+\verb|letfn| is a special \verb|let| for functions.
 
-\item Was muss man machen, wenn das Ergebnis der gesamten Berechnung selbst eine Funktion sein soll?
+\item What do you have to do if the result of the entire calculation happens to be a function itself?
 \end{enumerate}
 
-\end{aufgabe}
+\end{exercise}
 
-\section*{Fragen}
-Bei Fragen wenden Sie sich bitte an Philipp K"orner (\texttt{p.koerner@hhu.de}).
+\section*{Questions}
+If you have any questions, please contact Philipp K"orner (\texttt{p.koerner@hhu.de}).
 \end{document}
 
