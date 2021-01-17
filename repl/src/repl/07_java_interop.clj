@@ -8,78 +8,79 @@
   ;; Clojure - Java Interop
   ;; ------------------------------------------------------------------------------------
 
-  ;; es gibt ganz normale Javaklassen
+  ;; these are ordinary Java classes
   (type java.util.ArrayList)
 
   String
   ArrayList
 
-  ;; java.util muss man erst importieren
+  ;; java.util has to be imported first
   (import java.util.ArrayList)
 
   ArrayList
 
-  ;; Instanzen erzeugen geht einmal mit der Special Form new
+  ;; instances can be created via the special form 'new'
   (new ArrayList)
   (type (new ArrayList))
   (doc new)
-  ;; auch mit Parametern
+  ;; also with parameters
   (new String "1")
 
-  ;; oder mit dem . Macro
+  ;; or the '.' macro
   (ArrayList.)
   (macroexpand-1 '(ArrayList.))
 
 
-  ;; auf statische Felder kann man mit / zugreifen
+  ;; static fields can be accessed via '/'
 
   Math/PI  ;; Math.PI
   System/out
-  (System/out) ;; oder auch
-  ;; statischer Funktionsaufruf
+  (System/out) ;; or
+  ;; static function call
   (Math/floor 102.3)
 
-  ;; Attribute
-  (deftype Foo [x]) ;; Java Klasse mit Feld x generieren
+  ;; Attributes
+  (deftype Foo [x]) ;; generates a Java class with field x
 
   (def foo (Foo. 12))
-  ;; Zugriff auf ein Instanz-Attribut mit . bzw .-
-  ;; geht in mehreren Geschmacksrichtungen
+  ;; Access instance-attributes with '.' or '.-'
+  ;; comes in several flavors
   (. foo x) ;; foo.x
   (. (Foo. 124) x)
   (.x (Foo. 12))
   (macroexpand '(.x (Foo. 12)))
 
 
-  ;; Zugriff auf Attribute besser mit -x
-  ;; In ClojureScript ist das Pflicht, um Funktionen von anderen Werten unterscheiden zu können.
+  ;; Access to attributes is preferably done with -x
+  ;; This is mandatory in ClojureScript
+  ;; to distinguish functions from other values.
   (. (Foo. 122) -x)
   (.-x (Foo. 123))
 
 
-  ;; Instanz-Methoden aufrufen: mit .
+  ;; Call instance methods with '.'
   (def r (java.util.Random.))
 
   (. r nextInt)
   (.nextInt r)      ;; r.nextInt()
   (macroexpand '(.nextInt r))
-  ;; und auch das mit Parametern
+  ;; and the same with parameters once again
   (.nextInt r 100)  ;; r.nextInt(100)
 
-  ;; Chaining von Aufrufen
+  ;; Chaining of calls
   (.. r nextInt toString hashCode)  ;; r.nextInt().toString().hashCode()
   (macroexpand '(.. r (nextInt 50) toString hashCode))
 
-  ;; Kann jemand mal die Klammern zählen und mit Java vergleichen? ;-)
+  ;; Can someone count the parentheses and compare with Java? ;-)
 
 
 
   (doto
-    (javax.swing.JFrame. "Tralala")
+   (javax.swing.JFrame. "Tralala")
     (.setSize 800 600)
     (.setVisible true))
 
-  ;; ist das gleiche wie
+  ;; is the same as
 
   ;; j = new JFrame("Tralala");
   ;; j.setSize(800,600);
@@ -87,8 +88,8 @@
 
 
 
-  ;; Warum mögen Clojure Programmierer doto nicht besonders?
-  ;; Das braucht mutable Objekte, um Sinn zu ergeben!
+  ;; Why do Clojure programmers dislike doto?
+  ;; It requires mutable objects to make sense!
 
 
 
@@ -100,7 +101,7 @@
 
   ;; Java -> Clojure
 
-  ;; idiomatischer Java code (apache.commons):
+  ;; idiomatic Java code (apache.commons):
 
   ;;  public static boolean isBlank(final CharSequence cs) {
   ;;          int strLen;
@@ -116,7 +117,7 @@
   ;;      }
 
 
-  ;; Schritt 1: Weg mit den Types
+  ;; Step 1: Get rid of the types
 
   ;;  public isBlank(cs) {
   ;;          if (cs == null || (strLen = cs.length()) == 0) {
@@ -131,7 +132,7 @@
   ;;      }
 
 
-  ;; Schritt 2: HOF statt Schleife
+  ;; Step 2: Replace loops with HOF
 
   ;;  public isBlank(cs) {
   ;;          if (cs == null || (strLen = cs.length()) == 0) {
@@ -143,7 +144,7 @@
   ;;      }
 
 
-  ;; Schritt 3: Corner Cases eliminieren - Clojure kann mit nil umgehen!
+  ;; Step 3: eliminate edge cases - Clojure can handle nil!
 
   ;;  public isBlank(cs) {
   ;;         return  every (c in cs) {
@@ -152,7 +153,7 @@
   ;;      }
 
 
-  ;; Schritt 4: Clojure Syntax
+  ;; Step 4: Clojure syntax
 
   (defn blank? [cs]
     (every? (fn [c] (Character/isWhitespace c)) cs))
@@ -163,7 +164,7 @@
   (blank? nil)
   (blank? "\n\t")
 
-  ;; Vergleichen wir noch einmal:
+  ;; Let us compare once again:
 
   (defn blank? [cs]
     (every? #(Character/isWhitespace %) cs))
@@ -184,16 +185,16 @@
 
 
 
-  ;; Records führen neue Klassen ein, die bestimmte feste immutable Felder haben.
-  ;; Trotzdem sind die Klassen immer noch flexibel, d.h. man kann neue Felder mit
-  ;; assoc hinzufügen
+  ;; Records introduce new classes that have certain fixed immutable fields.
+  ;; Nevertheless, the classes are still flexible,
+  ;; i.e. you can add new fields with assoc
   (defrecord Foo [x y z])
 
   (def foo (Foo. :a :b :c))
   (type foo)
   (:y foo)
   (.-y foo)
-  foo ;; sieht fast wie eine Map aus
+  foo ;; resembles a map somewhat
 
   (supers (type foo))
 
@@ -202,24 +203,24 @@
   bar
   (type bar)
 
-  ;; man bekommt zwei Macros geschenkt, um das Objekt zu konstruieren
-  ;; 1. ->Record, was die Felder in Reihenfolge füllt
+  ;; you get two macros (free of charge) to construct the object
+  ;; 1. ->Record, which assigns the fields in order
   (def bar2 (->Foo 3 4 5))
   bar2
-  ;; 2. map->Foo, was die Attribute nach Keywords einsetzt
+  ;; 2. map->Foo, which assigns the attributes by keywords
   (map->Foo {:y 1 :x 3 :z 11})
   (map->Foo {:y 1 :x 3 :z 11 :n 3})
 
   (:y bar2)
 
-  ;; Literal als Readermacro
+  ;; Literal as reader macro
   (def bar3  #repl.07_java_interop.Foo{:x 1 :y 7 :z 10})
   (:z bar3)
 
 
 
 
-  ;; Typen sind so ähnlich wie Records
+  ;; types are somewhat similar to records
 
   (deftype Bar [x y z])
 
@@ -227,33 +228,34 @@
   (.-x bar)
   (:x bar)
 
-  ;; deftype implementiert keine Map!
+  ;; deftype does not implement a Map!
 
-  ;; deftype sind quasi Records ohne Geschenke (außer dem Konstruktor)
-  ;; - keine Map Implementierung
-  ;; - keine Reader Form
-  ;; - kein map->Bar
-  ;; - auf Wunsch auch noch mutable Felder
-
-
-
-
-  ;; andere Konstrukte
-
-  ;; *reify* verwendet man, wenn man "mal eben" ein Interface implementieren muss
-  ;; erstes Argument von Funktionen ist dabei das Objekt, was durch reify erzeugt wird
-
-  ;; reify erlaubt es nur Java Interfaces zu implementieren
-  ;; wenn man von Klassen erben will, benötigt man einen *proxy*
-
-  ;; Anwendungsfall für Proxy:
-  ;; manche Java Methoden erwarten eine bestimmte Klasse
-  ;; z.B. eine konkrete Subklasse von einem Reader
+  ;; deftypes are quasi records without any of the stuff you get for free
+  ;; (except for the constructor)
+  ;; - no Map implementation
+  ;; - no reader Form
+  ;; - no map->Bar
+  ;; - and mutable fields upon request
 
 
-  ;; letztes Ding: *gen-class*
-  ;; gibt es auch als key :gen-class in Namespace Deklarationen
-  ;; generiert zur Compilezeit ein Classfile
-  ;; dieses kann man dann auch aus Java aufrufen!
 
+
+  ;; other constructs
+
+  ;; *reify* is used to implement interfaces
+  ;; the first argument of the implemented functions is the object,
+  ;; which is created by reify
+
+  ;; reify only allows to implement Java interfaces
+  ;; if you want to inherit from classes, you need a *proxy*.
+
+  ;; Use case for proxy:
+  ;; some Java methods expect a certain class
+  ;; e.g. a concrete subclass of a reader
+
+
+  ;; Last thingy: *gen-class*
+  ;; also exists as key :gen-class in namespace declarations
+  ;; generates a class file at compile time
+  ;; which can then also be called from Java!
   )
