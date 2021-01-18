@@ -1,20 +1,22 @@
-;; hier eine Namespacedeklaration in (fast) ganzer Pracht:
-;; man kann noch mehr Spaß in Kombination mit Host-Interop dort unterbringen.
-;; Teile der Erklärungen folgen unten genauer.
+;; A namespace declaration in (nearly) all its glory:
+;; You can put even more stuff there in combination with host interop.
+;; Parts of the explanations follow in more detail below.
 
 (ns repl.08-namespaces
-  ;; Clojure wird automatisch eingebunden
-  ;; manchmal möchte man aber gewisse Bezeichner überschreiben.
-  ;; Hier möchten wir eine andere replace-Funktion.
+  ;; Clojure is automatically imported
+  ;; but sometimes you want to overwrite certain identifiers.
+  ;; Here we would like to use another replace function.
   (:refer-clojure :exclude [replace])
-  ;; Lade die clojure.test Bibliothek. Diese kriegt den Alias t.
+  ;; Load the clojure.test library and give it the alias 't'.
   (:require [clojure.test :as t])
-  ;; clojure.string wird geladen und replace sowie join werden im Namespace direkt verknüpft.
-  ;; clojure.repl wird auch komplett geladen, alle Symbole werden übernommen.
-  ;; Nur die dir-Funktion wird, um dem Idiom auf einem UNIX-Systems gerecht zu werden, in ls umbenannt.
+  ;; clojure.string is loaded and replace and join are
+  ;; directly linked in the namespace.
+  ;; clojure.repl is also loaded completely, every symbols is included as is.
+  ;; Only the 'dir' function is renamed to 'ls' to match
+  ;; the idiom on a UNIX system.
   (:use [clojure.string :only (replace join)]
         [clojure.repl :rename {dir ls}])
-  ;; wir laden ein paar Java Klassen, auch mehrere aus demselben Paket
+  ;; we load a few Java classes, several from the same package
   (:import (java.util Date Timer Random)
            java.io.File
            (javax.swing JFrame JPanel)))
@@ -22,158 +24,162 @@
 
 (comment
 
-  ;; für source brauchen wir clojure.repl
+  ;; We require clojure.repl for 'source'
   (source source)
-  ;; damit source die Funktion findet, muss das entsprechende Modul geladen sein.
-  ;; Wie geht das nun?
+  ;; so 'source' can find the function, the corresponding module must be loaded.
+  ;; How does that work?
 
-  ;; Laden von Modulen
+  ;; Loading modules
 
 
-  ;; 1) Java Klassen
-  ;; eine Javaklasse ist nicht unbedingt mit Namen geladen
+  ;; 1) Java classes
+  ;; A Java class is not necessarily accessible with its name alone
   Console
-  ;; vollständig qualifiziert haben wir darauf Zugriff
+  ;; We have access to it fully qualified
   java.io.Console
-  ;; wenn wir sie importieren, können wir sie direkt verwenden
+  ;; if we import it, we can use it directly
   (import java.io.Console)
   Console
   (type Console)
-  ;; alle Klassen aus dem java.lang Paket werden automatisch geladen
+  ;; all classes from the java.lang package are loaded automatically
   String
 
 
 
   ;; 2) Clojure Namespaces
-  ;; Namespaces erlauben nur - im Namen und keinen Unterstrich.
-  ;; Für den Dateinamen müssen alle - jedoch durch Unterstriche ersetzt werden.
-  ;; siehe hier: der Namespace repl.08-namespaces liegt im Ordner repl als 08_namespaces.clj
-  ;; Grund ist eine Mischung aus Lisp- und Java-Konvention.
-  
-  ;; ein Namespace, der nicht geladen ist, kann auch bei vollständig qualifiziertem Symbol nichts machen.
+  ;; Namespaces do not allow underscore in the name, only '-'.
+  ;; But for the file name, all '-' must be replaced by underscores.
+  ;; see here: the namespace repl.08-namespaces is located in the folder
+  ;; repl as 08_namespaces.clj
+  ;; The reason is a mixture of Lisp and Java convention.
+
+  ;; A namespace that is not loaded cannot do anything
+  ;; even if the symbol is fully qualified.
   (repl.greeter.friendly-hello/msg! "John" "Michael")
 
   ;; require = load
-  ;; Datei $CLASSPATH/repl/greeter/friendly_hello.clj
+  ;; File: $CLASSPATH/repl/greeter/friendly_hello.clj
   (require 'repl.greeter.friendly-hello)
 
-  ;; die Datei ist recht klein und hat folgenden Inhalt (kann man auch selbst nachschauen):
+  ;; the file is quite small and has the following content
+  ;; (you can also look it up yourself):
   ;; (ns repl.greeter.friendly-hello
   ;;    (:require [clojure.string :as str]))
   ;; (defn msg! [& args]
   ;;    (println "Hello" (str/join " and " args)))
 
-  ;; vollständig qualifiziert geht
+  ;; full qualification
   (repl.greeter.friendly-hello/msg! "John" "Michael")
-  ;; ohne Namespace aber nicht
+  ;; does not work without namespace
   (msg! "John" "Michael")
 
   ;; Aliasing:
-  ;; damit wir nicht so viel tippen müssen, kann man dem Namespace einen Alias verpassen
+  ;; you can give the namespace an alias, so we do not have to type as much
   (require '[repl.greeter.friendly-hello :as hello])
   (hello/msg! "John" "Jens")
 
-  ;; gibt es nicht, error
+  ;; not defined, error
   zipper
-  ;; die Funktion liegt in clojure.zip, aber ist noch nicht geladen
+  ;; a definition exists in clojure.zip, but is not loaded yet
   clojure.zip/zipper
 
-  ;; geladener Namespace, selbe Regel
+  ;; loaded namespace, same rule
   (require 'clojure.zip)
   zipper
   clojure.zip/zipper
-  zippy/zipper ;; wurde nicht alias'd
+  zippy/zipper ;; was not aliased
 
-  ;; refer fügt alle Symbole aus dem Namespace dem jetzigen hinzu
-  ;; da wir aus dem Clojure-Kern schon next und replace haben, sollen die aber nicht rein.
-  ;; remove gibt es auch in beiden, das ist die Warnung, die es dann gibt.
+  ;; refer adds all symbols from the namespace to the current one
+  ;; since we already loaded 'next' and 'replace' from the Clojure core,
+  ;; they should not be loaded.
+  ;; A definition of 'remove' also exists in both,
+  ;; which is the reason for the warning.
   (refer 'clojure.zip :exclude '[next replace])
-  ;; nun geht zipper direkt
+  ;; now we can refer to zipper directly
   zipper
 
-  ;; use macht require + refer
+  ;; use is require + refer
 
-  ;; file gibt uns das Java File Objekt zu einer Pfad als String - wenn die Bibliothek geladen ist.
+  ;; file gives us a Java file object to a path as a string,
+  ;; if the library is loaded.
   (file "project.clj")
   (use 'clojure.java.io)
   (file "project.clj")
   (type (file "project.clj"))
 
-  ;; jetzt erklärt sich das Namespace Macro (s. oben)
+  ;; now the namespace macro explains itself (see above)
 
-  ;; Man lädt Module in der Regel im Namespace Macro.
-  ;; require :as bzw. refer von wenigen Symbolen (es geht auch :refer :all) ist bevorzugt.
-  ;; So ist dem Leser klar, wo was herkommt!
-  ;; :use verwendet man daher eher möglichst wenig, außer es sind sehr bekannte Bibliotheken
-  ;; oder welche, die unmittelbar zusammenhängen (z.B. Wrapper).
-
-
+  ;; You usually load modules in the namespace macro.
+  ;; 'require :as' or 'refer' of a few symbols (:refer :all also works) is preferred.
+  ;; This way it is clear to the reader where definitions come from!
+  ;; :use is used as little as possible, unless it is a very well-known library
+  ;; or ones which are directly related (e.g. wrappers).
 
 
-  ;; Was ist ein Namespace?
+
+
+  ;; What is a namespace?
 
 
   (def v 4)
 
-  ;; def assoziiert das Symbol v mit einem Var
-  ;; Das Var ist ein Container für einen konstanten Wert
+  ;; def associates the symbol 'v' with a Var
+  ;; A Var is a container for a constant value
 
-  ;; Die Assoziation findet im Namespace statt
-  ;; Namespaces sind maps (so in etwa jedenfalls)
+  ;; The association happens in the namespace
+  ;; Namespaces are maps (kind of anyway)
 
 
-  ;; Namespaces und Introspektion
+  ;; Namespaces and introspection
   ;; ------------------------------------------------------------------------------------
 
-  ;; jetzt usen wir den ganzen Kram einfach
+  ;; now we will just 'use' everything
   (use 'repl.greeter.friendly-hello)
   (msg! "Kurs" "du daheim")
 
-  ;; hinter dem Namespace steht echt eine Map
+  ;; behind the namespace you will actually find a map
   (def m (ns-map 'repl.greeter.friendly-hello))
 
-  ;; eine große Map sogar...
+  ;; a very large map in fact...
   (keys m)
   (vals m)
 
-  ;; es werden Symbole auf Vars gemapped
+  ;; symbols are mapped to Vars
   (first m)
   (map type (first m))
 
-  ;; die kann man dann in der Namespacemap nachschlagen...
+  ;; which you can look up in the namespace map...
   (def f (get m (symbol "msg!")))
-  ;; und das Ergebnis verwenden
+  ;; and use
   f
   (f "jens" "michael")
 
-  ;; es gibt einige Namespace-Funktionen
+  ;; there are some namespace-functions
   (apropos "ns-")
 
   (def n 'repl.08-namespaces)
 
-  ;; öffentlich definiert haben wir recht wenig
+  ;; There is quite little that we have defined publicly
   (ns-publics n)
   (keys (ns-publics n))
-  ;; insgesamt haben wir hier wenig definiert
+  ;; overall we have defined little here
   (keys (ns-interns n))
 
-  ;; defn- oder def ^{:private true} schmeißt etwas nur ins interne Mapping
-  ;; und gibt es nicht nach außen frei
+  ;; Things defined with defn- or def ^{:private true}
+  ;; only show up in the internal mapping
+  ;; and are not visible to the outside
   (defn- internal [] -1)
   (keys (ns-interns n))
 
   (def ^{:private true} lol :lol)
-  ;; ^{...} ist eine Metadaten-Annotation.
-  ;; Dies und Type Hints (ein anderes Mal) sind in der Regel die einzigen, die man braucht.
+  ;; ^{...} is a metadata annotation.
+  ;; These and type hints (left for another time) are usually the
+  ;; only ones you will need
 
-  ;; die sind tatsächlich intern und nicht öffentlich
+  ;; they are actually internal and not public
   (clojure.set/difference
    (set (keys (ns-interns n)))
    (set (keys (ns-publics n))))
 
-  ;; und welche Aliase haben wir definiert?
-  (ns-aliases n)
-
-
-
-)
+  ;; and which aliases did we define?
+  (ns-aliases n))
