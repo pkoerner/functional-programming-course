@@ -45,7 +45,7 @@ Each unit groups material related to a topic as well as all expected learning ou
   - [x] 06_polymorphism.clj
   - [x] 07_java_interop.clj
   - [x] 08_namespaces.clj
-  - [ ] 09_evaluation_order.clj
+  - [x] 09_evaluation_order.clj
   - [ ] 11_macros.clj
   - [ ] 13_monaden.clj
   - [ ] 14_spec.clj

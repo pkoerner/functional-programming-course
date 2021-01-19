@@ -1,205 +1,212 @@
 (ns repl.09-evaluation-order)
 
 
-  ;; Evaluation von Symbolen
+  ;; Evaluation of symbols
   ;; ------------------------------------------------------------------------------------
 (comment
-  ;; Literale werden direkt ausgewertet
+  ;; Literals are evaluated directly
   1
   :a
-  ;; in Datenstrukturliteralen werden die Elemente von links nach rechts ausgewertet
+  ;; in data structure literals the elements are evaluated from left to right
   [:a 1]
   {:a 1}
   [(println 1) (println 2)]
-  ;; Funktionsaufrufe: erst die Expression, die die Funktion zurückgibt, dann die des ersten Arguments (und rekursiv dasselbe Schema), das zweite Argument, usw.
+  ;; Function calls: first the expression that the function returns, then that of the first argument (and recursively the same pattern), the second argument, and so on.
   (+ 1 2)
 
-  ;; manche Sachen können nicht ausgewertet werden
+  ;; some things can not be evaluated
   ding ;; error
 
-  ;; es sei denn, es ist definiert
+  ;; unless they are defined
   (def ding 1)
   ding
 
-  ;; definieren wir mal eine Funktion.
-  ;; die Rückgabe ist ein komisches #'repl.09-evaluation-order/foo Ding
+  ;; Let us define a function.
+  ;; The return value is some weird #'repl.09-evaluation-order/foo thing
   (defn foo [] 42)
-  ;; das ergibt ein Funktionsobjekt
+  ;; that results in a function object
   foo
 
-  ;; steht das Symbol foo also für eine Funktion? anscheinend...
+  ;; Does the symbol 'foo' stand for a function? apparently...
   (supers (type foo))
 
-  ;; wir können die problemlos aufrufen
+  ;; we can call it without problems
   (foo)
 
-  ;; so bekommt man wieder das komische #'-Ding
+  ;; This way you will get the strange #'-thing again
   (var foo)
 
-  ;; oder wir schreiben es direkt hin
+  ;; or we write it directly
   #'foo
-  ;; dieses #'-Ding ist Callable (deshalb funktioniert der Funktionsaufruf), aber ist hauptsächlich eine Referenz
+  ;; this #'-thing is callable (that's why the function call works),
+  ;; but is mainly a reference
   (supers (type #'foo))
 
-  ;; das #'-Ding ist eine Var.
-  ;; Das kann man sich als Box vorstellen, die auf den Wert, der dahinter steht, zeigt.
+  ;; the #'-thing is a var.
+  ;; This can be thought of as a box that points to the value behind it.
 
-  ;; Das Symbol foo wird im Namespace auf die Var abgebildet, das auf die definierte Funktion zeigt.
+  ;; The symbol foo is mapped to the var in the namespace pointing to the defined function.
 
 
-  ;; wenn wir die Var aufrufen, wird die Funktion dahinter ausgewertet
+  ;; when we call the var, the function it points to is evaluated
   ((var foo))
 
-  ;; die beiden folgenden Formen sind äquivalent
-  ;; @ verhält sich zu deref wie ' zu quote
+  ;; both forms are aquivalent
+  ;; @ is to deref what ' is to quote
   @#'foo
   (deref (var foo))
-  ;; Wenn wir also die Var derefenzieren, bekommen wir das Ding, wo es hinzeigt.
+  ;; So if we dereference the var, we get the thing it points to.
 
-  ;; das Funktionsobjekt kann man auch direkt aufrufen
+  ;; the function object can also be called directly
   (@#'foo)
 
-  ;; äquivalentes Ding ohne syntaktischen Zucker
+  ;; equivalent without syntactic sugar
   ((deref (var foo)))
 
 
-  ;; also nochmal:
+  ;; once again:
 
   ;; Namespace:
-  ;; Symbol foo -> ein var
+  ;; symbol foo -> a var
 
   ;; Var:
-  ;; Var -> Das Funktionsobjekt
+  ;; Var -> The function object
 
 
-  ;; was passiert mit mehreren Vars (Aliasing)?
+  ;; what happens with multiple vars (aliasing)?
   (def bar1 foo)
 
-  ;; bar1 steht auch für die Funktion - weil foo direkt aufgelöst wird und durch den Wert ersetzt wird
+  ;; bar1 also stands for the function
+  ;; because foo is directly resolved and replaced by the value
   bar1
 
-  ;; das kann man aufrufen
+  ;; you can call it
   (bar1)
 
   (var bar1)  ;; #'bar1
   (var foo)   ;; #'foo
-  ;; es sind verschiedene Vars...
+  ;; they are different Vars...
 
-  ;; die für dasselbe Ding stehen
+  ;; that stand for the same thing
   (identical? foo bar1)
-  ;; aber nicht dasselbe Objekt sind!
+  ;; but are not the same object!
   (identical? (var foo) (var bar1))
 
-  ;; was passiert, wenn meine Var auf eine andere Var zeigt?
+  ;; What happens if you point a Var to another Var?
   (def bar2 #'foo)
   bar2
 
   (def bar3 #'bar2)
   bar3
-  ;; wir haben also:
+  ;; We have:
   ;; bar3 ---> bar2 ---> foo --> fn
 
-  ;; die ausgewertete Expression bar3 ergibt die Var bar2
+  ;; the evaluated expression bar3 results in the Var bar2
   (eval bar3)
   (type (eval bar3))
 
-  ;; wenn wir das noch einmal dereferenzieren (dem Pointer folgen), kommen wir raus bei...
+  ;; if we dereference this again (follow the pointer), we get...
   @bar3
-  ;; und zweimal dereferenziert...
+  ;; and dereferencing it twice results in...
   @@bar3
   bar3
 
-  ;; Preisfrage: was passiert, wenn wir die Vars, die auf eine Var zeigt, die auf noch eine Var zeigt, die auf eine Funktion zeigt, aufrufen?
+  ;; sixty-four-dollar question: what happens if we call the Var
+  ;; that points to a Var that points to yet another Var that points to a function?
   (bar3)
-  ;; ...die Varkette wird verfolgt und die Funktion aufgerufen
+  ;; ...the Var-chain is traced and the function is called
 
-  ;; und was, wenn wir die Kette jetzt umbiegen?
+  ;; what if we now point to something else?
   (def foo (var bar3))
   (bar3)
-  ;; Willkommen in der Endlosschleife der Dereferenzierung!
-  ;; wir haben wirklich den Kreis
+  ;; Welcome to the endless loop of dereferencing!
+  ;; we actually created a cycle
   ;; bar3 --> bar2 --> foo
   ;;  ^                 v
   ;;   <----------------
   (-> bar3 deref deref)
 
-  ;; Lessons learned: Vars verwendet man nicht wirklich.
-  ;; Die einzige sinnvollen use cases sind konstante Definitionen!
-  ;; def, defn verwendet man nur auf der obersten Ebene des Programms.
+  ;; Lessons learned: You don't really use Vars.
+  ;; The only useful use cases are constant definitions!
+  ;; def, defn is used only at the top level of the program.
 
-  ;; Wer vars anders benutzt wird mit Fragen in der Prüfung dazu nicht unter 5 Stück bestraft!
-
-
-
+  ;; Whoever use Vars differently will be punished with questions
+  ;; in the exam about it, not less than 5!
 
 
-  ;; Evaluationsreihenfolge bei Symbolen
+
+
+
+  ;; Order of evaluation of symbols
   ;; ------------------------------------------------------------------------------------
 
-  ;; 1) vollständig qualifizierte Symbole, also mit Namespace, schlagen alles
-  ;; java.io.Writer ist eine Javaklasse
+  ;; 1) fully qualified symbols, i.e. with namespace, trump everything else
+  ;; java.io.Writer is a Java class
   (def java.io.Writer 101)
-  ;; vollständig qualifiziertes Symbol ergibt den definierten Wert
+  ;; fully qualified symbol gives the defined value
   repl.09-evaluation-order/java.io.Writer
-  ;; ohne Qualifizierung gewinnt die Javaklasse
+  ;; without qualification the Java class wins
   java.io.Writer
 
-  ;; 2) Javaklassen können nicht in Bindings verwendet werden
-  ;; und haben Priorität gegenüber normalen Symbolen
+  ;; 2) Java classes cannot be used within bindings
+  ;; and have priority over ordinary symbols
   (let [java.io.Writer 12] java.io.Writer) ;; error
 
 
-  ;; 3) lokale Variablen haben Vorrang vor globalen Variablen
-  ;; je weiter innen sie stehen, desto stärker sind sie
+  ;; 3) local variables have priority over global variables
+  ;; the deeper inside a scope they are, the higher the priority
   (def foo 10)
   foo
   (let [foo 11] foo)
-  ;; und in Kombination mit dem vollständig qualifizierten Symbol
+  ;; and in combination with the fully qualified symbol
   (let [foo 11] (+ foo repl.09-evaluation-order/foo))
 
 
-  ;; 4) kommt das globale Symbol dran
+  ;; 4) global symbols come next in priority
   foo
 
-  ;; 5) wenn dann nichts gefunden wird, gibt es einen Error
+  ;; 5) if then nothing is found by then, an error occurs
   sdfjks
 
 
 
-  ;; besondere Ausnahme: special forms sind... speziell
-  ;; special forms sind die Grundlagen von Clojure. Davon gibt es nur sehr wenige
-  ;; (je nach dem, wie man zählt, gibt es 13 Stück. Dann kommen noch welche für Java Interop hinzu.
-  ;; Beispiele sind def, fn, if, do, let und loop/recur. var und quote sind auch welche.
+  ;; special exception: special forms are... special
+  ;; special forms are the basis of Clojure. There are only very few of them
+  ;; (depending on how you count, there are 13). Then there are some for Java Interop.
+  ;; Examples are def, fn, if, do, let and loop/recur.
+  ;; Var and quote are also special forms.
   (def if +)
   if
-  ;; ist jetzt mein if weg?
+  ;; is the regular 'if' gone now?
 
-  ;; if ist jetzt irgendwie +
+  ;; if is now +
   (apply if [1 2 3])
 
-  ;; und irgendwie nicht
+  ;; and somehow also not
   (if 1 2 3)
 
-  ;; special forms gewinnen vor Namespace Symbolen,
-  ;; FALLS sie dasjenige sind, was aufgerufen wird
-  ;; das macht der Compiler für uns...
+  ;; special forms win beat out namespace symbols,
+  ;; IF they are what is called
+  ;; the compiler does that for us...
 
-  ;; anderes Quote: der Syntaxquote `
-  ;; der wird uns später noch einmal begegnen.
-  ;; für jetzt müssen wir wissen: er quotet nicht nur das Symbol, sondern fügt den Namespace mit dran
+  ;; other quote: the syntax quote `
+  ;; We will encounter it again at another time.
+  ;; for now we need to know: it not only quotes the symbol,
+  ;; but prepends the namespace to it as well
   `foo
 
-  ;; special forms werden vom Syntaxquote nicht mit einem Namespace versehen!
+  ;; special forms are not prepended with a namespace by the syntax quote!
   `do
   `if
 
 
-  ;; lessons learned für heute:
-  ;; - def(n) ist für Konstanten und Funktionen.
-  ;; - special Forms sollte man nicht versuchen zu überschreiben.
-  ;; - wann wird ein Symbol wie aufgelöst?
+  ;; lessons learned today:
+  ;; - def(n) is for constants and functions.
+  ;; - you should not try to overwrite special forms.
+  ;; - when is a symbol resolved and how?
 
-  ;; - wer wider aller Warnungen doch Quatsch macht, darf in der Klausur so etwas ausrechnen:
+  ;; - who against all warnings does any of the nonsense mentioned above,
+  ;;   must figure out what the following does in the exam:
 
   (def if false)
   (def do +)
@@ -216,9 +223,6 @@
         try 11
         catch 12]
     (if
-      `if
+     `if
       ((do (deref (var do))) ((do do) (try try catch throw)) (eval (quote quote)) quote)
-      ((do do) ((do do) catch var (deref (var var)) (eval (quote quote))) quote)))
-
-
-)
+      ((do do) ((do do) catch var (deref (var var)) (eval (quote quote))) quote))))
