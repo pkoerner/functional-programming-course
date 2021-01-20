@@ -22,7 +22,7 @@ Each unit groups material related to a topic as well as all expected learning ou
 ## List of TODOs
 
 - [ ] figure out licence
-- [ ] translate units
+- [x] translate units
   - [x] readings guide 0
   - [x] readings guide 1
   - [x] readings guide 2
@@ -34,7 +34,7 @@ Each unit groups material related to a topic as well as all expected learning ou
   - [x] readings guide 8
   - [x] readings guide 9
   - [x] readings guide 10
-  - [ ] readings guide 11
+  - [x] readings guide 11
 - [ ] translate REPL sessions
   - [x] 00_syntax.clj
   - [x] 01_intro.clj

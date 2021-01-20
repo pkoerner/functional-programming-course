@@ -1,65 +1,34 @@
 \documentclass[11pt,a4paper]{article}
-
-\usepackage[ngerman]{babel}
-\usepackage[TS1,T1]{fontenc}
-\usepackage[utf8x]{inputenc}
-\usepackage{theorem}
-\usepackage[scaled=0.9]{helvet}
-\usepackage{amsmath}
-\usepackage{amssymb}
-\usepackage[T1]{fontenc}
-\usepackage{hyperref}
-\usepackage{stmaryrd}
-\usepackage{pgf,tikz}
-\usepackage{relsize}
-\usepackage{enumitem}
-\usepackage{mathtools}
-\usepackage{graphicx}
-\usepackage{algpseudocode,amsmath,xifthen}
-
-\newcounter{numb}
-\theoremstyle{break}
-\theorembodyfont{\upshape}
-   	\newtheorem{aufgabe}{Aufgabe}[numb]
+\input{header.tex}
 \setcounter{numb}{11}
-\setlength{\oddsidemargin}{0cm}
-\setlength{\textwidth}{16cm}
-\setlength{\textheight}{23cm}
-\setlength{\topmargin}{-2cm}
-
-\usetikzlibrary{shapes,arrows,automata,positioning,decorations.fractals}
-\renewcommand\familydefault{\sfdefault}
+\usepackage{mathtools}
 
 
 \begin{document}
 
 \begin{minipage}[b]{\textwidth}
-\parbox[t]{5cm}{%
-\includegraphics[width=4cm]{unilogo}
-\hfill
-}
-\parbox[b]{11cm}{%
-%\scshape%
-Heinrich-Heine-Universit\"at D\"usseldorf\\
-Institut f\"ur Informatik\\
-Lehrstuhl Softwaretechnik und Programmiersprachen\\
-%Professor Dr.\ M.\ Leuschel
-Philipp K\"orner
-}
-
-%%date
-%\hfill 1.\@ August 2017\rule{0mm}{6mm}\quad\ %% <--
+	\parbox[t]{5cm}{%
+		\includegraphics[width=4cm]{unilogo}
+		\hfill
+	}
+	\parbox[b]{11cm}{%
+		%\scshape%
+		Heinrich-Heine-University D\"usseldorf\\
+		Computer Science Department\\
+		Software Engineering and Programming Languages\\
+		%Professor Dr.\ M.\ Leuschel
+		Philipp K\"orner
+	}
 \end{minipage}
 \begin{center}
-\bf
-Funktionale Programmierung -- WS 2020 / 2021\\
-Reading Guide 11: Transducer
+	\bf
+	Functional Programming -- WISE 2020 / 2021\\
+	Reading Guide 11: Transducer
 \end{center}
 
 \pagestyle{empty}
 
-\paragraph{Zeitliche Orientierung:} Diese Lerneinheit sollte bis zum 11.02.2021 abgeschlossen werden.
-%\paragraph{Abgabe des Lerntagebuchs} \"uber das ILIAS bis zum 16.5.2020 mit unbegrenzt Material, Nachfrist bis zum 23.5.2020 mit zwei Seiten A4.
+\paragraph{Deadline:} This unit should be completed by 11.02.2021.
 
 \section{Material} 
 
@@ -70,40 +39,40 @@ Reading Guide 11: Transducer
 \end{itemize}
 
 
-\section{Lernziele}
+\section{Learning Outcomes}
 
-Nach dem Bearbeiten dieser Lerneinheit sollten Sie in der Lage sein
+After completing this unit you should be able to
 
 \begin{itemize}
-    \item den Sinn von Transducern zu beschreiben.
-    \item bestehende Transducer zu lesen und korrekt zu verwenden.
-    \item selbst einfache (nicht state-behaftete) Transducer zu schreiben.
+    \item describe the idea behind transducers.
+    \item understand and correctly use existing transducers.
+    \item write basic (non-stateful) transducers yourself.
 \end{itemize}
 
 \section{Highlights}
 
 \begin{itemize}
     \item reduce vs. transduce
-    \item Durchreichen von Step-Funktionen
-    \item State-Flushing
+    \item pass-through of step-functions
+    \item state-flushing
 \end{itemize}
 
 
 
-\section{Aufgaben}
+\section{Exercises}
 
-\begin{aufgabe}[Transducer]
+\begin{exercise}[Transducer]
 
-Implementieren Sie eine Funktion \verb|(transplace m)|,
-die eine Map \verb|m| als Argument bekommt und einen Transducer zur\"uckgibt.
-Wenn ein Element als Schl\"ussel in \verb|m| vorhanden ist,
-soll es durch den assoziierten Wert ersetzt werden,
-ansonsten soll das originale Element verwendet werden.
+Implement a function \verb|(transplace m)|,
+which receives a map \verb|m| as argument and returns a transducer.
+If an element is present as a key in \verb|m|,
+it is replaced by the associated value,
+otherwise the original element is retained.
 
-Die Funktion \texttt{replace} darf dabei nicht benutzt werden.
+The function \texttt{replace} must not be used for this.
 
 \vspace{8px}
-Beispielaufrufe:
+Example calls:
 \begin{verbatim}
 user=> (transduce (transplace {:y :a}) conj [:x :y :z])
 [:x :a :z]
@@ -116,41 +85,41 @@ user=> (transduce (comp (transplace {nil -1}) (partition-by pos?))
                   [1 2 3 0 5 6])
 [[1 2 3] [0] [5 6]]
 \end{verbatim} 
-\end{aufgabe} 
+\end{exercise} 
 
-\begin{aufgabe}[Square-and-Multiply]
+\begin{exercise}[Square-and-Multiply]
 
-Potenzen von nat\"urlichen Zahlen kann man via $b^e = \underbrace{b * b * ... * b}_{e\text{ mal}}$ berechnen.
-Multiplikationen zweier Zahlen sind auf der CPU jedoch relativ langsam.
+Powers of natural numbers can be calculated via $b^e = \underbrace{b * b * ... * b}_{e\text{ times}}$.
+However, multiplications of two numbers are relatively slow on the CPU.
 
-Das Prinzip der bin\"aren Exponentiation ist, dass man Multiplikationen einspart, indem man  zuerst $b^{2^i}$ f\"ur $0 < 2^i \leq e$ berechnet und dann die passenden Terme multipliziert. Diese ergeben sich aus der Bin\"ardarstellung des Exponenten, beispielsweise $27 = 16 + 8 + 2 + 1$.
+The idea behind exponentiation by squaring is to save multiplications by first calculating $b^{2^i}$ for $0 < 2^i \leq e$ and then multiplying the appropriate terms. These result from the binary representation of the exponent, for example $27 = 16 + 8 + 2 + 1$.
 
-Folglich wird $30^{27}$ mittels $30^{16} * 30^8 * 30^2 * 30^1 = 30^{2^4} * 30^{2^3} * 30^{2^1} * 30^{2^0}$ berechnet.
+Consequently, $30^{27}$ is calculated using $30^{16} * 30^8 * 30^2 * 30^1 = 30^{2^4} * 30^{2^3} * 30^{2^1} * 30^{2^0}$.
 
-In dieser Aufgabe soll dieser Algorithmus implementiert werden. Im Folgenden wird ein m\"oglicher L\"osungsansatz beschrieben:
+Implement the algorithm. In the following section, a possible approach to one solution is described:
 
 \begin{enumerate}[label=\alph*)]
 \item
-  Schreiben Sie eine Funktion \texttt{(defn to-bits [n] ...)}, die eine nat\"urliche Zahl nimmt und eine Liste von 0en und 1en zur\"uckgibt, die eine Repr\"asentation der Bin\"ardarstellung von n ist.
+  Write a function \texttt{(defn to-bits [n] ...)} that takes a natural number and returns a list of 0s and 1s that is the binary representation of n.
 \item 
-    Schreiben Sie eine Funktion \texttt{(defn squares [b e] ...)}, die zu einer nat\"urlichen Zahl b die Sequenz \texttt{[$b^{2^0}$ $b^{2^1}$ $b^{2^2}$ ... $b^{2^j}$]} f\"ur $j \coloneqq \max\limits_{k} (2^k \leq e)$  berechnet.
+    Write a function \texttt{(defn squares [b e] ...)} that, given a natural number b, computes the sequence \texttt{[$b^{2^0}$ $b^{2^1}$ $b^{2^2}$ ... $b^{2^j}$]} for $j \coloneqq \max\limits_{k} (2^k \leq e)$.
 \item
-  F\"uhren Sie die beiden vorhergehenden Funktionen in geeigneter Weise zu einer Funktion \texttt{(defn square-and-multiply [b e] ...)} zusammen.
+  Combine the previous two functions suitably into one function \texttt{(defn square-and-multiply [b e] ...)}.
 \end{enumerate}
-\end{aufgabe}
+\end{exercise}
 
-\begin{aufgabe}[Hamilton-Pfad]
-    Ein Hamilton-Pfad ist ein besonderer Pfad durch einen Graphen:
-    jeder Knoten im Graphen wird genau einmal besucht.
-    Im Folgenden soll eine Variante einer Suche nach einem Hamilton-Pfad implementiert werden.
-    Zur Vereinfachung wird angenommen, dass der Startknoten bekannt ist.
+\begin{exercise}[Hamiltonian path]
+    A Hamiltonian path is a particular path through a graph:
+    each vertex in the graph is visited exactly once.
+    You are to implement a variant of a search for a Hamiltonian path.
+    For simplicity, it is assumed that the starting vertex is known.
 
-    Die Funktion \verb|hamilton| bekommt als erstes Argument
-    eine Liste an (gerichteten) Kanten der Form \verb|[start ziel]|,
-    als zweites Argument die Liste der Knoten im Graphen
-    und als drittes Argument den Knoten, von dem aus die Suche
-    nach einem Hamilton-Pfad beginnen soll.
-    Beispielsweise sollen Aufrufe wie folgt aussehen:
+	The function \verb|hamilton| receives as its first argument
+	a list of (directed) edges of the form \verb|[tail head]|,
+	as its second argument the list of vertices in the graph,
+	and as its third argument the vertex
+	from which to start searching for a Hamiltonian path.
+    For example, calls should look like this:
 
     \begin{verbatim}
     user=> (hamilton [[:a :b] [:b :c] [:c :d]]
@@ -160,7 +129,7 @@ In dieser Aufgabe soll dieser Algorithmus implementiert werden. Im Folgenden wir
     user=> (hamilton [[:a :a] [:a :b] [:b :c] [:c :d]] 
                      #{:a :b :c}
                      :a) 
-    (:a :b :c) ;; mit Selbstkante an :a
+    (:a :b :c) ;; with loop [:a :a]
     user=> (hamilton (shuffle [[:a :a] [:a :d] [:b :c] [:a :b] [:c :d]])
                      #{:a :b :c :d} 
                      :a)
@@ -168,14 +137,14 @@ In dieser Aufgabe soll dieser Algorithmus implementiert werden. Im Folgenden wir
     user=> (hamilton [[:a :a] [:a :d] [:b :c] [:a :b] [:c :d]]
                      #{:a :b :c :d} 
                      :b)
-    nil ;; kein Pfad
+    nil ;; no path
     \end{verbatim}
 
-    Implementieren Sie die Funktion \verb|hamilton|.
-    Z\"ahlen Sie dabei nicht naiv alle Permutationen der Knoten auf.
-\end{aufgabe}
+    Implement the function \verb|hamilton|.
+    Do not naively enumerate all permutations of the vertices.
+\end{exercise}
 
-\section*{Fragen}
-Bei Fragen wenden Sie sich bitte an Philipp K"orner (\texttt{p.koerner@hhu.de}).
+\section*{Questions}
+If you have any questions, please contact Philipp K"orner (\texttt{p.koerner@hhu.de}).
 \end{document}
 
