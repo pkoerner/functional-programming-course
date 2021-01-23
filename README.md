@@ -48,7 +48,7 @@ Each unit groups material related to a topic as well as all expected learning ou
   - [x] 09_evaluation_order.clj
   - [x] 11_macros.clj
   - [ ] 13_monaden.clj
-  - [ ] 14_spec.clj
+  - [x] 14_spec.clj
   - [ ] 15_test_check.clj
   - [ ] 16_transducer.clj
   - [x] 17_homoiconicity.clj

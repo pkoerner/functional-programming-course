@@ -7,27 +7,28 @@
             [clojure.spec.gen.alpha :as gen]
             [clojure.spec.alpha :as s]))
 
-;; benötigt ein aktuelles Clojure + test.check (siehe project.clj)
+;; Requires a recent Clojure version + test.check
+;; (see project.clj -> 14 clojure.spec)
 
 
 (set! *print-length* 10)
 
 (comment
 
-  ;; Fallbeispiel:
-  ;; Analyse von Informatik 1 Übungen - geben manche Korrektoren mehr Punkte als andere?
-  ;; die Daten sind echt, aber anonymisiert
+  ;; Case study:
+  ;; Analysis of computer science 1 exercises - do some correctors give more points than others?
+  ;; the data is genuine, but anonymized
   (defn read-csv [filename]
     (with-open [in-file (io/reader filename)]
       (let [[header & data] (doall (csv/read-csv in-file))
             header (repeat (map keyword header))]
         (map zipmap header data))))
 
-  ;; riesige CSV Datei
+  ;; huge CSV file
   (read-csv "info1.csv")
 
-  ;; Was wir eigentlich haben wollen:
-  ;; Eine Map-artige Struktur, die pro Blatt einen Korrektor auf die Durchschnittspunktzahl abbildet
+  ;; What we actually want to have:
+  ;; A map-like structure that maps one corrector to the average score, per sheet
   ;; ((["Etienne Weitzel" 67.25]
   ;;   ["Edelfriede Künzel" 74.10344827586206]
   ;;   ["Nushi Happel" 49.44186046511628]
@@ -42,58 +43,57 @@
   ;;   ...)
   ;;  ...)
 
-  ;; also gruppieren wir Daten nach Blatt
-  (defn nach-studi-blatt-gruppieren [data]
-    (group-by #(select-keys % [:matnr :blatt :korrektor]) data))
+  ;; so we group the data by sheet
+  (defn group-by-sheet [data]
+    (group-by #(select-keys % [:matnr :sheet :corrector]) data))
 
-  ;; und nach Korrektor
-  (defn nach-korrektor-gruppieren [data]
-    (group-by #(select-keys % [:blatt :korrektor]) data))
+  ;; and by corrector
+  (defn group-by-corrector [data]
+    (group-by #(select-keys % [:sheet :corrector]) data))
 
-  ;; addieren alles auf
-  (defn aufgaben-summieren [[k vs]]
-    (let [sum (reduce (fn [a e] (+ a (:punkte e))) 0 vs)]
-      [(assoc k :summe sum)]))
+  ;; sum points by exercise
+  (defn sum-exercise [[k vs]]
+    (let [sum (reduce (fn [a e] (+ a (:points e))) 0 vs)]
+      [(assoc k :sum sum)]))
 
-  ;; berechnen den Durchschnitt
-  (defn avg-berechnen [[k vs]]
-    (let [sum (reduce (fn [a e] (+ a (:summe e))) 0 vs)
+  ;; calculate the average
+  (defn calc-avg [[k vs]]
+    (let [sum (reduce (fn [a e] (+ a (:sum e))) 0 vs)
           n (count vs)]
       [(assoc k :avg (double (/ sum n)))]))
 
-  ;; und fügen alles Zusammen
-  (defn durchschnitt-pro-korrektor-und-blatt
-    "Extrahiert die durchschnittlichen Punkte pro Korrektor gruppiert nach Übungsblatt"
+  ;; and put everything together
+  (defn average-by-corrector-and-sheet
+    "Extracts the average points per corrector grouped by exercise sheet"
     [data]
     (as-> data d
-      (nach-studi-blatt-gruppieren d)
-      (map aufgaben-summieren d)
-      (nach-korrektor-gruppieren d)
-      (map avg-berechnen d)
-      (group-by :blatt d)
+      (group-by-sheet d)
+      (map sum-exercise d)
+      (group-by-corrector d)
+      (map calc-avg d)
+      (group-by :sheet d)
       (for [[_ e] d]
         (map
-         ;; {:blatt 1 :korrektor "lol" :avg 10} -> ["lol" 10]
-         (fn [{:keys [korrektor avg]}] [korrektor avg])
-         data)
-        )))
+         ;; {:sheet 1 :corrector "lol" :avg 10} -> ["lol" 10]
+         (fn [{:keys [corrector avg]}] [corrector avg])
+         data))))
 
-  (durchschnitt-pro-korrektor-und-blatt (read-csv "info1.csv"))
-  ;; geht nicht :-(
+  (average-by-corrector-and-sheet (read-csv "info1.csv"))
+  ;; does not work :-(
 
-  ;; jetzt können wir Fehler suchen (es gibt mehrere!)
+  ;; now let us look for errors (there are several!)
 
-  ;; Es wäre schon nett
-  ;;  - Wenn wir nicht auf println angewiesen wären beim Debugging
-  ;;  - Wenn wir formale Aussagen über Eingabe/Ausgabe Strukturen treffen könnten
-  ;;  - Wenn man Aussagen über das Verhalten von Funktionen machen könnte.
+  ;; It would be nice
+  ;;  - If we didn't have to rely on println for debugging
+  ;;  - If we could make formal statements about input/output structures
+  ;;  - If one could make statements about the behavior of functions.
   ;;  -  ...
-  ;; das sind nun halt Nachteile einer dynamischen Programmiersprache!
+  ;; these are now simply the disadvantages of a dynamic programming language!
 
 
-  ;; kleineres Beispiel:
+  ;; small example:
   (cons 3 [4 5]) ;; okay
-  (conj 3 [4 5]) ;; Argumente falsch rum
+  (conj 3 [4 5]) ;; parameters are the other way around
 
   ;; ClassCastException ... RLY ?!?
 
@@ -105,13 +105,14 @@
     (assert (sequential? coll) "First argument must be a collection")
     (conj coll ele))
 
-  ;; gute Fehlermeldungen? In MEINEM Clojure?
+  ;; good error messages? In MY Clojure? It's more likely than you think
   (conj' 3 [4 5])
 
 
-  ;; Seit Clojure 1.1 gibt es Pre- und Postconditions.
-  ;; Das ist spezielle Syntax. Es muss eine Map nach den Parametern sein, und es muss ein weiterer Body folgen.
-  ;; Es ist zumindest etwas schöner, wenn man mehrere Bedingungen spezifiziert.
+  ;; pre- and postconditions exist since Clojure 1.1
+  ;; This is special syntax. A map must be defined after the parameters
+  ;; and the body of the function must follow.
+  ;; It is at least somewhat nicer to specify multiple conditions this way.
 
   (defn conj' [coll ele]
     {:pre [(instance? Iterable coll)]}
@@ -119,7 +120,7 @@
 
   (conj' 3 [4 5])
 
-  ;; Intervallschachtelung zur Wurzelberechnung
+  ;; Interval nesting for root calculation
   (defn interval-sqrt
     ([n] (interval-sqrt n 0 n 1e-5))
     ([n a b eps]
@@ -130,12 +131,12 @@
 
   (interval-sqrt 4)
   (interval-sqrt 0)
-  ;; eigentlich ist die Eingabe hier falsch
+  ;; the input is wrong here
   (interval-sqrt -4)
 
 
-  ;; wir können also Preconditions und Postconditions spezifizieren.
-  ;; wenn die Eingabe größer null ist, ist die Ausgabe wirklich nach genug an der Wurzel dran
+  ;; we can specify preconditions and postconditions.
+  ;; if the input is greater than zero, the output is really close enough to the root
   (defn interval-sqrt
     ([n]
      {:pre [(>= n 0)]
@@ -148,21 +149,21 @@
              (> (* m m) n) (recur n a m eps)
              :else (recur n m b eps)))))
 
-  ;; Das ist Design-by-contract.
+  ;; This is design-by-contract.
 
-  ;; Assertions sind nicht so gut geeignet für komplexe Strukturen/Zusammenhänge
+  ;; Assertions are not well suited for complex structures/relationships
 
-  ;; Übung:
+  ;; Exercise:
 
   (defn foo [x]
     {:pre []})
 
-  ;; Eingabe soll eine Map sein, die Keywords auf Vektoren von Maps
-  ;; abbildet. Diese Maps bilden Zahlen auf Strings oder Booleans ab.
+  ;; The input of foo should be a map that maps keywords to vectors of maps.
+  ;; These maps map numbers to strings or booleans
 
-  ;; Und nun als Precondition schreiben!
+  ;; And now write this as a precondition!
 
-  ;; Viel Spass!
+  ;; Have fun!
 
 
 
@@ -174,29 +175,29 @@
   ;; to this problem, we present a lighter weight solution: schemas."
 
 
-  ;; es gibt eingebaute Schemas
+  ;; there are built-in schemes
   (schema/validate schema/Int 4)
   (schema/validate schema/Str 4)
   (schema/validate schema/Str "5")
 
-  ;; und man kann auch Container parametrisieren
+  ;; and you can also parameterize containers
   (schema/validate [schema/Int] [2 3 4])
   (schema/validate [schema/Int] [2 3 "s"])
 
   (schema/validate {:name schema/Str
-                    :addresse schema/Str}
+                    :address schema/Str}
                    {:name "Jens"
-                    :addresse "Universitätsstr.1"})
+                    :address "Universitätsstr.1"})
 
   (schema/validate {:name schema/Str
-                    :addresse schema/Str}
+                    :address schema/Str}
                    {:name "Jens"
-                    :addresse "Universitätsstr.1"
-                    :plz 40225
+                    :address "Universitätsstr.1"
+                    :postal-code 40225
                     :ort "Düsseldorf"})
 
   ;; Composition!
-  ;; Schemas sind nur Daten
+  ;; Schemas are just data
   (def IntVec [schema/Int])
   (def MMap {schema/Keyword {schema/Any IntVec}})
   MMap
@@ -205,17 +206,17 @@
   (schema/validate MMap {:a {:q [1 2]}})
   (schema/validate MMap {:a {:fail "true"}})
 
-(sequential? "true")
-(seq? "true")
-(seqable? "true")
+  (sequential? "true")
+  (seq? "true")
+  (seqable? "true")
 
 
-  ;; Unsere kleine Übung von eben:
-  ;; Eingabe soll eine Map sein, die Keywords auf Vektoren von Maps
-  ;; abbildet. Diese Maps bilden Zahlen auf Strings oder Booleans ab.
+  ;; Our little exercise from before:
+  ;; The input of foo should be a map that maps keywords to vectors of maps.
+  ;; These maps map numbers to strings or booleans
 
-  (def int->bool-or-string {schema/Int (schema/either schema/Str
-                                                      schema/Bool)})
+  (def int->bool-or-string {schema/Int (schema/cond-pre schema/Str
+                                                        schema/Bool)})
   (def foo-schema {schema/Keyword [int->bool-or-string]})
 
   (schema/validate foo-schema
@@ -223,64 +224,65 @@
 
   (schema/validate foo-schema
                    {:foo [{1 true} {2 "2" :a false}]})
-  ;; Das war erstaunlich okay.
+  ;; That was surprisingly okay.
 
 
-  ;; Nicht (nur) Struktur-Checks:
-  ;; man kann auch beliebige Prädikate verwenden
-  (def EvenInt (schema/both  schema/Int (schema/pred even? :gerade)))
+  ;; Not (only) structural checks are possible:
+  ;; you can also use any predicate
+  (def EvenInt (schema/constrained  schema/Int even?))
   (schema/validate EvenInt 2)
   (schema/validate EvenInt 3)
   (schema/validate EvenInt 2.0)
 
 
 
-  ;; Schema hat schnell Verbreitung gefunden, aber es hat ein Problem
+  ;; Scheme has quickly spread, but it has a problem
   (schema/validate {:name schema/Str
-                    :addresse schema/Str}
+                    :address schema/Str}
                    {:name "Jens"
-                    :addresse "Universitätsstr.1"
-                    :plz 40225
+                    :address "Universitätsstr.1"
+                    :postal-code 40225
                     :ort "Düsseldorf"})
 
 
-  ;; Schemas sind geschlossen.
-  ;; Erweiterung ist nur durch Überschreiben machbar.
-  ;; wenn also zusätzliche Information (zu allem notwendigen) dazukommt,
-  ;; dann funktioniert es nicht mehr...
+  ;; Schemes are closed.
+  ;; Extension is only possible by overwriting previous definitions.
+  ;; so when additional information (to already defined schemas)
+  ;; needs to be added, it is no longer possible
 
 
-  ;; 2016 - Clojure 1.9 bekommt specs
+  ;; 2016 - Clojure 1.9 introduce specs
 
-  ;; clojure.spec ist Teil von Clojure (war vorher eine Bibliothek)
-  ;; es gab dafür kleine Änderungen an Macro-Expansion und Doc-Strings und brauchte
-  ;; automatische Verbesserung der Fehlermeldungen
+  ;; clojure.spec is part of Clojure (it was a library before)
+  ;; there were small changes to macro expansion and doc strings for this
+  ;; and needed automatic improvement of error messages
 
-  ;; ... macht den Editor LightTable kaputt :-(
-  ;; Der war für die Vorlesung ganz angenehm, da alte Auswertungen angezeigt bleiben.
-  ;; LightTable dependet auf eine alte Version von Clojurescript.
-  ;; da gibt es folgenden Fehler in einer Namespace-Deklaration
+  ;; ... and broke the LightTable editor :-(
+  ;; The editor was quite convenient for the lecture,
+  ;; because old evaluations remain displayed in it.
+  ;; LightTable depends on an old version of Clojurescript.
+  ;; which contains the following error in a namespace declaration
 
   ;; (ns cljs.source-map.base64-vlq
-  ;;   (require [clojure.string :as string] ;; require ist kein Keyword!
+  ;;   (require [clojure.string :as string] ;; require is no keyword!
   ;;            [cljs.source-map.base64 :as base64]))
 
-  ;; das wird von clojure.spec gefangen und lief vorher "zufällig" durch
+  ;; this is caught by clojure.spec and previously worked "by accident"
 
 
 
-  ;; falsche Funktionsdeklaration
+  ;; incorrect function declaration
   (defn oop!oop!oop! (x)
     (println x))
 
 
-  ;; auf Clojure 1.10 upgraden
+  ;; upgrade to Clojure 1.10
   (doc defn)
-  ;; die spec daran wurde verletzt
+  ;; the spec was violated on this
 
-  ;; Jede Clojure Funktion, die ein Argument bekommt und einen
-  ;; truthy Wert liefert ist eine valide spec.
-  ;; valid? prüft, ob ein Wert eine spec erfüllt
+  ;; Any Clojure function that receives an argument and returns a
+  ;; truthy value is a valid spec.
+  ;; valid? checks if a value satisfies a spec
 
   (s/valid? pos-int? 17)
   (s/valid? pos-int? -3)
@@ -294,66 +296,66 @@
   (s/valid? s/valid? s/valid?)
   ;; щ（ﾟДﾟщ）
 
-  ;; specs registrieren macht das spec-def
-  ;; Name der spec ist ein vollständig qualifiziertes Keyword (und muss es auch sein!),
-  ;; damit man bei gleichen Bezeichnungen weiß, welches gemeint ist
+  ;; specs are registered via 'spec-def'.
+  ;; The name of spec is a fully qualified keyword (and has to be!),
+  ;; so that specs with the same name can be distinguished
 
   (s/def ::postal-code int?)
   (s/def ::street string?)
   (s/def ::city string?)
 
-  ;; Danach kann das Keyword wie eine spec benutzt werden
-  ;; (::postal-code 1) verhält sich aber nicht anders als sonst!
+  ;; Afterwards the keyword can be used like a spec
+  ;; (::postal-code 1) does not behave differently than usual!
 
   (s/valid? ::postal-code 4)
   (s/valid? ::postal-code "4")
 
-  ;; Und warum ist es fehlgeschlagen?
+  ;; And why did it fail?
 
   (s/explain ::postal-code 4)
   (s/explain ::postal-code "4")
   (s/explain-data ::postal-code "4")
 
 
-  ;; Kombinatoren
-  ;; man kann eine Funktion schreiben, die zwei Dige prüft
+  ;; Combinators
+  ;; you can write a function that checks two things
   (s/def ::big-int-p (fn [e] (and (int? e) (< 1000 e))))
   (s/explain ::big-int-p 320)
 
-  ;; oder das spec-und verwenden für präzisere Fehlermeldungen
+  ;; or use spec/and for more precise error messages
   (s/def ::big-int (s/and int? (fn [x] (< 1000 x))))
   (s/explain ::big-int 320)
 
-  (s/explain ::big-int 9.0) ;; short circuit - nur der erste Fehler wird gemeldet
+  (s/explain ::big-int 9.0) ;; short circuited - only the first error is reported
 
-  ;; es gibt auch ein oder, da muss man den Alternativen Namen geben
+  ;; there is also an 'or', you have to give names to the alternatives
   (s/def ::even-or-big (s/or :even even?
                              :big ::big-int))
   (s/explain ::even-or-big 333)
 
   (s/explain ::not-existing-spec "9")
 
-  ;; Ein Spec ist:
-  ;; - Ein Prädikat
-  ;; - Eine Komposition aus specs (mit Hilfe von z.B. or oder and erzeugt)
+  ;; A Spec is:
+  ;; - A predicate
+  ;; - A composition of specs (generated with the help of e.g. or or and)
 
-  ;; Achtung! Prädikate sind Specs, die Umkehrung gilt nicht!
+  ;; Caution! Predicates are specs, the inverse does not hold!
 
   ((s/and int? even?) 12)
   (s/valid? (s/and int? even?) 12)
 
 
-  ;; Datenstrukturen
-  ;; Drei typische Einsatzarten
+  ;; Data structures
+  ;; Three common types of use
 
-  ;; a) homogene (oft grosse/unbeschränkte) Sammlung von Daten
-  ;; b) heterogene (struct/objekt-ähnliche) Sammlung von Daten
-  ;; c) Syntax (die Reihenfolge ist wichtig)
+  ;; a) homogenous (often large/unlimited) collections of data
+  ;; b) heterogeneous (struct/object-like) collections of data
+  ;; c) syntax (i.e. the order is important)
 
 
-  ;; Beispiele
+  ;; Examples
 
-  ;; a) Homogene Sammlungen
+  ;; a) homogenous collections
   {"Etienne Weitzel" 67.25
    "Edelfriede Künzel" 74.10344827586206
    "Nushi Happel" 49.44186046511628}
@@ -362,76 +364,78 @@
 
   ;; b) Structs
   {:name "Jens Bendisposto"
-   :plz 42103
-   :ort "Wuppertal"}
+   :postal-code 42103
+   :city "Wuppertal"}
 
   ;; c) Syntax
-  ;; Funktion + Argumente
+  ;; function + arguments
   (+ 1 2 3)
 
   [1.0 -9.3 6.2]
-  ;; Das war eben doch eine homogene Sammlung?
-  ;; Es kommt drauf an:
-  ;; Sind es drei Messpunkte von Temperaturen, so ist es eine homogene Sammlung.
-  ;; Sind es RGB-Werte, oder Höhe-Breite-Tiefe Maße, ist es Syntax!
+  ;; Was this not a homogeneous collection just now?
+  ;; It depends:
+  ;; If they are three temperature samples, it is a homogeneous collection.
+  ;; If they are RGB or x-y-z-values instead it is syntax!
 
-  ;; Syntax ist komplex und sollte vermieden werden... bei RGB oder HBT wäre eine Map klarer.
+  ;; Syntax is complex and should be avoided... a map would make RGB and x-y-z clearer.
 
 
 
-  ;; und die Specs dazu
+  ;; corresponding specs
 
-  ;; (a) Homogene Sammlungen
+  ;; (a) Homogenous collections
 
-  (s/def ::punkte-eintrag number?)
-  ;; feste Menge an Korrektoren
-  (s/def ::korrektor #{"Etienne Weitzel" "Edelfriede Künzel" "Nushi Happel"})
+  (s/def ::points-entry number?)
+  ;; fixed amount of correctors
+  (s/def ::corrector #{"Etienne Weitzel" "Edelfriede Künzel" "Nushi Happel"})
 
-  (s/def ::punkte-liste (s/coll-of ::punkte-eintrag))
-  (s/def ::korrektor-punkte (s/map-of ::korrektor ::punkte-liste))
-  (s/def ::korrektor-durchschnitt (s/map-of ::korrektor double?))
+  (s/def ::points-list (s/coll-of ::points-entry))
+  (s/def ::corrector-points (s/map-of ::corrector ::points-list))
+  (s/def ::corrector-average (s/map-of ::corrector double?))
 
-  (s/valid? ::korrektor-punkte {"Etienne Weitzel" [40 42 38]
+  (s/valid? ::corrector-points {"Etienne Weitzel" [40 42 38]
                                 "Edelfriede Künzel"  []
                                 "Nushi Happel" [41 50 10]})
 
-  (s/explain ::korrektor-punkte {"Etienne Weitzel" [40  3 "42" 34] ;; hier schmuggelt sich ein String ein
+  (s/explain ::corrector-points {"Etienne Weitzel" [40  3 "42" 34] ;; a string was snuck in
                                  "Edelfriede Künzel"  []
                                  "Nushi Happel" [41 50 10]})
 
-  (s/valid? ::korrektor-durchschnitt  {"Etienne Weitzel" 67.25
-                                       "Edelfriede Künzel" 74.10344827586206
-                                       "Nushi Happel" 49.44186046511628})
+  (s/valid? ::corrector-average  {"Etienne Weitzel" 67.25
+                                  "Edelfriede Künzel" 74.10344827586206
+                                  "Nushi Happel" 49.44186046511628})
 
-  (s/valid? ::korrektor-durchschnitt  {"Etienne Weitzel" 80
-                                       "Jens Bendisposto" 74.5
-                                       "Nushi Happel" 49.44})
+  (s/valid? ::corrector-average  {"Etienne Weitzel" 80
+                                  "Jens Bendisposto" 74.5
+                                  "Nushi Happel" 49.44})
 
-  ;; wer hätte spontan den Jens gesehen?
-  (s/explain  ::korrektor-durchschnitt  {"Etienne Weitzel" 80
-                                         "Jens Bendisposto" 74.5
-                                         "Nushi Happel" 49.44})
+  ;; who would have spontaneously spotted the invalid corrector?
+  (s/explain  ::corrector-average  {"Etienne Weitzel" 80
+                                    "Jens Bendisposto" 74.5
+                                    "Nushi Happel" 49.44})
 
-  ;; Warum ["Jens Bendisposto" 0] ?
-  ;; das ist der Pfad in der Datenstruktur zum kaputten Eintrag (z.B. via get-in extrahierbar)
+  ;; Why does ["Jens Bendisposto" 0] appear the error message?
+  ;; this is the path in the data structure to the faulty entry
+  ;; (e.g. extractable via get-in)
 
 
 
-  ;; (b) Heterogene Sammlungen / Structs
+  ;; (b) Heterogeneous collections / structs
 
-  ;; keys spezifiziert eine Map
-  ;; :req sind Schlüssel, die notwendig sind, :opt sind optional.
-  ;; Die Keywords müssen so die Schlüssel sein, und der Wert dieselbe Spec erfüllen.
+  ;; keys specify a map
+  ;; :req are keys, that are necessitated, :opt are optional.
+  ;; The Keywords must be the keys as is, and the value must satisfy the same spec.
   (s/def ::address (s/keys :req [::street ::postal-code ::city]
                            :opt [::state]))
 
-  ;; Syntax: man kann einen Namespace allen Keywords in der Map unterschmuggeln - das spart Tipparbeit
+  ;; you can sneak in the namespace for all keywords in the map
+  ;; this saves work
   (s/valid? ::address #:repl.14-spec{:street "Universitätsstr. 1"
                                      :city "Düsseldorf"})
 
   (s/explain ::address #:repl.14-spec{:street "Universitätsstr. 1"
                                       :city "Düsseldorf"})
-  ;; keine Postleitzahl
+  ;; no postal-code
 
   (s/valid? ::address #:repl.14-spec{:street "Universitätsstr. 1"
                                      :postal-code "40225"
@@ -440,10 +444,10 @@
   (s/explain ::address #:repl.14-spec{:street "Universitätsstr. 1"
                                       :postal-code "40225"
                                       :city "Düsseldorf"})
-  ;; Postleitzahl war als int definiert
+  ;; postal-code was defined as int
 
-  ;; Eigentlich ist es uns egal ob es ein int ist, oder ein String der einen int enthält.
-  ;; Beides ist int genug.
+  ;; We don't care if it's an int, or a string containing an int.
+  ;; Both are close to an actual int for us, in this case.
   (s/def ::postal-code (s/or :int int?
                              :string-int (comp int? read-string)))
 
@@ -456,9 +460,9 @@
                                      :city "Düsseldorf"})
 
 
-  ;; (s/valid? ... ) ist true ... now what?
-  ;; conform kann angeben, welche Alternative gewählt wurde und
-  ;; transformiert die Eingabe in einen "conformed value"
+  ;; (s/valid? ... ) is true ... now what?
+  ;; conform can specify which alternative was chosen and
+  ;; transforms the input into a "conformed value"
 
   (s/conform int? 2)
   (s/def ::even-int (s/and int? even?))
@@ -478,24 +482,25 @@
                                       :postal-code 40255
                                       :city "Düsseldorf"})
 
-  ;; da kommen wir gleich drauf zurück...
+  ;;  we will come back to that in a moment...
 
-  ;; eines noch: Keywords ohne Namespace? req-un (das steht für required unqualified)
+  ;; one more thing: keywords without namespace?
+  ;; req-un (that stands for required unqualified)
   (s/conform (s/keys :req-un [::a ::b]
                      :opt-un [::c])
              {:a 1 :b 2})
 
 
 
-  ;; (c) Syntax / Sequenzen
-  ;; cat ist eine Konkatenierung. Alle Elemente brauchen einen Namen.
+  ;; (c) Syntax / Sequences
+  ;; cat is a concatenation. All elements require a name.
   (s/def ::voxel (s/cat :x number? :y number? :z number?))
 
   (s/valid? ::voxel [1 2 3])
   (s/explain ::voxel [1 2])
-  (s/explain ::voxel [1 2 :drei])
+  (s/explain ::voxel [1 2 :three])
 
-  ;; zurück zu conform...
+  ;; conform once again...
   (s/conform ::voxel [2.8 0 1/2])
 
   (s/def ::temperature-value (s/cat :volume int? :scale #{:C :F :K}))
@@ -503,43 +508,43 @@
 
   (s/conform ::time-series [10 :C 20 :F 70 :F 380 :K])
 
-  ;; Man kann schon kleine Parser mit conform bauen!
-  ;; Dann kann man mit demselben Code
-  ;;  - die Struktur der Daten verifizieren
-  ;;  - Daten in eine andere Struktur überführen
+  ;; You can even build small parsers with conform!
+  ;; Then you can use the same code to
+  ;;  - Verify the structure of the data
+  ;;  - Translate the data to another structure
 
-  ;; Die Regex Expressions sind:
-  ;; Konkatenation: cat
+  ;;  The regex expressions are:
+  ;; Concat: cat
   ;; Alternative: alt
-  ;; 0-beliebig oft: *
-  ;; 1-beliebig oft: +
-  ;; 0 oder 1 mal: ?
-  ;; Zusatzconstraint: &
+  ;; arbitrarily many: *
+  ;; at least one: +
+  ;; none or at most once: ?
+  ;; Additional constraint: &
 
 
-  ;; exercise benötigt test.check Generatoren und kann dann Werte generieren,
-  ;; die mögliche Eingaben zu einer Spec generieren.
-  ;; Sehr nützlich, um ein Gefühl dafür zu bekommen, wie die Struktur aussieht!
-  ;; dabei werden direkt der Wert und der conformed value zusammen generiert.
+  ;; exercise requires test.check generators and can generate
+  ;; possible inputs for a spec.
+  ;; Very useful to get a feel for what the structure looks like!
+  ;; the value and the conformed value are generated at the same time.
   (s/exercise (s/alt :option1 (s/cat :at-least-a-string (s/+ string?)
                                      :num-or-not (s/? int?))
                      :option2 (s/* int?)))
 
 
-  ;; das ist relativ mächtig: Strings und Strings mit gerader Länge
+  ;; this is relatively powerful: strings and strings with even length
   (s/def ::strings (s/* string?))
   (s/def ::even-strings (s/& ::strings  #(even? (count %))))
-  ;; oder nicht als Regex
+  ;; or without the use of regex
   ;; (s/def ::even-strings (s/and ::strings  #(even? (count %))))
 
   (s/exercise ::strings)
   (s/exercise ::even-strings)
 
 
-  ;; Achtung! Es wird eine flache Sequenz verarbeitet!
-  ;; Nesting muss man explizit mit (spec ...) schreiben
+  ;; Note: A flat sequence is processed!
+  ;; Nested sequences must be specified explicitly with (spec ...)
 
-  ;; Vergleiche
+  ;; Compare
   (s/exercise (s/cat :data (s/+ ::voxel)))
   (s/exercise (s/cat :data (s/+ (s/spec ::voxel))))
 
@@ -547,24 +552,24 @@
 
   ;; ---
 
-  ;; und wie benutzt man das jetzt?
+  ;; and how do you use it?
 
   (defn my-index-of
     "Searches for b in a, returns index or -1 if not found"
-    [a b] ,,,) ;; Übung: implementieren
+    [a b]) ;; Exercise: implement this function
 
 
-  ;; Die Argumentliste ist auch nur eine sequentielle Datenstruktur!
+  ;; The parameter list is also just a sequential data structure!
 
-  ;; passende Spec dazu
+  ;; appropriate spec for this
   (s/def ::index-of-args (s/cat :src string? :search string?))
   (s/conform ::index-of-args ["Hello World" "orl"])
-  ;; unform ist übrigens die Inverse von conform
-  (s/unform ::index-of-args {:search "es geht auch so" :src "toll"})
+  ;; unform is the inverse of conform, by the way
+  (s/unform ::index-of-args {:search "it also works like this" :src "great"})
   (s/unform ::index-of-args (s/conform ::index-of-args ["Hello World" "orl"]))
 
 
-  ;; eine Möglichkeit: Assert
+  ;; one possibility: Assert
 
   (defn my-index-of
     "Searches for b in a, returns index or -1 if not found"
@@ -574,79 +579,79 @@
 
   (my-index-of "aaa" "b")
   (my-index-of 2 4)
-  ;; ups
+  ;; oops
 
 
-  ;; Spec-Asserts sind ein Werkzeug, um Aufrufer zu debuggen.
-  ;; Im Produktivcode will man die vielleicht nicht haben.
-  ;; Deshalb sind sie billiger, wenn sie nicht eingeschaltet sind (Standard) :-)
+  ;; Spec-Asserts are a tool to debug callers.
+  ;; You might not want them in production code.
+  ;; That is why they are cheaper when they are not on (default) :-)
   (s/check-asserts true)
 
-  ;; nochmal
+  ;; once again
   (my-index-of "aaa" "b")
-  (my-index-of 2 4) ; aha!
+  (my-index-of 2 4) ; gotcha!
 
 
-  ;; und wieder ausmachen
+  ;; turn it off again
   (s/check-asserts false)
 
 
 
-  ;; es geht aber ein wenig besser:
-  ;; man kann Funktionen mit Specs versehen!
-  ;; :args ist der Argumentvektor
-  ;; :ret gibt den return-value an
-  ;; :fn setzt die conformed-values von Argument und Rückgabe in Zusammenhang
+  ;; You can do it even better:
+  ;; you can add specs to functions!
+  ;; :args is the argument vector
+  ;; :ret specifies the return-value
+  ;; :fn correlates the conformed-values of argument and return
 
   (s/fdef my-index-of
-          :args ::index-of-args
-          :ret nat-int?
-          :fn (fn [cfd] (<= (-> cfd :ret)
-                            (-> cfd :args :src count))))
+    :args ::index-of-args
+    :ret nat-int?
+    :fn (fn [cfd] (<= (-> cfd :ret)
+                      (-> cfd :args :src count))))
 
-  ;; wir klauen einfach die andere Implementierung
+  ;; we'll just steal the other implementation
   (defn my-index-of [a b]
     (clojure.string/index-of a b))
 
-  ;; guck mal, wir haben eine Spec dadran!
+  ;; look at that, we have a spec defined for the function!
   (doc my-index-of)
 
 
-  ;; Instrumentieren
+  ;; Instrument
   (my-index-of nil "2")
-  ;; ich dachte, ich krieg jetzt Bescheid?
-  ;; ach so, erstmal anschalten!
+  ;; I thought I would get errors now?
+  ;; ah, switch it on first!
 
-  ;; die Funktion ist die einzige, die instrumentiert werden kann
+  ;; this function is the only one that can be instrumented
   (stest/instrumentable-syms)
 
-  (stest/instrument `my-index-of) ;; für den Namespace: syntax quote!
+  (stest/instrument `my-index-of) ;; to prepend the namespace: syntax quote!
 
-  ;; Prüfe bei allen aufrufen, ob die Parameter mit :args konform sind
+  ;; Check for all calls if the parameters are compliant with :args
   (my-index-of nil "2")
 
-  ;; Noch ein falscher Aufruf:
+  ;; Another incorrect call
   (my-index-of "" "0")
 
 
 
-  ;; instrument checkt nur die Precondition (nicht die Postcondition, nicht die Funktion)
-  ;; vgl. Design-by-contract
-  ;; Postcondition verletzt: Meine Schuld
-  ;; Precondition verletzt: Deine Schuld!
+  ;; instrument only checks the precondition (not the post condition and neither the function)
+  ;; vmp. Design-by-contract
+  ;; Post condition violated: Shame on me
+  ;; Pre condition violated: Shame on you!
 
-  ;; instrument ist dazu da, um Aufrufer zu debuggen
+  ;; instrument exists to debug caller
 
 
-  ;; Macros mit Spec versehen
-  ;; genauso wie Funktionen, der Macroexpander checkt die specs
-  ;; Unterschied zu Funktionen: kein instrument erforderlich
+  ;; Add specs to Mmacros
+  ;; same as functions, the macroexpander checks the specs
+  ;; The difference to functions: no instrument required
 
   (declare 100)
 
   (s/fdef clojure.core/declare
-          :args (s/cat :names (s/* simple-symbol?))
-          :ret any?)
+    :args (s/cat :names (s/* simple-symbol?))
+    :ret any?)
 
   (declare 100)
 
@@ -655,14 +660,14 @@
 
   ;; Testing
 
-  ;; warum jetzt :ret und :fn?
-  ;; So testet man eine Funktion:
+  ;; what is the point of :ret and :fn?
+  ;; You use them to test a function:
   (stest/check `my-index-of)
 
-  ;; Und so bekommt man vernünftigen Output:
+  ;; And this is how you get reasonable output:
   (->> (stest/check `my-index-of) stest/summarize-results)
 
-  ;; hier wurde der Fehler von oben automatisch gefunden!
+  ;; the error from above was found automatically!
   (my-index-of "" "0")
 
 
@@ -670,14 +675,14 @@
   (defn my-index-of
     "Searches for b in a, returns index or -1 if not found"
     [a b]
-    ; Übung
+    ; Exercise
     )
 
   (s/fdef my-index-of
-          :args ::index-of-args
-          :ret int?
-          :fn (fn [cfd]
-                (<= (-> cfd :ret) (-> cfd :args :src count))))
+    :args ::index-of-args
+    :ret int?
+    :fn (fn [cfd]
+          (<= (-> cfd :ret) (-> cfd :args :src count))))
 
 
   (->> (stest/check `my-index-of) stest/summarize-results)
@@ -686,26 +691,26 @@
   (stest/check `my-index-of)
 
 
-  ;; Mehr Tests
+  ;; More tests
   (stest/check `my-index-of {:clojure.spec.test.check/opts {:num-tests 5000}})
 
 
-  ;; Generatoren
-  ;; manche Sachen wie (read ...) sind nicht umgekehrbar
+  ;; Generators
+  ;; some things like (read ...) are not reversible
   (s/exercise ::address)
 
-  ;; der fehlt auch noch
+  ;; this one is missing, too
   (s/def ::state string?)
-  ;; dann braucht man halt seinen eigenen Generator:
+  ;; then you just need to define your own generator:
   (defn gen-plz []
     (gen/one-of
      [(s/gen nat-int?)
       (gen/fmap str (s/gen nat-int?))]))
 
 
-  ;; Generatoren kann man dann mitgeben
-  (s/exercise ::address 10 {::postal-code gen-plz})
+  ;; Generators can then be provided
+  (s/exercise ::address 10 {::postal-code gen-plz}))
 
 
-  )
+  
 
