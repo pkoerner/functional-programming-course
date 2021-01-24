@@ -1,6 +1,6 @@
  (ns repl.15-test-check-b)
 
-;; wer hier nachguckt, verdirbt sich den Spaß
+;; whoever reads this, spoils his own fun
 
 
 
