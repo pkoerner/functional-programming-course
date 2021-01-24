@@ -6,67 +6,63 @@
             [clojure.test :as t]))
 
  
-  ;; zuerst: ebt und transients
+  ;; first of all: ebt and transients
 
 
-  ;; Angenommen ihr hättet transients in Clojure eingebaut.
-  ;; Wie würdet ihr sicherstellen, dass eure Implementierung
-  ;; korrekt ist?
+  ;; If you were to implement transients in Clojure
+  ;; How would you ensure that your implementation is correct?
 
-  ;; Welche Tests würdet ihr schreiben?
-
-
-  ;; 2-3 Minuten
-  ;; Ihr braucht keinen Clojure Code schreiben,
-  ;; Testszenarios reichen aus
+  ;; What kind of tests would you write?
 
 
-
-  ;; kurzer Einschub: Typen von Funktionen (Notation)
-
-  ;; viele Funktionen nehmen Argumente von bestimmten Typen
-  ;; und bilden auf bestimmte Typen ab
-
-  ;; Typ von (dem zweistelligen) +: Number -> Number -> Number
-  ;; wir verstehen das als curried function.
-  ;; + nimmt ein Argument vom Typ Number,
-  ;; und gibt eine Funktion zurück, die eine zweite Number nimmt.
-  ;; das Ergebnis der Funktion ist wieder vom Typ Number.
-
-
-  ;; es gibt auch Typvariablen (i.d.R. a, b, c, ...)
-  ;; Typ von str: a -> String
-  ;; str nimmt irgendetwas und macht einen String raus
+  ;; 2-3 minutes
+  ;; You don't need to write Clojure code, test scenarios are enough
 
 
 
-  ;; Typ von identity: a -> a
+  ;; short interlude: types of functions (notation)
+
+  ;; many functions take arguments of certain types
+  ;; and map to specific types
+
+  ;; Type of (the two-ary) +: Number -> Number -> Number
+  ;; this as a curried function.
+  ;; + takes an argument of the Number type
+  ;; and returns a function that takes a second Number.
+  ;; the result of the function is again of type Number.
 
 
-  ;; Listen von einem Typen werden beispielsweise als [String]
-  ;; oder [a] geschrieben.
-  ;; wir nehmen hier an, dass die leere Liste auch vom Typ [a] ist - 
-  ;; euer Typsystem sieht das ggf. anders ;-)
+  ;; there are also type variables (usually a, b, c, ...)
+  ;; Type of str: a -> String
+  ;; str takes something and makes a string out of it
 
 
-  ;; Typ von reverse: [a] -> [a]
-  ;; Typ von rest: [a] -> [a]
-  ;; Typ von clojure.string/join: [String] -> String
+
+  ;; Type of identity: a -> a
 
 
-  ;; wenn ein Argument eine Funktion ist,
-  ;; muss man klammern:
+  ;; For example, lists of one type are written as [string] or [a].
+  ;; we assume here that the empty list is also of type [a] - 
+  ;; your type system may consider that a different type ;-)
 
-  ;; Typ von map: (a -> b) -> [a] -> [b]
-  ;; map kriegt eine beliebige Funktion, die Typ a nach Typ b abbildet;
-  ;; das können auch dieselben Typen sein!
-  ;; Das zweite Argument ist eine Liste vom Typ a,
-  ;; das Ergebnis ist die Liste von Typ b.
+
+  ;; Type of reverse: [a] -> [a]
+  ;; Type of rest: [a] -> [a]
+  ;; Type of clojure.string/join: [String] -> String
+
+
+  ;; if an argument is a function you have to parenthesize:
+
+  ;; Type of map: (a -> b) -> [a] -> [b]
+  ;; map receives an arbitrary function that maps type a to type b;
+  ;; a and b can also be the same type!
+  ;; The second argument is a list of type a
+  ;; the result is the list of type b.
 
 
 
 
-  ;; Frage: Welche Funktionen könnten das sein?
+  ;; Question: What functions could these be?
 
   ;; Int -> Int -> Int
   ;; [a] -> Int
@@ -74,117 +70,116 @@
   ;; (a -> Bool) -> [a] -> [a]
 
 
-  ;; Was ist der Typ von reduce?
+  ;; What is the type of reduce?
 
 
 
 
-  ;; zurück zum eigentlichen Thema.
+  ;; back to the topic at hand.
 
-  ;; was wäre wenn wir von einer Funktion den Input beschreiben könnten
-  ;; und den Output entsprechend charakterisieren könnten?
+  ;; what if we could describe the input of a function
+  ;; and characterize the output accordingly?
 
 
-  ;; Willkommen zu test.check!
+  ;; Welcome to test.check!
 
 
 (comment
-  ;; Schritt 1: Input beschreiben
+  ;; Step 1: Describe the input
 
-  ;; dafür gibt es einen Haufen Generatoren:
+  ;; there are a bunch of generators for that:
   gen/nat
-  ;; ist ein Generatorobjekt
+  ;; is a generator object
 
-  ;; sample gibt mal ein paar Beispielwerte von dem Generator
+  ;; sample provides a few sample values from the generator
   (gen/sample gen/nat)
 
-  ;; oder auch auf Bestellung etwas mehr (hier 100 Stück)
+  ;; or a little bit more on demand (here 100 pieces)
   (gen/sample gen/nat 100)
 
-  ;; es gibt nicht nur natürliche Zahlen, sondern viel, viel mehr
+  ;; there are not only natural numbers, but many, many more
   (gen/sample gen/boolean)
   (gen/sample gen/char-ascii)
   (gen/sample gen/keyword)
   (gen/sample gen/int)
   (gen/sample gen/any)
-  (gen/sample gen/any-printable) ;; damit es nicht auf dem Terminal so klingelt, und andere Steuerzeichen wegbleiben
+  (gen/sample gen/any-printable) ;; so that it does not ring the bell in the terminal, and other control characters do no appear in the input
   (gen/sample gen/string 20)
   (gen/sample gen/string-ascii 20)
   (gen/sample gen/string-alphanumeric 20)
 
-  ;; nicht so offensichtlich
-  ;; Choose für Intervalle (beide Seiten inklusive)
+  ;; not so obvious
+  ;; Choose for intervals (both sides included)
   (gen/sample (gen/choose 100 250))
-  ;; return nimmt einen Wert und gibt einen Generator zurück, der nur diesen Wert generiert
-  ;; return hat also den Typen a -> gen a
+  ;; return takes a value and returns a generator that generates only that value
+  ;; which means return has the type a -> gen a
   (gen/sample (gen/return 3))
 
   ;; Composed
-  ;; homogene Collections von Werten
+  ;; homogenous collections of values
   (gen/sample (gen/vector gen/boolean))
-  ;; Vektor mit fester Länge
+  ;; Vector of fixed length
   (gen/sample (gen/vector gen/boolean 3))
-  ;; Tupel mit Generator pro Index
+  ;; Tuple with generators per index
   (gen/sample (gen/tuple gen/int gen/boolean))
-  ;; Maps von Keywords auf Maps von natürlichen Zahlen auf Integer
+  ;; Maps of keywords which map to maps of natural numbers mapping to integers
   (gen/sample (gen/map gen/keyword (gen/map gen/nat gen/int)))
 
   ;; Filter
-  ;; nicht-leere Vektoren
+  ;; non-empty vectors
   (gen/sample (gen/not-empty (gen/vector gen/boolean)))
-  ;; bestimmtes Prädikat
+  ;; specific predicate
   (gen/sample (gen/such-that even? gen/nat) 30)
-  ;; wenn man das oft genug probiert (oder Pech hat) bekommt man eine Fehlermeldung:
+  ;; if you try this often enough (or are unlucky) you will get an error message:
   ;; Couldn't satisfy such-that predicate after 10 tries. 
-  ;; such-that sollte man nutzen, wenn es eine eher kleine Einschränkung des Generators ist.
-  ;; Will man mehr ausschließen sollte man über eine andere Konstruktion nachdenken, z.B. wie folgt:
+  ;; such-that should be used if it is a rather small limitation for the generator.
+  ;; If you want to exclude more you should consider another construction,
+  ;; e.g. as follows:
 
 
-  ;; Higher order Generatoren
+  ;; Higher order generators
 
 
-  ;; Transformation von generierten Werten
+  ;; Transformation of generated values
   ;; fmap: (a -> b) -> gen a -> gen b
   (gen/sample (gen/fmap str gen/int))
 
-  ;; das ist sehr mächtig!
-  ;; Hier gibt es drei Booleans, und als letztes Element wird gezählt, wie viele davon wahr sind.
+  ;; this is very powerful!
+  ;; Here there are three booleans.
+  ;; The last element in the vector is a count of how many of them are true.
   (gen/sample 
    (gen/fmap (fn [[x y z :as c]]
                [x y z (count (filter identity c))])
              (gen/vector gen/boolean 3)))
 
-  ;; Das ist deutlich mehr als ein Typsystem in der Regel ausdrücken kann!
-  ;; Man nennt dies dependent type, weil es auf den Wert drauf ankommt, ob er im Typ drin ist oder nicht.
-  ;; das ist sehr mächtig!
-  ;; Hier gibt es drei Booleans, und als letztes Element wird gezählt, wie viele davon wahr sind.
-  ;; Das ist deutlich mehr als ein Typsystem in der Regel ausdrücken kann!
-  ;; Man bezeichnet dies als dependent type, weil es auf den Wert drauf ankommt, ob er im Typ drin ist oder nicht.
+  ;; This is significantly more than a classic type system can usually express!
+  ;; This is called a dependent type because it depends on the value
+  ;; whether it is in the type or not.
 
 
 
 
-  ;; mit frequency man kann auch mit einer bestimmten Gewichtung Werte bekommen
+  ;; with 'frequency' you can also give values a certain weight
   (let [x (gen/sample
-           (gen/frequency [[70 (gen/return :kopf)]
-                           [30 (gen/return :zahl)]]) 1000)]
+           (gen/frequency [[70 (gen/return :heads)]
+                           [30 (gen/return :tails)]]) 1000)]
     (frequencies x))
 
-  ;; die Werte müssen nicht 100 ergeben
+  ;; the values do not have to add up to 100
   (let [x (gen/sample
-           (gen/frequency [[2000 (gen/return :kopf)]
-                           [2000 (gen/return :zahl)]]) 1000)]
+           (gen/frequency [[2000 (gen/return :heads)]
+                           [2000 (gen/return :tails)]]) 1000)]
     (frequencies x))
 
-  ;; Auswahl aus fester Collection an Werten
+  ;; Selection from a fixed collection of values
   ;; elements: [a] -> gen a
   (gen/sample (gen/elements [1 2 3]))
-  ;; ein "oder" auf Generatoren:
+  ;; an "or" of generators:
   ;; one-of: [gen a] -> gen a
   (gen/sample (gen/one-of [gen/int gen/boolean]))
 
 
-  ;; 1000 Werte aus dem Bereich 0 bis 10, die nicht 5 sind
+  ;; 1000 values from the range 0 to 10 that are not 5
   (let [g (gen/such-that
            (fn [e] (not= e 5))
            (gen/choose 0 10))
@@ -192,24 +187,23 @@
     (frequencies sample))
 
 
-  ;; Komplexere Generatoren
-  ;; Ein Tupel bestehend aus einem Vektor
-  ;; und einem Element aus diesem Vektor
+  ;; Complex Generators
+  ;; A tuple consisting of a vector and an element from this vector
 
-  ;; zuerst brauchen wir einen nicht-leeren Vektor
+  ;; first we need a non-empty vector
   (def vector-gen (gen/not-empty (gen/vector gen/int)))
   (gen/sample vector-gen)
 
-  ;; gegeben ein Vektor, gebe den Vektor zurück und wähle ein Element aus
+  ;; given a vector, return the vector and select an element from it
   (defn tuple-from-vector-gen [v] 
     (gen/tuple (gen/return v)
                (gen/elements v)))
   (gen/sample (tuple-from-vector-gen [1 2 3]))
 
 
-  ;; und der letzte Schritt:
-  ;; die Ergebnisse aus einem Generator müssen in den nächsten Generator gepresst werden.
-  ;; Das macht der Pömpel bind.
+  ;; and the final step:
+  ;; the results from one generator must be passed into the next generator.
+  ;; This is what the 'bind' does.
   ;; bind: gen a -> (a -> gen b) -> gen b
   (def complex-gen (gen/bind vector-gen tuple-from-vector-gen))
   (gen/sample complex-gen 20)
@@ -220,15 +214,15 @@
 
 
 
-  ;; bind und return?
-  ;; behaltet das mal im Kopf (für eine Weile)
+  ;; bind and return?
+  ;; keep this in mind (for a while)
 
 
 
 
 
 
-  ;; Was hat das nun mit Testing zu tun?
+  ;; So what does this have to do with testing?
 
 
 
@@ -236,25 +230,24 @@
 
 
 
-  ;; Idee von Property-Based Testing:
-  ;; Spezifiziere die Relation zwischen Input und Output als Prädikat.
-  ;; Wirf zufällige Eingaben in die Funktion und
-  ;; checke den Output.
+  ;; The idea of Property-Based Testing:
+  ;; Specify the relation between input and output as a predicate.
+  ;; Throw random inputs into the function and check the Output.
 
 
-  ;; in der Regel gibt es drei Muster:
-  ;; 1. Test gegen eine Umkehrfunktion
-  ;;    (Parsing + Pretty Printing, Serialisierung + Deserialisierung, ...)
-  ;; 2. Test gegen bestehende Implementierung (ein Orakel)
-  ;; 3. Test durch Charakterisierung bestimmter Eigenschaften
+  ;; Generally there are three patterns:
+  ;; 1. Test against an inverse function
+  ;;    (e.g. Parsing + Pretty Printing, Serialization + Deserialization, ...)
+  ;; 2. Test against an existing implementation (an oracle)
+  ;; 3. Test by characterization of certain properties
 
 (comment
 
-  ;; manchmal ist es schwierig, die richtige Property zu finden
+  ;; sometimes it is difficult to find the right property
 
-  ;; zurück zum example-based-testing
-  ;; my-sort wurde woanders definiert, nicht spicken!
-  ;; hier ein paar Testcases für die Sortierfunktion
+  ;; back to example-based-testing
+  ;; my-sort was defined somewhere else, don't cheat by looking it up
+  ;; here are a few test cases for the sort function
 
   (t/are [x y] (= x y) 
     (my-sort [1]) [1]
@@ -264,117 +257,117 @@
     (my-sort [1 3 2 4 5]) (my-sort [5 1 3 2 4]))
 
 
-  ;; falsche Testcases explodieren wirklich
+  ;; incorrect test cases really do fail
   (t/are [x y] (= x y) 
     (my-sort [1]) [3])
 
 
-  ;; alle Tests laufen durch!
-  ;; die Implementierung ist BESTIMMT korrekt!
+  ;; all tests passed!
+  ;; the implementation must CERTAINLY be correct!
 
 
 
-  ;; Reicht das an test-cases?
+  ;; Is that enough test cases?
 
-  ;; natürlich nicht!
-  ;; wir generieren jetzt Testcases, anstatt sie selbst zu schreiben
-  (def vectors-of-numbers (gen/vector gen/int)) 
+  ;; of course not!
+  ;; we now generate test cases instead of writing them ourselves
+  (def vectors-of-numbers (gen/vector gen/int))
 
-  (gen/sample vectors-of-numbers) 
+  (gen/sample vectors-of-numbers)
 
-  ;; Wir benutzen ein Orakel, also eine Implementierung die korrekt
-  ;; ist. Das ist ziemlich nützlich, wenn man eine alte (korrekte aber
-  ;; möglicherweise nicht optimale) Implementierung ersetzen will
+  ;; We use an oracle, which is an implementation that is correct.
+  ;; This is quite useful when you want to replace an old
+  ;; (correct but possibly not optimal) implementation
 
-  ;; sort funktioniert bestimmt
+  ;; sort should do the trick
   (defn sortiert? [v]
-    (= (sort v) v)) 
+    (= (sort v) v))
 
-  (sortiert? []) 
-  (sortiert? [1 2]) 
-  (sortiert? [2 1]) 
+  (sortiert? [])
+  (sortiert? [1 2])
+  (sortiert? [2 1])
 
 
-  ;; wir testen bei generiertem Input nun die Eigenschaft:
-  ;; Das Ergebnis einer sort Funktion sollte sortiert sein:
-  ;; für alle Daten, die aus dem Generator rausfallen, soll die Eigenschaft gelten.
+  ;; we check the following property with generated input now:
+  ;; The return value of a sort function should be sorted:
+  ;; for all data generated by the generator, the property should hold.
   (def sortiert-prop (prop/for-all [data vectors-of-numbers] 
                                    (sortiert? (my-sort data))))
 
 
-  ;; dann mal 100 Testcases, go!
+  ;; 100 test cases, go!
   (tc/quick-check 100 sortiert-prop) 
-  ;; ups, leere Collection vergessen
+  ;; oops, forgot about the empty collection
 
 
-  ;; Es gibt ein Macro um test.check in einen clojure.test Testcase umzuwandeln
+  ;; A macro exists to convert test.check into a clojure.test test case
   ;; (defspec qs-sorted 100 sortiert-prop)
 
 
-  (t/is (= (my-sort []) [])) 
-  ;; da kommt nill statt = raus...
+  (t/is (= (my-sort []) []))
+  ;; returns nil instead of []
 
 
-
-  ;; Versuch zwei, wir fixen die leere Collection
+  ;; Attempt two, we fix the empty collection case
   (def sortiert-prop (prop/for-all [data vectors-of-numbers] 
                                    (sortiert? (my-sort2 data))))
 
 
   (my-sort2 [])
   (my-sort2 [3 4 1])
-  ;; dann mal 100 Testcases, go!
+  ;; 100 Test cases, go!
   (tc/quick-check 100 sortiert-prop) 
-  ;; mal 1000 Tests zur Sicherheit?
+  ;; 1000 Tests to make sure?
   (tc/quick-check 1000 sortiert-prop) 
 
 
 
 
-  ;; alle Tests laufen durch!
-  ;; die Implementierung ist BESTIMMT korrekt!
+  ;; all tests passed!
+  ;; the implementation must CERTAINLY be correct!
 
 
 
 
 
-  ;; Noch eine Eigenschaft, die im Eifer des Gefechts fehlte: 
-  ;; Alle ursprünglichen Werte sollten erhalten bleiben.
-  ;; Eine Sortierfunktion, die immer den leeren Vektor zurückgibt, ist nicht gut.
+  ;; Another characteristic that we missed in the heat of the moment: 
+  ;; All original values should be preserved.
+  ;; A sort function that always returns the empty vector is not useful.
 
   (defn permutation? [v1 v2]
-    (= (frequencies v1) (frequencies v2))) 
+    (= (frequencies v1) (frequencies v2)))
 
 
   (def permutation-prop
     (prop/for-all [data vectors-of-numbers]
-                  (permutation? data (my-sort2 data)))) 
+                  (permutation? data (my-sort2 data))))
 
 
-  ;; mit dem Seed geht es garantiert kaputt
+  ;; with this specific seed it is guaranteed to break
   (def r (tc/quick-check 10 permutation-prop :seed 1422980091656)) 
 
-  (:fail r)  ;; das ist der kaputte Test, der gefunden wird
+  (:fail r)  ;; this is the failing test that was found
 
-  r  ;; das ist das gesamte Ergebnis
+  r  ;; this is the entire result
 
-  ;; und jetzt der coole Trick:
-  ;; test.check minimiert die Eingabe an die Funktion und kann ein Minimalbeispiel geben, bei dem es fehlschlägt
-  (-> r :shrunk :smallest) 
-
-
-  (t/is (= (my-sort2 [0 0]) [0 0])) 
-  ;; Duplikate werden weggeworfen...
+  ;; and now for the amazing part:
+  ;; test.check minimizes the input for the function
+  ;; and can give a minimal example that fails
+  (-> r :shrunk :smallest)
 
 
+  (t/is (= (my-sort2 [0 0]) [0 0]))
+  ;; Duplicates are discarded...
 
-  ;; Implementierung 1
+
+
+  ;; Implementation 1
   (defn my-sort [coll]
     (into (sorted-set) coll))
 
 
 
-  ;; Implementierung 2
+  ;; Implementation 2
   (defn my-sort2 [coll]
     (into [] (into (sorted-set) coll)))
 
@@ -389,182 +382,187 @@
 
 
 (comment
-  ;; Zurück zum Transient Beispiel
+  ;; Back to the transient example
 
-  ;; Wenn wir eine Sequenz haben (-> #{} (conj 1) (conj 2) (disj 0))
-  ;; Dann können wir die Performance erhöhen, indem wir
-  ;; 1) Als Erstes transient aufrufen
-  ;; 2) conj durch conj! und disj durch disj! ersetzen
-  ;; 3) Am Ende persistent! aufrufen
-
-
-  ;; Beobachtung:
-  ;; Es gibt eine API mit Pre- und Postconditions für die API Calls.
-
-  ;; Z.B.: Wir können transient und persistent! öfter aufrufen, aber nur
-  ;; paarweise. transient ... persistent! ... transient ... persistent! ...
-  ;; Aber nicht transient ... transient ... persistent! ... persistent!
+  ;; When we have a sequence (-> #{} (conj 1) (conj 2) (disj 0))
+  ;; Then we can increase performance by
+  ;; 1) First calling 'transient'
+  ;; 2) Replace conj with conj! and disj with disj!
+  ;; 3) Finally calling 'persistent!'
 
 
-  ;; Idee: 
-  ;; Generiere viele Sequenzen von API Calls, die erlaubt sind
-  ;; und verifiziere die Postconditions.
+  ;; Note:
+  ;; There is an API with pre- and postconditions for the API calls.
+
+  ;; eg..: We can call transient and persistent! more than once, but only
+  ;; pairwise transient ... persistent! ... transient ... persistent! ...
+  ;; but not transient ... transient ... persistent! ... persistent!
+
+
+  ;; Idea: 
+  ;; Generate many sequences of API calls that are allowed
+  ;; and verify the postconditions.
   
-  ;; Tatsächlich (korrekten) Code zu generieren ist etwas aufwändiger.
-  ;; Alternativ können wir aber Instruktionen generieren und durch einen kleinen Interpreter ausführen lassen.
-  ;; Falls die Precondition nicht erfüllt ist, wird die Instruktion ignoriert.
+  ;; Actually generating (correct) code is a bit more involved.
+  ;; Alternatively, however, we can generate instructions
+  ;; and have them executed by a small interpreter.
+  ;; If the precondition is not met, the instruction is simply ignored.
 
 
   (defn transient? [x]
     (instance? clojure.lang.ITransientCollection x)) 
 
 
-  ;; Unsere Instruktionen sollen die Form [:conj Zahl], [:disj Zahl], [:trans] oder [:pers] haben.
+  ;; Our instructions should be in the form
+  ;; [:conj number], [:disj number], [:trans], or [:pers].
 
 
-  ;; Was machen wir?
-  ;; 1) Generiere alle Aktionen
+  ;; How do we proceed?
+  ;; 1) Generate all actions
 
-  ;; wir können transient und persistent! aufrufen...
+  ;; we can call transient and persistent!...
   (gen/sample (gen/elements [[:trans] [:pers]]))
-  ;; oder conj + Zahl und disj + Zahl
+  ;; or conj + Zahl and disj + Zahl
   (gen/sample (gen/tuple (gen/elements [:conj :disj]) gen/int))
 
-  ;; die verodern wir mit one-of und wollen eine (nicht-leere) Reihe davon (Vektor)
+  ;; we combine them with one-of and want a (non-empty) series of them (vector)
   (def gen-mods
     (gen/not-empty (gen/vector (gen/one-of
                                  [(gen/elements [[:trans] [:pers]])
                                   (gen/tuple (gen/elements [:conj :disj]) gen/int)])))) 
 
 
-  (gen/sample gen-mods) 
-  ;; jede Aufrufsequenz ist ein Testcase!
+  (gen/sample gen-mods)
+  ;; each sequence of calls is a test case!
 
-  ;; 2) Lasse die Actionens auf dem leeren Set laufen.
-  ;;    Falsche Sequenzen werden vom Interpreter automatisch repariert
+  ;; 2) Run the actions on the empty set.
+  ;;    Invalid sequences are automatically repaired by the interpreter
 
   (defn run-action [c [f & [arg]]] 
     (condp = [(transient? c) f]
-      [true   :conj]          (conj! c arg) ;; wenn es transient ist, nehmen wir das transient-conj!
-      [false  :conj]          (conj c arg)  ;; wenn es persistent ist, dann das normale conj
+      [true   :conj]          (conj! c arg) ;; if it is a transient, we us transient-conj!
+      [false  :conj]          (conj c arg)  ;; if it is persistent, the ordinary conj
       [true   :disj]          (disj! c arg)
       [false  :disj]          (disj c arg)
-      [true   :trans]         c             ;; ein transient machen wir nicht noch einmal transient
-      [false  :trans]         (transient c) ;; ein persistent machen wir transient
-      [true   :pers]          (persistent! c) ;; transient machen wir persistent
-      [false  :pers]          c))             ;; persistents machen wir nicht persistent
+      [true   :trans]         c             ;; We do not call transient on a transient
+      [false  :trans]         (transient c) ;; We call transient on persistent collections
+      [true   :pers]          (persistent! c) ;; We call persistent! on transient
+      [false  :pers]          c))             ;; We do not call persistent! on persistent data structures
 
-  ;; damit können wir eine beliebige Instruktion abarbeiten!
+  ;; with this we can process any series of instructions!
 
-  (run-action #{} [:conj 2]) 
-  (run-action #{} [:trans]) 
-  (persistent! (run-action (transient #{1}) [:disj 1])) 
+  (run-action #{} [:conj 2])
+  (run-action #{} [:trans])
+  (persistent! (run-action (transient #{1}) [:disj 1]))
 
-  ;; damit wir viele Instruktionen abarbeiten, reducen wir die Funktion einfach darüber, mit dem Set als Akkumulator
+  ;; so that we process many instructions, we simply reduce the actions
+  ;; providing the function, with the set as accumulator
   (defn reduce-actions [coll actions]
-    (reduce run-action coll actions)) 
+    (reduce run-action coll actions))
 
   (reduce-actions #{} [[:conj 3]])
-  (reduce-actions #{} [[:conj 2] [:trans] [:conj 4] [:trans] [:pers]]) 
+  (reduce-actions #{} [[:conj 2] [:trans] [:conj 4] [:trans] [:pers]])
   (reduce-actions #{} [[:conj 2] [:trans] [:conj 4] [:trans] [:trans]])
 
-  ;; und eine Hilfsfunktion noch, damit es nicht doof aussieht:
-  ;; wenn ein Transient am Ende rausfällt, machen wir den noch einmal persistent
+  ;; and a helper function, to avoid some goofy stuff:
+  ;; if a transient is returned, we make it persistent again
   (defn apply-actions [coll actions] 
     (let [applied (reduce-actions coll actions)]
       (if (transient? applied)
         (persistent! applied)
         applied)))
 
-  ;; fertig!
-  (apply-actions #{} [[:conj 2] [:trans] [:conj 4] [:trans] [:trans]]) 
+  ;; done!
+  (apply-actions #{} [[:conj 2] [:trans] [:conj 4] [:trans] [:trans]])
 
-  ;; 3) Wir werfen alle Calls, die transient und persistent machen weg.
-  ;; Das wird unsere Referenz, die nur conj und disj auf den persistenten Datenstrukturen aufruft.
-  ;; apply-actions macht immer wieder transients raus und die wieder persistent.
+  ;; 3) We discard all transient- and persistent!-calls.
+  ;; This is our reference, calling only conj and disj on the persistent data structures.
+  ;; apply-actions always converts the collection into a transient
+  ;; and back into a persistent data structure.
 
   (defn filter-actions [actions] 
     (filter (fn [[a & args]]
               (#{:conj :disj} a))
             actions))
 
-  (filter-actions [[:conj 2] [:trans] [:conj 4] [:trans] [:trans]]) 
+  (filter-actions [[:conj 2] [:trans] [:conj 4] [:trans] [:trans]])
 
 
-  ;; 4) Wenn transients korrekt funktionieren, muss das Ergebnis das gleiche sein,
-  ;; als ob ich nie ins transient gegangen wäre.
+  ;; 4) If transients work correctly, the result must be the same
+  ;; as if we had never used transients.
 
   (def transient-property 
     (prop/for-all
      [a gen-mods]
-     (= (apply-actions #{} a) ;; benutzt persistente Sets und transients gemischt
-        (apply-actions #{} (filter-actions a))))) ;; benutzt nur persistente Sets
+     (= (apply-actions #{} a) ;; uses persistent sets and transients
+        (apply-actions #{} (filter-actions a))))) ;; only uses persistent sets
 
 
-  ;; das sieht gut aus (je nach Glück)
-  (tc/quick-check 100 transient-property) 
-  (tc/quick-check 1000 transient-property) 
+  ;; this looks fine (depending on luck)
+  (tc/quick-check 100 transient-property)
+  (tc/quick-check 1000 transient-property)
 
-  ;; aber...
-  (def r (tc/quick-check 400 transient-property :seed 1422983037254)) 
+  ;; but...
+  (def r (tc/quick-check 400 transient-property :seed 1422983037254))
 
-  ;; es gibt diese komische Sequenz hier
-  (:fail r) 
-  ;; 119 Schritte macht die
+  ;; there is this weird sequence here
+  (:fail r)
+  ;; it took 119 steps to create it
   (count (first (:fail r)))
 
-  ;; wo liegt nun der Fehler...? Uff...
+  ;; where is the error...? Whew...
 
   ;; Shrinking to the rescue!
-  (def full-seq (-> r :shrunk :smallest first)) 
+  (def full-seq (-> r :shrunk :smallest first))
 
-  full-seq 
-  ;; Keine Aktion kann man weglassen ohne, das der Fehler verschwindet.
+  full-seq
+  ;; No more actions can be omitted without the test failing.
 
-  (let [le-seq [[:conj -49] [:conj 48] [:trans] [:disj -49] [:pers]]] ;; ohne [:conj -49]
+  (let [le-seq [[:conj -49] [:conj 48] [:trans] [:disj -49] [:pers]]] ;; without [:conj -49]
     (= (apply-actions #{} le-seq)
-       (apply-actions #{} (filter-actions le-seq)))) 
+       (apply-actions #{} (filter-actions le-seq))))
 
   (= (apply-actions #{} full-seq) 
      (apply-actions #{} (filter-actions full-seq)))
 
-  ;; eigentlich ist es noch schlimmer:
+  ;; actually, it's even worse:
 
-  (= (apply-actions #{} full-seq) 
+  (= (apply-actions #{} full-seq)
      (apply-actions #{} full-seq))
 
-  ;; Was ist denn genau nicht gleich?
+  ;; What exactly is not the same?
 
   (t/is (= (apply-actions #{} full-seq) 
            (apply-actions #{} (filter-actions full-seq))))
-  ;; WTF - {48 -49} ist nicht gleich {48 -49}?
+  ;; WTF - {48 -49} does not equal {48 -49}?
 
-  ;; was das Problem ist:
-  (hash -49) 
-  (hash 48) 
+  ;; the problem:
+  (hash -49)
+  (hash 48)
 
   ;; Problem: HashCollisionNode
-  ;; Alle Werte, die Hashkollisionen erzeugen, werden in einem Array gespeichert.
-  ;; Bei persistenten Datenstrukturen wird bei dissoc / disj dieses Array verkleinert.
-  ;; Bei transients werden die Werte einfach mit null überschrieben.
-  ;; Allerdings stimmt dann nicht mehr die Arraylänge mit dem Elementcount überein!
-  ;; Wer von euch hätte diesen Testcase gehabt?
+  ;; All values that generate hash collisions are stored in an array.
+  ;; With persistent data structures, dissoc / disj shrinks this array.
+  ;; With transients the values are simply overwritten with null.
+  ;; However, the array length then no longer matches the element count!
+  ;; How many of you would have thought of this test case?
 
 
-  ;; wir brauchten dafür ein altes Clojure.
+  ;; We needed an old clojure for this.
   *clojure-version* ; =>  {:major 1, :minor 5, :incremental 1, :qualifier nil}
 
 
-  ;; in Clojure 1.6 gefixt
+  ;; fixed in Clojure 1.6
 
 
 
   ;; Bug: http://dev.clojure.org/jira/browse/CLJ-1285
-  ;; Wurde tatsächlich mit dieser Methode gefunden!
+  ;; The bug was actually found using this method!
   ;; https://groups.google.com/forum/#!msg/clojure-dev/HvppNjEH5Qc/1wZ-6qE7nWgJ
 
 
-  ;; Es dadurch gibt eine Spezialbibliothek für das Testen von Datenstruktur-Implementierungen
+  ;; As a result, there is a special library
+  ;; for testing data structure implementations
   ;; https://github.com/ztellman/collection-check
 
 
