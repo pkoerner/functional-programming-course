@@ -1,7 +1,7 @@
 (ns repl.22-ebt
   (:require [clojure.test :as t]))
 
-;; neulich in der Übung:
+;; The solution of a recent programming exercise:
 
 (defn levenshtein [[h1 & t1 :as s1] [h2 & t2 :as s2]]
   (cond (empty? s1) (count s2)
@@ -14,8 +14,8 @@
                        (inc (levenshtein t1 t2))))))
 
 
-;; Lösung eines anonymen Studierenden in einer früheren Ausgabe der Veranstaltung.
-;; Angenommen, das wäre eine supereffiziente Implementierung des Problems.
+;; Following, a solution of an anonymous student:
+;; Suppose that this implementation is a super-efficient solution.
 (defn mapHelper "Which letter should be keept" [hold keep]
   (if (= hold keep)
     hold
@@ -41,23 +41,23 @@
           x
           y)))
 
-;; ist die zweite Implementierung korrekt?
-;; die erste verstehe ich und kann darüber nachdenken...
-;; die zweite ist weniger offensichtlich.
+;; Is that second implementation correct?
+;; The former one is understandable and I can (informally) reason about it...
+;; The latter solution is somewhat more involved and its correctness is not clear.
 
-;; Eine perfekte Gelegenheit für Tests!
+;; Let's use the opportunity for tests!
 
 (comment 
 
-;; normalerweise kommt das in eine Datei unter test/ statt src/
-;; deftest definiert einen test, is ist eine Assertion im Test
+;; usually, this is defined in a file in the test/ folder rather than src/
+;; 'deftest' defines a test, 'is' is an assertion in the test
 (t/deftest empty-test 
   (t/is (= (levenschtein "" "") 0)))
 
-;; das macht dann normalerweise lein test 
+;; Usually, lein test executes this:
 (t/run-tests) ; =>  {:type :summary, :pass 1, :test 1, :error 0, :fail 0}
 
-;; mit are kann man viele ähnliche Assertions etwas kompakter schreiben
+;; One can write many (similar) assertions more concise with 'are':
 (t/deftest examples 
   (t/are [x y] (= (levenshtein x y) (levenschtein x y))
          "" "hallo"
@@ -69,15 +69,15 @@
 
 (t/run-tests) ; =>  {:type :summary, :pass 7, :test 2, :error 0, :fail 0}
 
-;; Können wir uns *jetzt* sicher sein, dass levenschtein korrekt ist?
+;; Can we be *now* be sure that levenschtein is a correct implementation?
 
 
-;; Das "ebt" im Dateinamen steht für "example-based testing".
-;; Solche Tests sind wichtig!
-;; Allerdings sind sie nur so gut wie die Beispiele, die ich da hereinwerfe.
-;; Vom gesamten Eingaberaum haben wir ungefähr nichts abgedeckt...
+;; The "ebt" of this file name is for "example-based testing".
+;; Such tests are important!
+;; However, they are just as good as the examples that I choose.
+;; Of the entire input space of the function, we covered almost nothing...
 
-;; Wir kommen in den Übungen hierauf zurück!
+;; We will come back to this in the exercises!
 
 )
 

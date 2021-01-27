@@ -53,7 +53,7 @@ Each unit groups material related to a topic as well as all expected learning ou
   - [x] 16_transducer.clj
   - [x] 17_homoiconicity.clj
   - [ ] 21_transients.clj
-  - [ ] 22_ebt.clj
+  - [x] 22_ebt.clj
 - [ ] add bonus item: core.async
 - [ ] add ILIAS tests?
 
