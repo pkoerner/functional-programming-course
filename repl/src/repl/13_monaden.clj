@@ -6,68 +6,66 @@
 (comment
 
 
-  ;; Streng genommen besteht eine Monade aus einen Typkonstruktor, der
-  ;; return Funktion und einer Funktion zur Komposition (bind ist nur
-  ;; eine Möglichkeit).
+  ;; Strictly speaking, a monad consists of a type constructor,
+  ;; the return function and a function for composition
+  ;; (bind is only one possibility).
 
-  ;; Der Typkonstruktor spielt in Clojure als dynamischer Sprache quasi
-  ;; keine Rolle.
+  ;; The type constructor plays no role in Clojure as a dynamic language.
 
 
-  ;; Typen (nur angelehnt an Haskell, kein echtes Haskell):
+  ;; Types (only based on Haskell, not real Haskell):
 
   ;; inc           : Long -> Long
   ;; half          : Long -> Long | nil
   ;; unscharf      : Long -> [Long]
 
-  ;; Die Funktionen nehmen einen Wert und liefern einen
-  ;; Wert mit Kontext. Ein Wert mit Kontext heisst monadischer Wert.
-  ;; Funktionen, die aus einem normalen Wert einen monadischen Wert
-  ;; machen heissen monadische Funktionen.
+  ;; The functions take a value and outputs a value with context.
+  ;; A value with context is called a monadic value.
+  ;; Functions that turn a normal value into a monadic value
+  ;; are called monadic functions.
 
   ;; mf : a -> m b
 
-  ;; Kontext kann zum Beispiel sein, das die Berechnung fehlgeschlagen
-  ;; ist oder nicht-deterministisch war.
+  ;; The context can be, for example,
+  ;; that the calculation failed or was non-deterministic.
 
 
-  ;; return: Funktion, die einen normalen Wert als
-  ;; Parameter bekommt und einen monadischen Wert zurückgibt
+  ;; return: function that takes a normal value as parameter
+  ;;         and returns a monadic value
   ;; return : a -> m b
-  ;; -> return ist eine monadische Funktion
+  ;; -> return is a monadic function
 
-  ;; bind: Funktion die einen monadischen Wert und eine monadische
-  ;; Funktion als Parameter bekommt und einen monadischen Wert zurückgibt.
+  ;; bind: Function that gets a monadic value and
+  ;;       a monadic function as parameter and returns a monadic value.
   ;; bind : m a -> (a -> m b) -> m b
 
 
 
-  ;; Es gibt verschiedene valide Kombinationen von bind und return,
-  ;; die unterschiedliches Verhalten erzeugen.
+  ;; There are several valid combinations of bind and return
+  ;; that produce different behavior.
 
-  ;; bind und return müssen folgende Regeln erfüllen,
-  ;; um mit uberlet zu funktionieren:
+  ;; bind and return must satisfy the following rules to work with uberlet:
 
-  ;; Rechts/Links Identität
+  ;; Right/Left Identity
   ;; (>>= (return a) f) =  (f a)
   ;; (>>= m return) =  m
 
-  ;; Assoziativität
+  ;; Associativity
   ;; (>>= (>>= m f) g) = (>>= m (fn [x] (>>= (f x) g)))
 
 
-  ;; Ab hier verwenden wir die Bibliothek algo.monades
+  ;; From here on out we use the library algo.monades
 
-  ;; uberlet heisst domonad
-  ;; bind heisst m-bind
-  ;; return heisst m-result
+  ;; uberlet is called domonad
+  ;; bind is called m-bind
+  ;; return is called m-result
 
-  ;; triviale Monade / Identitätsmonade (let)
+  ;; trivial monad / identity monad (let)
   (domonad identity-m [a 3
                        b (+ a 4)
                        c (* a b)] c)
 
-  ;; Sequence Monad/ Listmonad (for)
+  ;; sequence monad / list monad (for)
   (domonad sequence-m [a (unscharf 10)
                        b (unscharf a)
                        c (unscharf b)] c)
@@ -76,7 +74,7 @@
 
 
 
-  ;; Maybe Monad
+  ;; maybe monad
   (domonad maybe-m [a 20
                     b (half a)
                     c (half b)] c)
@@ -86,7 +84,7 @@
                     c (half b)] c)
 
 
-  ;; Wenn es identity-m nicht gäbe:
+  ;; If identity-m did not exist:
 
   (defmonad trivial-m
     [m-result identity
@@ -97,7 +95,7 @@
                       c (* a b)] c)
 
 
-  ;; Der erste Parameter ist eine Map mit bind und return
+  ;; The first parameter is a map with bind and return
   trivial-m
 
   (macroexpand-all '(defmonad trivial-m
@@ -124,41 +122,39 @@
 
 
 
-  ;; also: Monaden sind überall
+  ;; So: monads are everywhere
 
 
-  ;; let kriegt man als Monade hin
-  ;; for kriegt man als Monade hin
+  ;; you can define 'let' as monad
+  ;; as well as 'for'
 
 
-  ;; Generatoren (aus test.check) sind nur Monaden
+  ;; Generators (from test.check) are just monads
 
-  ;; bind und return hießen da sogar so!
+  ;; bind und return are even called as such!
 
   ;; bind: gen a -> (a -> gen b) -> gen b
   ;; return: a -> gen a
 
 
 
-  ;; unter den Codeanalysen in core.async für go-Blöcke
-  ;; liegt die State-Monade
+  ;; behind the code analyses in core.async for go blocks
+  ;; you will find the state monad
 
 
-  ;; Ziel: stateful calculations
-  ;;       in einem puren Kontext
-  ;;       ausführen
+  ;; Goal: stateful calculations
+  ;;       in a pure context
 
 
-  ;; State Monade im Beispiel:
+  ;; State monad in an example:
 
-  ;; Es soll ein Interpreter für eine (sehr einfache) Sprache
-  ;; geschrieben werden:
+  ;; An interpreter for a (very simple) language is to be written:
 
   ;; x = 4
   ;; y = x++ + x
 
-  ;; Ein Parser soll dafür schon existieren und folgende Datenstruktur
-  ;; generieren
+  ;; Assume a parser already exist for this,
+  ;; that generate the following data structure
 
   (def input '($do ($assign :x ($int 4))
                    ($assign :y
@@ -167,13 +163,13 @@
 
 
 
-  ;; Aufgabe: Schreibe einen Interpreter für die Sprache
-  ;; Das Ergebnis des Programmaufrufs soll 9 sein!
-  ;; Der Typ jeder Variablen ist Long. Der Default-Wert einer nicht
-  ;; gesetzten Variable ist 0.
+  ;; Task: Write an interpreter for the language
+  ;; The result of the program call should be 9!
+  ;; The type of each variable is Long.
+  ;;   The default value of an unset variable is 0.
 
 
-  ;; Zeit: 10 Minuten
+  ;; Deadline: 10 minutes
 
 
 
@@ -204,7 +200,7 @@
 
 
 
-  ;; Wie kann man das testen?
+  ;; How do you test this?
 
   ;; meh!
 
@@ -217,11 +213,9 @@
 
   (do (test1) @state)
 
-  ;; Es wäre besser, wenn die Funktionen den State explizit
-  ;; als Eingabe bekommen würden.
-  ;; Wenn der State verändert wird, muss der neue State auch
-  ;; explizit mit zurückgegeben werden.
-  ;; Die Rückgabe wird dann [<Wert> <neuer State>]
+  ;; It would be better if the functions would receive the state explicitly as input.
+  ;; If the state is modified, the new state must also be explicitly returned.
+  ;; The return value is then [<value> <new state>].
 
   (defn $postinc' [env n] (let [v (get env n)] [v (assoc env n (inc v))]))
 
@@ -232,33 +226,34 @@
   (test2 2)
 
 
-  ;; Von Hand wird das ziemlich aufwändig! Insbesondere müssen wir den
-  ;; Input ändern
+  ;; This will be quite time-consuming, by hand!
+  ;; In particular, we need to change the input
 
   ;; state-m to the rescue
 
 
-  ;; Umbenennung nur zur Klarheit hier. Es wäre auch mit dem Original gegangen!
+  ;; Renaming is only done for clarity here.
+  ;; It would have worked with the original too!
   (def m-input '(m-assign :y
                           (m-add (m-postinc :x)
                                  (m-id :x))))
 
 
-  ;; == Monadischer Wert der State Monade:
+  ;; == monadic value of the state monad:
 
-  ;; Ist eine Funktion, die einen Zustand nimmt und ein Tupel aus
-  ;; einem Wert und einem Folgezustand zurückgibt
+  ;; Is a function that takes a state and
+  ;; returns a tuple of a value and a subsequent state
 
 
-  ;; return sieht so aus: (fn [v] (fn [env] [v env]))
+  ;; return looks like this: (fn [v] (fn [env] [v env]))
   (defn state-return [v]
     (fn [env] [v env]))
 
   (with-monad state-m
-    ;; Anmerkung: in der neueren Version von clojure.algo.monads
-    ;; geht das irgendwie nicht.
-    ;; Anhand der Commits sehe ich nicht warum?
-    ;; TODO: future Jens soll das fixen. (pk, 24.01.18)
+    ;; Note: in the newer version of clojure.algo.monads
+    ;;       this does not work for some reason.
+    ;; Based on the commits I don't see why
+    ;; TODO: future Jens should fix this. (pk, 24.01.18)
 
 
     (def m-int m-result) ;; state-return
@@ -276,11 +271,9 @@
 
     (defn m-assign [n mv]
       (domonad [v mv
-                r (set-val n v)] r)) ;; Übung !
+                r (set-val n v)] r)) ;; Exercise !
 
-    (defn m-do [a b] (domonad [x a y b] nil))
-
-  )
+    (defn m-do [a b] (domonad [x a y b] nil)))
 
 
   ((m-id :x) {:x 3})
@@ -298,9 +291,9 @@
   ((swap :x :y) {:x 1 :y 3 :z 5})
 
 
-  ;; bind der Statemonade:
+  ;; bind of the  state monad:
 
-  ;; ein einfaches Beispiel: x++
+  ;; A simple example: x++
 
   (defn x++ []
     (fn [{x :x :as e}]
@@ -309,8 +302,8 @@
         [x' e'])))
 
 
-  ;; x++ ist eine monadische Funktion
-  ;; (x++) ist ein monadischer Wert
+  ;; x++ is a monadic function
+  ;; (x++) is a monadic value
 
   ((x++) {:x 4})
 
@@ -319,7 +312,7 @@
 
   (defn state-bind [mv f]
     (fn [env]
-      (let [ [v ss] (mv env)
+      (let [[v ss] (mv env)
             next-mv (f v)]
         (next-mv ss))))
 
@@ -339,25 +332,25 @@
 
   ((state-bind (x++) (fn [r]
                        (fn [e1] (let [[v ss] ((x++) e1)
-                                     nmv ((fn [t] (fn [env] [[r t] env])) v)]
-                                 (nmv ss))))) {:x 4})
+                                      nmv ((fn [t] (fn [env] [[r t] env])) v)]
+                                  (nmv ss))))) {:x 4})
 
 
   ((fn [e0] (let [[v0 ss0] ((x++) e0)
-                 nmv0 ((fn [r]
-                         (fn [e1] (let [[v ss] ((x++) e1)
-                                       nmv ((fn [t] (fn [env] [[r t] env])) v)]
-                                   (nmv ss)))) v0)]
-             (nmv0 ss0))) {:x 4})
+                  nmv0 ((fn [r]
+                          (fn [e1] (let [[v ss] ((x++) e1)
+                                         nmv ((fn [t] (fn [env] [[r t] env])) v)]
+                                     (nmv ss)))) v0)]
+              (nmv0 ss0))) {:x 4})
 
 
 
 
 
   ;; =============================================================
-  ;; Monaden Transformer
+  ;; monad transformer
 
-  ;; Hatten wir schon:
+  ;; We already looked at this one before:
   (def +m (with-monad maybe-m (m-lift 2 +)))
   (def +s (with-monad sequence-m (m-lift 2 +)))
 
@@ -365,7 +358,7 @@
 
   (+s [1 2] [1 2 3])
 
-  ;; Was passiert wenn nil auftaucht?
+  ;; What happens if nil is involved?
   (+s [1 2 4] nil)
   (+s [1 2] [1 nil 3])
 
@@ -395,7 +388,5 @@
 
   ;; etc...
 
-  ;; Aus einem von Jens' Projekten (BLA):
-  (def wd-state-m (maybe-t state-m))
-
-)
+  ;; From one of Jens' projects (BLA):
+  (def wd-state-m (maybe-t state-m)))
