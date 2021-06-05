@@ -21,44 +21,17 @@ Each unit groups material related to a topic as well as all expected learning ou
 
 ## List of TODOs
 
-- [ ] figure out licence
-- [x] translate units
-  - [x] readings guide 0
-  - [x] readings guide 1
-  - [x] readings guide 2
-  - [x] readings guide 3
-  - [x] readings guide 4
-  - [x] readings guide 5
-  - [x] readings guide 6
-  - [x] readings guide 7
-  - [x] readings guide 8
-  - [x] readings guide 9
-  - [x] readings guide 10
-  - [x] readings guide 11
-- [x] translate REPL sessions
-  - [x] 00_syntax.clj
-  - [x] 01_intro.clj
-  - [x] 02_data.clj
-  - [x] 03_concurrency.clj
-  - [x] 04_destructuring.clj
-  - [x] 05_recursion.clj
-  - [x] 06_polymorphism.clj
-  - [x] 07_java_interop.clj
-  - [x] 08_namespaces.clj
-  - [x] 09_evaluation_order.clj
-  - [x] 11_macros.clj
-  - [x] 13_monads.clj
-  - [x] 14_spec.clj
-  - [x] 15_test_check.clj
-  - [x] 16_transducer.clj
-  - [x] 17_homoiconicity.clj
-  - [x] 18_core_async.clj
-  - [x] 21_transients.clj
-  - [x] 22_ebt.clj
-- [x] add bonus item: core.async
 - [ ] add ILIAS tests?
 
 
 ## Licence
+[![CC BY-SA 4.0][cc-by-sa-shield]][cc-by-sa]
 
-TODO
+This work is licensed under a
+[Creative Commons Attribution-ShareAlike 4.0 International License][cc-by-sa].
+
+[![CC BY-SA 4.0][cc-by-sa-image]][cc-by-sa]
+
+[cc-by-sa]: http://creativecommons.org/licenses/by-sa/4.0/
+[cc-by-sa-image]: https://licensebuttons.net/l/by-sa/4.0/88x31.png
+[cc-by-sa-shield]: https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg
