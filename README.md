@@ -2,6 +2,7 @@
 
 This repository contains the material for a Master's Course taught at the Heinrich-Heine University in Düsseldorf.
 As programming language, it focuses on Clojure.
+As an introductory course, we recommend units 1 to 8.
 
 
 ## How to use it
