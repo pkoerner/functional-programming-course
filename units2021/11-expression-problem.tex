@@ -1,0 +1,130 @@
+\documentclass[11pt,a4paper]{article}
+\input{header.tex}
+\setcounter{numb}{11}
+
+
+\begin{document}
+
+\begin{minipage}[b]{\textwidth}
+	\parbox[t]{5cm}{%
+		\includegraphics[width=4cm]{unilogo}
+		\hfill
+	}
+	\parbox[b]{11cm}{%
+		%\scshape%
+		Heinrich-Heine-University D\"usseldorf\\
+		Computer Science Department\\
+		Software Engineering and Programming Languages\\
+		%Professor Dr.\ M.\ Leuschel
+		Philipp K\"orner
+	}
+\end{minipage}
+\begin{center}
+	\bf
+	Functional Programming -- WT 2021 / 2022\\
+	Reading Guide 11: The Expression Problem
+\end{center}
+
+\pagestyle{empty}
+
+\paragraph{Timeline:} This unit should be completed by 10.01.2022.
+
+\paragraph{Note:} This unit is way smaller than usual. Happy holidays and enjoy your time off!
+
+\section{Material} 
+
+\begin{itemize}
+%\item Clojure for the Brave and True, chapter 13
+%\item Clojure Reference: Multimethods \url{https://clojure.org/reference/multimethods}
+%\item Clojure Reference: Protocols \url{https://clojure.org/reference/protocols}
+\item Philip Wadler: The Expression Problem \url{http://homepages.inf.ed.ac.uk/wadler/papers/expression/expression.txt}
+%\item 06\_polymorphism.clj
+\end{itemize}
+
+
+\section{Learning Outcomes}
+
+After completing this unit you should be able to
+
+\begin{itemize}
+    \item describe the expression problem.
+    \item identify use cases as well as advantages and disadvantages of wrappers and monkey patching.
+    %\item explain how multimethods and protocols solve the expression problem.
+    %\item use multimethods and protocols.
+    %\item compare the expressiveness of multimethods and protocols.
+    %\item recall and compare the performance of multimethods and protocols.
+\end{itemize}
+
+\section{Highlights}
+
+\begin{itemize}
+    \item Expression problem
+    %\item Multimethods
+    %\item Protocols
+    %\item Functions / Macros: \verb|defmulti|, \verb|defmethod|, \verb|defprotocol|, \verb|extend-protocol|, \verb|extend-type|, \verb|extend|
+\end{itemize}
+
+
+
+\section{Exercises}
+
+
+\begin{exercise}[Marsrover]
+	In this task you are asked to implement a simplified version of the Marsrover-kata.
+	For this, you are to write the control software for a robot that has landed on Mars.
+	The robot has already scanned a rectangular area for this purpose, which unfortunately is surrounded by obstacles so that the robot cannot leave it.
+	The requirements are as follows:
+
+\begin{itemize}
+    \item A surface area is given, e.g.
+        \begin{verbatim}
+      [["x" "x" "x" "x"]
+       ["x" " " " " "x"]
+       ["x" " " " " "x"]
+       ["x" "x" "x" "x"]]
+\end{verbatim}
+
+	The data structure is a sequence of sequences that specifies the map with obstacles.
+  	The first sequence (or line) is the northernmost line of the surface, the leftmost entry corresponds to the westernmost coordinate.
+  	Entries that are the string ''x'' are obstacles, strings with whitespace are free (accessible) fields.
+    \item An initial position of the rover and its orientation (\verb|:north|, \verb|:south|, \verb|:east|, \verb|:west|) is given.
+    \item The signature for initialization is thus: \verb|(init! x y orientation surface)|
+    \item Implement commands to move the rover forwards (f) and backwards (b).
+    \item Implement command to rotate the rover by 90 degrees left and right (l, r).
+    \item The rover is controlled via a string of commands (e.g. ''flffr'').
+    \item The state of the rover is manipulated by \verb|(execute! string-sequence)|.
+    \item If there is an obstacle in the way, the rover should abort further execution of the command sequence and report the position of the obstacle.
+    \item The function \verb|rover-status| should return the tuple \verb|[x y direction]| with current information about the rover.
+    \item Your solution must allow the addition of further commands,
+        \emph{without the need to modify existing code}.
+\end{itemize}
+
+        Note: Use multimethods.
+\end{exercise}
+
+
+\begin{exercise}[Lazy Searching - 4clojure Nr. 108]
+
+Implement a function that receives any number of ascending sequences
+as input and returns the smallest element that occurs in all sequences.
+The inputs can be infinite sequences.
+
+\begin{verbatim}
+(common-min [3 4 5])
+=> 3
+(common-min [1 2 3 4 5 6 7] [0.5 3/2 4 19])
+=> 4
+(common-min (range) (range 0 100 7/6) [2 3 5 7 11 13])
+=> 7
+(common-min (map (fn [x] (* x x x)) (range)) ;; Cubic numbers
+            (filter (fn [x] (zero? (bit-and x (dec x)))) (range)) ;; Powers of two
+            (iterate inc 20)) ;; Numbers greater than/equal to 20
+=> 64
+\end{verbatim}
+
+\end{exercise}
+
+\section*{Questions}
+If you have any questions, please contact Philipp K"orner (\texttt{p.koerner@hhu.de}).
+\end{document}
+

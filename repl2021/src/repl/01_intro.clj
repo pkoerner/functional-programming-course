@@ -371,6 +371,18 @@
 ;; the proof
   (macroexpand-1 '(defn sq2 [x] (* x x)))
 
+;; multiple-arity definition:
+(defn sum-3
+  "nobody needs to add more than three numbers" ;; docstring
+  ([] 0)
+  ([n] n)
+  ([n m] (+ n m))
+  ([n m o] (+ (+ n m) o)))
+
+(sum-3)
+(sum-3 1 2)
+(doc sum-3) ;; you can find the docstring again, hooray!
+
 ;; If you know that you are guaranteed to receive at least one argument and possibly some more
   (defn variadic-args-function [x & args]
     (println :x x :args args))
@@ -415,8 +427,8 @@
   (if true 1 2)
   (if false 1 2)
 
-;; The values triggering the then-branch are described as 'truthy',
-;; the values triggering the else-branch as "falsey".
+;; The values triggering the then-branch are called "truthy",
+;; the values triggering the else-branch "falsey".
 ;; nil and false are falsey, everything else truthy
   (if 1 2 3)
   (if :doh 2 3)
@@ -632,6 +644,7 @@
 ;; last is nevertheless slow :-(
   (time (last y))
 
+(distinct [])
 
 
 ;; Maps
@@ -682,7 +695,7 @@
 
 ;; (!!) If you catch yourself thinking 'this function on a collection would be useful', it often already exists!
 ;; https://clojure.org/api/cheatsheet
-;; links auf: https://clojuredocs.org/ (with example calls)
+;; links to https://clojuredocs.org/ (with example calls)
 ;; the sections on sequences and collection are always worth a look while programming
 
   (reverse [1 2 3])

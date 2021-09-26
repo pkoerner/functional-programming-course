@@ -100,7 +100,7 @@
 
 (deftest remove-duplicates-empty-test
   (testing "remove-duplicates on an empty seq should yield an empty seq."
-    (is (= [] (remove-duplicates [])))))
+    (is (empty? (remove-duplicates [])))))
 
 (deftest remove-no-duplicates-test
   (testing "remove-duplicates on a duplicate-less seq should yield the seq itself."
@@ -125,5 +125,6 @@
 ;; left a duplicate or changed the order of the elements from v
 (defspec remove-duplicates-property-test 25
   (prop/for-all [v (gen/not-empty (gen/vector gen/simple-type-equatable))]
-                (= (distinct v)
-                   (remove-duplicates v))))
+                (or (and (empty? v) (empty? remove-duplicates))
+                    (= (distinct v)
+                       (remove-duplicates v)))))
