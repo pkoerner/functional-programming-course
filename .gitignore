@@ -1,6 +1,5 @@
-
-*.gz
-
-*.out
-
-*.aux
+**/*.gz
+**/*.out
+**/*.aux
+**/*.log
+**/.lein-repl-history
