@@ -103,6 +103,25 @@ After completing this unit you should be able to
 \end{exercise}
 
 
+\begin{exercise}[Operator Overloading]
+
+    Define a new protocol \verb|Multipliable| with a single function \verb|mult| that takes two arguments.
+    The function \verb|mult| shall dispatch on the type of the first argument
+    and ``multiply'' it with the second arguments.
+    Calls and results may, for example, look like the following:
+
+\begin{verbatim}
+user=> (mult 3 4)
+12
+user=> (mult "foo" 4)
+"foofoofoofoo"
+user=> (mult '(1 2 3) 4)
+(1 2 3 1 2 3 1 2 3 1 2 3)
+\end{verbatim}
+
+    Implement the protocol for at least these three types.
+\end{exercise}
+
 %\begin{exercise}[Lazy Searching - 4clojure Nr. 108]
 %
 %Implement a function that receives any number of ascending sequences
