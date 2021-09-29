@@ -72,117 +72,37 @@ After completing this unit you should be able to
 
 
 \section{Exercises}
-\begin{exercise}[Hash Trie]
 
-	In this exercise we consider a hash trie with a branching factor of 4,
-	meaning every node has at most 4 children.
-	Assume the following hash values for this exercise:
+\begin{exercise}[4clojure Exercise Unlocks]
+    After completing this unit, you gained the knowledge to solve all exercises. Enjoy!
 
-    \begin{center}
-    \begin{tabular}{l@{}ll@{}l}
-        hash(:a)    &= \colorbox{red!15}{00}\colorbox{blue!15}{10}\colorbox{orange!15}{00}\colorbox{green!15}{00} &hash(:e)    &= \colorbox{red!15}{10}\colorbox{blue!15}{01}\colorbox{orange!15}{11}\colorbox{green!15}{01}\\
-        hash(:b)    &= \colorbox{red!15}{10}\colorbox{blue!15}{00}\colorbox{orange!15}{00}\colorbox{green!15}{10} &hash(:new)  &= \colorbox{red!15}{00}\colorbox{blue!15}{01}\colorbox{orange!15}{01}\colorbox{green!15}{10}\\
-        hash(:c)    &= \colorbox{red!15}{01}\colorbox{blue!15}{11}\colorbox{orange!15}{10}\colorbox{green!15}{10} &hash(:ouch) &= \colorbox{red!15}{11}\colorbox{blue!15}{01}\colorbox{orange!15}{11}\colorbox{green!15}{01}\\
-        hash(:d)    &= \colorbox{red!15}{11}\colorbox{blue!15}{00}\colorbox{orange!15}{01}\colorbox{green!15}{00} &\\
-    \end{tabular}
-    \end{center}
-
-\begin{center}
-    \includegraphics[scale=0.4]{hashtrie.pdf}
-\end{center}
-
-\begin{enumerate}[label=\alph*)]
-\item
-	Which map is stored in the pictured trie?
-\item
-	How many bits are needed for determining the position in an array?
-\item
-	Insert the value \texttt{:ez} under key \texttt{:new}.
-	Which nodes can be referenced in the previous trie and which have to be copied?
-\item
-	Insert the value \texttt{:almost-a-collision} under key \texttt{:ouch}.
-	Which nodes can be referenced in the previous trie and which have to be copied?
-\end{enumerate}
+    Expect exam questions to be about ``medium'' level.
+    It is worthwhile to tackle a couple hard problems 
+    in order to prepare for the exam.
 \end{exercise}
 
-
-\pagebreak
-
-\begin{exercise}[Maxima]
-
-\begin{enumerate}[label=\alph*)]
-\item
-  Define a function, that returns the maximum of its arguments.
-\begin{verbatim}
-(max-value 3 42 1336 12.5)
-=> 1336
-\end{verbatim}
-\item
-  Define a function that returns the first, longest sequence of its arguments. Nesting should not be considered.
-\begin{verbatim}
-(longest []  [:a :b 12] [[1 2 3 4 5 6]])
-=> [:a :b 12]
-\end{verbatim}
-\item
-  Define a function that determines the maximal length of its arguments. Nesting should not be considered.
-\begin{verbatim}
-(max-length []  [:a :b 12] [[1 2 3 4 5 6]])
-=> 3
-\end{verbatim}
-
-\end{enumerate}
-\end{exercise}
-
-
-
-\begin{exercise}[Matrix]
-In the following exercise, we consider a matrix as a vector of row vectors. For example:
-\begin{verbatim}
-(def identity-matrix [[1 0 0] [0 1 0] [0 0 1]])
-(def matrix2 [[1 0 0 1] [0 1 0 1] [0 0 1 1]])
-\end{verbatim}
+\begin{exercise}[Newton's method]
+Newton's method is an algorithm to approximate a solution $c$ for $f(c)=0$ for a given function $f$.
+The algorithm uses the series $$x_{n+1} = x_{n} - \frac{f(x_n)}{f'(x_n)}$$
+It terminates if  $|x_{n+1} - x_n| < \epsilon$ holds for a given $\epsilon > 0$.
 
 \begin{enumerate}[label=\alph*)]
-\item Write a function \verb|p!|, which outputs the matrix.
-\begin{verbatim}
-user=> (p! identity-matrix)
-100
-010
-001
-\end{verbatim}
+
+  \item Write a function \texttt{(defn newton [f f'] ...)} that receives the function and its derivative as a parameter. The call to \texttt{newton} should then return a function which in turn receives a starting value $x$ and a precision $eps$ and approximates the solution for $f(x)=0 \pm eps$ using Newton's method.
   
-\item Write a function \verb|trans|, which transposes the matrix, i.e. swaps the rows and columns:
-\begin{verbatim}
-user=> (= identity-matrix (trans identity-matrix))
-true
-user=> (p! (trans matrix2))
-100
-010
-001
-111
-user=> (= matrix2 (trans matrix2))
-false
-user=> (= matrix2 (trans (trans matrix2)))
-true 
-\end{verbatim}
+   \item The square root of a number $K$ is a solution for the equation $c^2 - K = 0$. So we can apply Newton's Method to the function $f(x) = x^2 - K$. Write a function \texttt{(defn sqrt [n] ...)} which approximates the square root of $n$ using Newton's method. You can use $10^{-5}$ as both initial value and precision.
+    
+%  \item Newton's method is a fixed-point algorithm. Write a function \texttt{(defn fixedpoint [F guess eps?] ...)}, which calculates a fixed point starting from an initial value $guess$. The accuracy $eps?$ should itself be a function that receives two inputs: (the new and old value) and returns true if the two values match sufficiently well.
+
+% \item Write Newton's method as instance of this fixed point function.
+
+\emph{Spoiler alert}: we will return to this exercise in unit 9.
+That reading guide will contain a solution.
+
 \end{enumerate}
-
 \end{exercise}
 
-\begin{exercise}[Black Box Testing (4clojure \#65)]
-	Clojure has different collections, which differ (slightly) in their behaviour.
-	Functions in \verb|clojure.core| typically transform them into sequences and work on them.
-	It is nonetheless important to understand the differences in behaviour and performance 
-	to choose an appropriate representation for given data.
-
-    Write a function \verb|data-type|, which takes a collection as parameter and returns \verb|:map|, \verb|:set|, \verb|:list| or \verb|:vector|
-    depending on which type of collection was passed.
-
-	It is prohibited to use the \verb|list?| predicate.
-	The point of this exercise is to play around with collections and understand their behaviour.
-\end{exercise}
-
-\section*{Questions}
-If you have any questions, please contact Philipp K"orner (\texttt{p.koerner@hhu.de}).
+	\section*{Questions}
+	If you have any questions, please contact Philipp K"orner (\texttt{p.koerner@hhu.de}) or post it to the Rocket.Chat group.
 \end{document}
 

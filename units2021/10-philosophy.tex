@@ -22,7 +22,7 @@
 \begin{center}
 	\bf
 	Functional Programming -- WT 2021 / 2022\\
-	Reading Guide 10: Philosophie
+	Reading Guide 10: Philosophy
 \end{center}
 
 \pagestyle{empty}
@@ -54,80 +54,84 @@ After completing this unit you should be able to
 
 \section{Exercises}
 
-\begin{exercise}[Functions]
-\begin{enumerate}[label=\alph*)]
-\item The Clojure function \texttt{interleave} works as follows:
-\begin{verbatim}
-user=> (interleave [1 3 5] [2 4 6])
-(1 2 3 4 5 6)
-user=> (interleave [1 4] [2 5] [3 6])
-(1 2 3 4 5 6)
-\end{verbatim}
+No practical exercises here.
+Proceed with the usual 4clojure exercises.
+Make sure to think about the solution in a hammock before implementing it.
 
-Write a function \texttt{(defn rev-interleave [s n] ...)}, that acts as \texttt{interleave}'s inverse function. 
-\begin{verbatim}
-user=> (rev-interleave [1 2 3 4 5 6] 2)
-((1 3 5) (2 4 6))
-user=> (rev-interleave [1 2 3 4 5 6] 3)
-((1 4) (2 5) (3 6))
-\end{verbatim}
+%\begin{exercise}[Functions]
+%\begin{enumerate}[label=\alph*)]
+%\item The Clojure function \texttt{interleave} works as follows:
+%\begin{verbatim}
+%user=> (interleave [1 3 5] [2 4 6])
+%(1 2 3 4 5 6)
+%user=> (interleave [1 4] [2 5] [3 6])
+%(1 2 3 4 5 6)
+%\end{verbatim}
+%
+%Write a function \texttt{(defn rev-interleave [s n] ...)}, that acts as \texttt{interleave}'s inverse function. 
+%\begin{verbatim}
+%user=> (rev-interleave [1 2 3 4 5 6] 2)
+%((1 3 5) (2 4 6))
+%user=> (rev-interleave [1 2 3 4 5 6] 3)
+%((1 4) (2 5) (3 6))
+%\end{verbatim}
+%
+%If an input \texttt{s} cannot be split into \texttt{n} sequences of equal length, your function may behave arbitrarily, but it must terminate.
+%\item The Clojure function \texttt{flatten} works as follows:
+%\begin{verbatim}
+%user=> (flatten '[[1 2] 3 (4 [5 6])])
+%(1 2 3 4 5 6)
+%user=> (flatten ["a" ["b"] "c"])
+%("a" "b" "c")
+%user=> (flatten [1 [[[[[[[[[[[[2]]]]]]]]]]]]])
+%(1 2)
+%\end{verbatim}
+%Implement your own version of \texttt{flatten}, that additionally satisfies the following test case:
+%\begin{verbatim}
+%user=> (my-flatten [:a #{:b}])
+%(:a :b)
+%\end{verbatim}
+%
+%Note: The function \verb|coll?| is useful to determine whether something is a scalar value or a collection.
+%
+%
+%\end{enumerate}
+%
+%\end{exercise}
+%
+%\begin{exercise}[Collatz sequence]
+%For any natural number n, the so-called Collatz sequence can be calculated.
+%The next term $x_{i+1} = c(x_i)$ in the sequence is obtained from the previous one by applying the following function:
+%\begin{equation*}
+%   c(n) =
+%   \begin{cases}
+%     3n+1 & \text{if } n \text{ odd} \\
+%     n/2  & \text{if } n \text{ even} \\
+%   \end{cases}
+%\end{equation*}
+%
+%Write a function \texttt{(defn collatz [n] ...)}, which returns a sequence [n, c(n), c(c(n)), ..., 4, 2, 1]. For example, a call should look like this:
+%
+%\begin{verbatim}
+%(collatz 11)
+%=> (11 34 17 52 26 13 40 20 10 5 16 8 4 2 1)
+%\end{verbatim}
+%\end{exercise}
+%
+%\begin{exercise}[Combinations]
+%
+%Implement a function that returns a sequence of all combinations of pairs of its elements. Duplicates need not be considered.
+%
+%\begin{verbatim}
+%(combinations [1 2 3])
+%=> #{(1 2) (1 3) (2 3)}
+%(combinations [1 2 3 4])
+%=> #{(1 2) (1 3) (1 4) (2 3) (2 4) (3 4)}
+%
+%\end{verbatim}
+%\end{exercise}
 
-If an input \texttt{s} cannot be split into \texttt{n} sequences of equal length, your function may behave arbitrarily, but it must terminate.
-\item The Clojure function \texttt{flatten} works as follows:
-\begin{verbatim}
-user=> (flatten '[[1 2] 3 (4 [5 6])])
-(1 2 3 4 5 6)
-user=> (flatten ["a" ["b"] "c"])
-("a" "b" "c")
-user=> (flatten [1 [[[[[[[[[[[[2]]]]]]]]]]]]])
-(1 2)
-\end{verbatim}
-Implement your own version of \texttt{flatten}, that additionally satisfies the following test case:
-\begin{verbatim}
-user=> (my-flatten [:a #{:b}])
-(:a :b)
-\end{verbatim}
-
-Note: The function \verb|coll?| is useful to determine whether something is a scalar value or a collection.
-
-
-\end{enumerate}
-
-\end{exercise}
-
-\begin{exercise}[Collatz sequence]
-For any natural number n, the so-called Collatz sequence can be calculated.
-The next term $x_{i+1} = c(x_i)$ in the sequence is obtained from the previous one by applying the following function:
-\begin{equation*}
-   c(n) =
-   \begin{cases}
-     3n+1 & \text{if } n \text{ odd} \\
-     n/2  & \text{if } n \text{ even} \\
-   \end{cases}
-\end{equation*}
-
-Write a function \texttt{(defn collatz [n] ...)}, which returns a sequence [n, c(n), c(c(n)), ..., 4, 2, 1]. For example, a call should look like this:
-
-\begin{verbatim}
-(collatz 11)
-=> (11 34 17 52 26 13 40 20 10 5 16 8 4 2 1)
-\end{verbatim}
-\end{exercise}
-
-\begin{exercise}[Combinations]
-
-Implement a function that returns a sequence of all combinations of pairs of its elements. Duplicates need not be considered.
-
-\begin{verbatim}
-(combinations [1 2 3])
-=> #{(1 2) (1 3) (2 3)}
-(combinations [1 2 3 4])
-=> #{(1 2) (1 3) (1 4) (2 3) (2 4) (3 4)}
-
-\end{verbatim}
-\end{exercise}
-
-\section*{Questions}
-If you have any questions, please contact Philipp K"orner (\texttt{p.koerner@hhu.de}).
+	\section*{Questions}
+	If you have any questions, please contact Philipp K"orner (\texttt{p.koerner@hhu.de}) or post it to the Rocket.Chat group.
 \end{document}
 

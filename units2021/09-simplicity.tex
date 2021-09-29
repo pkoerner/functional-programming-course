@@ -59,12 +59,13 @@ After completing this unit you should be able to
 
 \section{Exercises}
 
+
 \begin{exercise}[Fixed point algorithm]
 
-Reading Guide 03 asked you to implement Newton's method.
-This exercise is about abstracting the solution to a general fixed point method.
-Newton's method is then a special case of this abstraction.
-Proceed as follows:
+The exercise from unit 5 asked you to implement Newton's method.
+%This exercise is about abstracting the solution to a general fixed point method.
+%Newton's method is then a special case of this abstraction.
+Now, proceed as follows:
     
 \begin{enumerate}[label=\alph*)]
 \item Write a function \texttt{(defn fixedpoint [F guess eps?] ...)}, which computes a fixed point of $F$ from an initial value $guess$.
@@ -82,7 +83,7 @@ Proceed as follows:
         (newton-fn next-x eps)))))
 \end{verbatim}
 
-\item Write Newton's method as instance of this fixed point function.
+\item Write Newton's method (from as instance of this fixed point function.
 \item Which aspects of the implementation of Newton's method have you abstracted and decomplected here?
 \end{enumerate}
 \end{exercise}
@@ -119,7 +120,7 @@ The following exercise asks you to implement different functions operating on a 
 \end{exercise}
 
 
-\section*{Questions}
-If you have any questions, please contact Philipp K"orner (\texttt{p.koerner@hhu.de}).
+	\section*{Questions}
+	If you have any questions, please contact Philipp K"orner (\texttt{p.koerner@hhu.de}) or post it to the Rocket.Chat group.
 \end{document}
 

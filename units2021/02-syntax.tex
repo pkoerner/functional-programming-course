@@ -36,7 +36,7 @@
             \item 01\_intro.clj (covers all material)
         \end{itemize}
     \item Please be aware of \url{https://clojure.org/api/cheatsheet} and that there are many useful functions.
-        Especially the blocks \enquote{Sequences}, \enquote{Primitives} and \enquote{Collections} are worth knowing.
+        Especially the blocks ``Sequences'', ``Primitives'' and ``Collections'' are worth knowing.
         You do not have to learn everything by heart now, but go ahead and find out, what some functions do.
 %\item Rich Hickey: Clojure for Java Programmers Part 2 \url{https://www.youtube.com/watch?v=hb3rurFxrZ8} (Overview over further topics of the lecture)
 \end{itemize}
@@ -84,6 +84,14 @@ You can initially define symbols with \verb|(declare seq-e fibonacci remove-dupl
 to get rid of exceptions which are caused by the tests trying to reference undefined global variables and functions.
 Alternatively you can execute tests individually (see \verb|lein help test|).
 
+\begin{exercise}[4clojure Exercise Unlocks --- Recommended!]
+    After completing this unit, you gained the knowledge to solve the following exercises:
+
+    \begin{itemize}
+        \item elementary: 4--13, 15--16, 35, 37, 57, 134, 145, 156, 161
+    \end{itemize}
+\end{exercise}
+
 \begin{exercise}[Sequences]
 
 In the following exercise simply define the described sequences. As Example: If you are to define the sequence of numbers between -100 and 100, a valid solution is: \texttt{(def example-seq (range -100 101))}
@@ -107,39 +115,18 @@ In the following exercise simply define the described sequences. As Example: If 
 
 \end{exercise}
 
-\begin{exercise}[Fibonacci]
-The Fibonacci sequence begins with $F_0=0$ and $F_1=1$. Every subsequent number is the sum of the two preceding ones: $F_{n}=F_{n-1}+F_{n-2}$ 
-\begin{enumerate}[label=\alph*)]
-  \item Define a function \verb|fibonacci|, which takes an integer $z$ as input and generates the first $z$ Fibbonacci numbers.
-  \item Test your function with an input of 100.
-  \end{enumerate}
-\end{exercise}
+%\begin{exercise}[Fibonacci]
+%The Fibonacci sequence begins with $F_0=0$ and $F_1=1$. Every subsequent number is the sum of the two preceding ones: $F_{n}=F_{n-1}+F_{n-2}$ 
+%\begin{enumerate}[label=\alph*)]
+%  \item Define a function \verb|fibonacci|, which takes an integer $z$ as input and generates the first $z$ Fibbonacci numbers.
+%  \item Test your function with an input of 100.
+%  \end{enumerate}
+%\end{exercise}
 
 
 
 
-
-
-\begin{exercise}[Removing duplicates]
-Given a vector $v$, which can contain duplicate elements, write a function \texttt{remove-duplicates} that removes all duplicates from the vector, maintaining the original order of the elements.
-
-Following are some example calls of this function:
-\begin{verbatim}
-user=> (remove-duplicates [])
-()
-user=> (remove-duplicates nil)
-()
-user=> (remove-duplicates [1 2 1])
-(1 2)
-user=> (remove-duplicates [1 2 3 "dd" 2 :a 3])
-(1 2 3 "dd" :a)
-\end{verbatim}
-
-It is only important that the result is a sequential collection. The specific data structure is irrelevant (in particular: vectors are fine, returning nil rather than an empty collection is fine, too. This applies for all exercises, unless stated otherwise.).
-\end{exercise}
-
-
-\section*{Questions}
-If you have any questions, please contact Philipp K"orner (\texttt{p.koerner@hhu.de}).
+	\section*{Questions}
+	If you have any questions, please contact Philipp K"orner (\texttt{p.koerner@hhu.de}) or post it to the Rocket.Chat group.
 \end{document}
 

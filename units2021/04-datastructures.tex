@@ -116,30 +116,30 @@ After completing this unit you should be able to
 
 \pagebreak
 
-\begin{exercise}[Maxima]
-
-\begin{enumerate}[label=\alph*)]
-\item
-  Define a function, that returns the maximum of its arguments.
-\begin{verbatim}
-(max-value 3 42 1336 12.5)
-=> 1336
-\end{verbatim}
-\item
-  Define a function that returns the first, longest sequence of its arguments. Nesting should not be considered.
-\begin{verbatim}
-(longest []  [:a :b 12] [[1 2 3 4 5 6]])
-=> [:a :b 12]
-\end{verbatim}
-\item
-  Define a function that determines the maximal length of its arguments. Nesting should not be considered.
-\begin{verbatim}
-(max-length []  [:a :b 12] [[1 2 3 4 5 6]])
-=> 3
-\end{verbatim}
-
-\end{enumerate}
-\end{exercise}
+%\begin{exercise}[Maxima]
+%
+%\begin{enumerate}[label=\alph*)]
+%\item
+%  Define a function, that returns the maximum of its arguments.
+%\begin{verbatim}
+%(max-value 3 42 1336 12.5)
+%=> 1336
+%\end{verbatim}
+%\item
+%  Define a function that returns the first, longest sequence of its arguments. Nesting should not be considered.
+%\begin{verbatim}
+%(longest []  [:a :b 12] [[1 2 3 4 5 6]])
+%=> [:a :b 12]
+%\end{verbatim}
+%\item
+%  Define a function that determines the maximal length of its arguments. Nesting should not be considered.
+%\begin{verbatim}
+%(max-length []  [:a :b 12] [[1 2 3 4 5 6]])
+%=> 3
+%\end{verbatim}
+%
+%\end{enumerate}
+%\end{exercise}
 
 
 
@@ -177,7 +177,7 @@ true
 
 \end{exercise}
 
-\begin{exercise}[Black Box Testing (4clojure \#65)]
+\begin{exercise}[Black Box Testing (4clojure exercise unlock, medium \#65)]
 	Clojure has different collections, which differ (slightly) in their behaviour.
 	Functions in \verb|clojure.core| typically transform them into sequences and work on them.
 	It is nonetheless important to understand the differences in behaviour and performance 
@@ -186,11 +186,11 @@ true
     Write a function \verb|data-type|, which takes a collection as parameter and returns \verb|:map|, \verb|:set|, \verb|:list| or \verb|:vector|
     depending on which type of collection was passed.
 
-	It is prohibited to use the \verb|list?| predicate.
+    It is prohibited to use the \verb|list?| predicate (or similar functions).
 	The point of this exercise is to play around with collections and understand their behaviour.
 \end{exercise}
 
-\section*{Questions}
-If you have any questions, please contact Philipp K"orner (\texttt{p.koerner@hhu.de}).
+	\section*{Questions}
+	If you have any questions, please contact Philipp K"orner (\texttt{p.koerner@hhu.de}) or post it to the Rocket.Chat group.
 \end{document}
 

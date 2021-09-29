@@ -164,6 +164,13 @@
 ((partial + 1 2) 3 4) ;; 1 + 2 (hard-wired) + 3 + 4
 
 
+;; 6. iterate:
+;; iterate takes a function f and a value v
+;; and returns an infinite sequence [v, f(v), f(f(v)), f(f(f((v)))), ...]
+
+(take 5 (iterate inc 42))
+
+
 ;; In functional programming, higher-order functions are used heavily 
 ;; and are the prefered solution over explicit recursion.
 ;; If we want to filter values, we do not care *how* they are filtered;
