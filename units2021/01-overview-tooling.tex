@@ -123,10 +123,10 @@
 		code (You do not have to understand the code at this point!)
 		
 		\begin{verbatim}
-			(def fib-seq
-			    (lazy-cat [0 1] (map + (rest fib-seq) fib-seq)))
+			(def my-seq
+			    (lazy-cat [0 1] (map + (rest my-seq) my-seq)))
 			
-			(take 10 fib-seq)
+			(take 10 my-seq)
 		\end{verbatim}
 	\end{exercise}
 
