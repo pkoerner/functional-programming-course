@@ -211,7 +211,7 @@
   (my-readable "(eval `(fn [x#] (+ x x#)))")
   (:read (my-readable "(eval `(fn [x#] (+ x x#)))"))
   ;; aha!
-  ;; this is expanded to (fn [x-fresh] (+ repl.11-macros/x x-fresh))
+  ;; this is expanded to (fn [x-fresh] (+ repl.28-macros/x x-fresh))
   ;; that is not the locally defined x!
 
   ;; but the one defined in line 6 of the file...
