@@ -1,0 +1,150 @@
+\documentclass[11pt,a4paper]{article}
+\input{header.tex}
+\setcounter{numb}{1}
+
+\begin{document}
+	
+\begin{minipage}[b]{\textwidth}
+		\parbox[t]{5cm}{%
+			\includegraphics[width=4cm]{unilogo}
+			\hfill
+		}
+		\parbox[b]{11cm}{%
+			%\scshape%
+			Heinrich-Heine-University D\"usseldorf\\
+			Computer Science Department\\
+			Software Engineering and Programming Languages\\
+			%Professor Dr.\ M.\ Leuschel
+		Philipp K\"orner
+}
+		
+\end{minipage}
+	\begin{center}
+		\bf
+		Functional Programming -- WT 2022 / 2023\\
+		Reading Guide 1: Overview and Tooling
+	\end{center}
+	
+	\pagestyle{empty}
+	
+	\section*{Note}
+	The learning objectives indicate what is expected of you in the exam.
+	In principle it does not matter which material you consult to achieve the learning objective.
+	The deadline allows you to meaningfully participate in the exercises.
+	
+	Solving the exercises is voluntary.
+	The exercises in this guide present tools and as such are elementary for subsequent course material.
+	In addition these tools are an immense help for solving the exercises.
+	
+	You are free to proceed to the next unit, as soon as you complete this one.  
+	
+	\paragraph{Timeline:} This unit should be completed by 17.10.2022.
+	
+	\section{Material} 
+	
+	\begin{itemize}
+        \item Clojure Newbie Guide (overview of Clojure-related resources --- give it a glance) \url{http://www.clojurenewbieguide.com/}
+        \item The Joy of Clojure, Chapter 1 - Clojure Philosophy
+		\footnote{Do not be discouraged if you do not understand everything from this chapter immediately. The book is not especially suited for beginners, but gives a comprehensive overview of the topics we will focus on.}
+        %(ca. 45 minutes (video edition))
+        \item Leiningen (Clojure Project Management Tool --- install it) \url{https://github.com/technomancy/leiningen}
+		%\item Clojure Cheatsheet \url{https://clojure.org/api/cheatsheet}
+        \item REPL: 00-syntax.clj
+	\end{itemize}
+	
+	
+	\section{Learning Outcomes}
+	
+	After completing this unit you should be able to
+	
+	\begin{itemize}
+		\item name the characteristics of functional programming.
+		\item describe the downsides of object-oriented programming.
+		\item use an editor with a REPL-plugin and paredit.
+        \item read, write and understand fundamental Clojure syntax.
+		%\item list some Clojure-functions and explain their functionality.
+	\end{itemize}
+	
+	\section{Exercises}
+
+	\begin{exercise}[Leiningen]
+		Install Leiningen (\url{https://github.com/technomancy/leiningen}).
+		Please use the installation instructions provided on the linked website
+		to ensure you are not an outdated version of Clojure.
+		
+		Find out how to generate a new project
+		and familiarise yourself with the directory structure.
+		Start a REPL-session as well.
+	\end{exercise}
+	
+	
+	\begin{exercise}[Paredit]
+		Paredit is an important aid in programming in a LISP.
+		A paredit-plugin exists for most editors.
+		Make sure that your editor of choice has such a plugin
+		and install or activate it.
+		
+		
+		Paredit helps you by keeping parentheses balanced.
+		In order to work efficiently you should
+		become acquainted with the keyboard shortcuts that allow for the following manipulations
+		(copy \& paste or retyping are prohibited!):
+		
+		\begin{enumerate}[label=\alph*)]
+			\item
+			\texttt{(foo (bar) baz)} $\longrightarrow$ \texttt{(foo (bar baz))} \textit{(Right Slurp)}
+			\item
+			\texttt{(foo (bar baz))} $\longrightarrow$ \texttt{(foo bar (baz))} \textit{(Left Barf)}
+			\item
+			\texttt{(foo bar (baz))} $\longrightarrow$ \texttt{(foo (bar baz))} \textit{(Left Slurp)}
+			\item
+			\texttt{(foo (bar baz))} $\longrightarrow$ \texttt{(foo (bar) baz)} \textit{(Right Barf)}
+			\item
+			\texttt{(foo) (bar)} $\longrightarrow$ \texttt{(foo bar)} \textit{(Join)}
+			\item
+			\texttt{(foo bar)} $\longrightarrow$ \texttt{(foo) (bar)} \textit{(Split)}
+			\item
+			\texttt{foo} $\longrightarrow$ \texttt{(foo)} \textit{(Wrap)}
+			\item
+			\texttt{(foo (bar baz))} $\longrightarrow$ \texttt{(foo bar baz)} \textit{(Splice)}
+			\item
+			\texttt{(foo (bar baz))} $\longrightarrow$ \texttt{(foo)} \textit{(Delete / Killing)}
+		\end{enumerate}
+		
+	\end{exercise}
+	
+	\begin{exercise}[REPL-Plugin]
+		Many editors provide plugins
+		to connect to open REPL sessions
+		and execute code within their context.
+		
+		Find out if such a plugin exists for your chosen editor,
+		start a REPL session and evaluate the following
+		code (You do not have to understand the code at this point!)
+		
+		\begin{verbatim}
+			(def my-seq
+			    (lazy-cat [0 1] (map + (rest my-seq) my-seq)))
+			
+			(take 10 my-seq)
+		\end{verbatim}
+	\end{exercise}
+
+    \begin{exercise}[4clojure Exercise Unlocks --- Recommended!]
+        After completing this unit, you gained the knowledge to solve the following 4clojure exercises:
+
+        \begin{itemize}
+            \item elementary: 1--3, 162
+        \end{itemize}
+
+        \noindent You can find them in the ILIAS system in the ``Material/exercises.zip'' file or, alternatively,
+        at \url{https://4clojure.oxal.org/}\footnote{There is an issue when progressing to the next problem after solving a problem. You will need to return back to the problem list instead.}.
+        Your task is to make the assertion succeed in the corresponding file.
+    \end{exercise}
+	
+	
+    \enlargethispage{2\baselineskip}
+	\section*{Questions}
+	If you have any questions, please contact Philipp K"orner (\texttt{p.koerner@hhu.de}) or post it to the Rocket.Chat group.
+\end{document}
+

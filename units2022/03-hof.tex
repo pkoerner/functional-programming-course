@@ -1,0 +1,95 @@
+\documentclass[11pt,a4paper]{article}
+\input{header.tex}
+\setcounter{numb}{3}
+
+
+\begin{document}
+
+\begin{minipage}[b]{\textwidth}
+	\parbox[t]{5cm}{%
+		\includegraphics[width=4cm]{unilogo}
+		\hfill
+	}
+	\parbox[b]{11cm}{%
+		%\scshape%
+		Heinrich-Heine-University D\"usseldorf\\
+		Computer Science Department\\
+		Software Engineering and Programming Languages\\
+		%Professor Dr.\ M.\ Leuschel
+		Philipp K\"orner
+	}
+\end{minipage}
+\begin{center}
+	\bf
+	Functional Programming -- WT 2022 / 2023\\
+	Reading Guide 3: Higher-Order Functions
+\end{center}
+
+\pagestyle{empty}
+
+\section{Material} 
+
+\begin{itemize}
+    \item Alternatives:
+        \begin{itemize}
+            \item Clojure for the Brave and True, chapter 4 (Seq Function Examples + Function Functions, more in-depth explanations)
+            \item 23\_hof.clj (basic coverage)
+        \end{itemize}
+    \item self-driven exercises!
+\end{itemize}
+
+\paragraph{Timeline:} This unit should be completed by 31.10.2022.
+
+\paragraph{Note:} This week gives you an overview of a very important concept.
+Thus, the material is rather little.
+This does not mean that there is less to do this week: you should focus on practical aspects instead.
+The REPL session contains pointers on what exercises you should attempt to deepen your understanding.
+
+
+\section{Learning Outcomes}
+
+After completing this unit you should be able to
+
+\begin{itemize}
+	%\item determine the evaluation order of elements in a function call.
+    %\item define functions with local bindings.
+    %\item use the fundamental control structures in small functions.
+    \item use built-in higher-order functions.
+    \item write higher-order functions.
+    %\item recall fundamental sequence operations provided by the standard library.
+\end{itemize}
+
+\section{Highlights}
+
+\begin{itemize}
+    %\item $\beta$-reduction as evaluation-mechanism
+    %\item Lists and sequences
+    \item Higher-Order functions: concept, \verb|map|, \verb|filter|, \verb|reduce|, \verb|apply|, \verb|partial|
+    %\item Special forms: \verb|def|, \verb|fn|, \verb|if|, \verb|let|, \verb|do|
+    %\item Sequence operations: \verb|first|, \verb|rest|, \verb|range|, \verb|cons|, \verb|conj|, \verb|assoc|, \verb|dissoc|, \verb|disj|
+    %\item Macros: \verb|ns|, \verb|for|, \verb|cond|, \verb|and|, \verb|or|
+\end{itemize}
+
+
+
+\section{Exercises}
+\begin{exercise}[4clojure Exercise Unlocks --- Recommended!]
+    After completing this unit, you gained the knowledge to solve the following exercises:
+
+    \begin{itemize}
+        \item elementary: 17--18, 64
+        \item easy: 19--25, 27, 29--33, 38, 42, 45
+        \item medium: 46, 59 (highly recommended!)
+    \end{itemize}
+
+    Note that in some exercises you should re-implement a Clojure built-in without calling it or related functions.
+    Please also note that it is not expected that you solve every single one of these problems right now.
+    Next week will unlock only a single new problem.
+\end{exercise}
+
+
+
+	\section*{Questions}
+	If you have any questions, please contact Philipp K"orner (\texttt{p.koerner@hhu.de}) or post it to the Rocket.Chat group.
+\end{document}
+
