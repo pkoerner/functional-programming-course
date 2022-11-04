@@ -1,0 +1,108 @@
+\documentclass[11pt,a4paper]{article}
+\input{header.tex}
+\setcounter{numb}{5}
+
+
+\begin{document}
+	
+	\begin{minipage}[b]{\textwidth}
+		\parbox[t]{5cm}{%
+			\includegraphics[width=4cm]{unilogo}
+			\hfill
+		}
+		\parbox[b]{11cm}{%
+			%\scshape%
+			Heinrich-Heine-University D\"usseldorf\\
+			Computer Science Department\\
+			Software Engineering and Programming Languages\\
+			%Professor Dr.\ M.\ Leuschel
+			Philipp K\"orner
+		}
+	\end{minipage}
+\begin{center}
+	\bf
+	Functional Programming -- WT 2022 / 2023\\
+    Reading Guide 5: Recursion, Destructuring \& More
+\end{center}
+
+\pagestyle{empty}
+
+\paragraph{Timeline:} This unit should be completed by 14.11.2022.
+
+\section{Material} 
+
+\begin{itemize}
+\item 05\_recursion.clj 
+\item 04\_destructuring.clj
+\item 07\_java\_interop.clj
+\item 08\_namespaces.clj
+\item 09\_evaluation\_order.clj
+\end{itemize}
+
+\paragraph{Note:} This unit groups several REPL sessions.
+The focus lies on understanding explicit recursion and destructuring.
+While the code volume is larger than usual,
+the REPL sessions do not introduce complex concepts
+and require less cognitive load.
+In particular, we do not expect you to be able to write programs interacting heavily with Java
+or to name all internal mappings of a namespace.
+Nonetheless, you should be aware of the basic mechanisms
+and might be required to work with them later on.
+
+\section{Learning Outcomes}
+
+After completing this unit you should be able to
+
+\begin{itemize}
+    \item write recursive programs yourself.
+    \item read destructurings of data structures and specify the binding of symbols.
+    \item be able to read Host interop forms.
+    \item roughly sketch how namespaces work.
+    \item know in which order symbols are evaluted.
+\end{itemize}
+
+\section{Highlights}
+
+\begin{itemize}
+    \item Destructuring
+    \item Special Forms: \verb|loop|, \verb|recur|
+    \item Functions: \verb|trampoline|
+\end{itemize}
+
+
+
+\section{Exercises}
+
+\begin{exercise}[4clojure Exercise Unlocks]
+    After completing this unit, you gained the knowledge to solve all exercises. Enjoy!
+
+    Expect exam questions to be about ``medium'' level.
+    It is worthwhile to tackle a couple hard problems 
+    in order to prepare for the exam.
+\end{exercise}
+
+\begin{exercise}[Newton's method]
+Newton's method is an algorithm to approximate a solution $c$ for $f(c)=0$ for a given function $f$.
+The algorithm uses the series $$x_{n+1} = x_{n} - \frac{f(x_n)}{f'(x_n)}$$
+It terminates if  $|x_{n+1} - x_n| < \epsilon$ holds for a given $\epsilon > 0$.
+
+\begin{enumerate}[label=\alph*)]
+
+  \item Write a function \texttt{(defn newton [f f'] ...)} that receives the function and its derivative as a parameter. The call to \texttt{newton} should then return a function which in turn receives a starting value $x$ and a precision $eps$ and approximates the solution for $f(x)=0 \pm eps$ using Newton's method.
+  
+   \item The square root of a number $K$ is a solution for the equation $c^2 - K = 0$. So we can apply Newton's Method to the function $f(x) = x^2 - K$. Write a function \texttt{(defn sqrt [n] ...)} which approximates the square root of $n$ using Newton's method. You can use $10^{-5}$ as both initial value and precision.
+    
+%  \item Newton's method is a fixed-point algorithm. Write a function \texttt{(defn fixedpoint [F guess eps?] ...)}, which calculates a fixed point starting from an initial value $guess$. The accuracy $eps?$ should itself be a function that receives two inputs: (the new and old value) and returns true if the two values match sufficiently well.
+
+% \item Write Newton's method as instance of this fixed point function.
+
+\emph{Spoiler alert}: we will return to this exercise in unit 9.
+That reading guide will contain a solution.
+
+\end{enumerate}
+\end{exercise}
+
+	\section*{Questions}
+	If you have any questions, please contact Philipp K"orner (\texttt{p.koerner@hhu.de}) or post it to the Rocket.Chat group.
+\end{document}
+
