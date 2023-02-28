@@ -1,0 +1,177 @@
+\documentclass[11pt,a4paper]{article}
+\input{header.tex}
+\setcounter{numb}{1}
+\usepackage{csquotes}
+
+
+\begin{document}
+
+\begin{minipage}[b]{\textwidth}
+	\parbox[t]{5cm}{%
+		\includegraphics[width=4cm]{unilogo}
+		\hfill
+	}
+	\parbox[b]{11cm}{%
+		%\scshape%
+		Heinrich-Heine-University D\"usseldorf\\
+		Computer Science Department\\
+		Software Engineering and Programming Languages\\
+		%Professor Dr.\ M.\ Leuschel
+		Philipp K\"orner \\
+        Jens Bendisposto
+	}
+\end{minipage}
+\begin{center}
+	\bf
+	Functional Programming -- ST 2022\\
+	Reading Guide 01: Generative Testing
+\end{center}
+
+\pagestyle{empty}
+
+\paragraph{Timeline:} This unit should be completed by 19.04.2022.
+
+\section{Material} 
+
+\begin{itemize}
+    \item Getting Clojure, chapter 14
+	\item Material/repl2022-vertiefung/src/repl/21\_transients.clj
+	\item Material/repl2022-vertiefung/src/repl/22\_ebt.clj
+	\item Material/repl2022-vertiefung/src/repl/15\_test\_check.clj
+	\item Reid Draper: Powerful Testing with test.check \url{https://www.youtube.com/watch?v=JMhNINPo__g}
+	\item Gary Fredericks: Building test.check Generators \url{https://www.youtube.com/watch?v=F4VZPxLZUdA}
+	\item John Hughes: Testing the Hard Stuff and Staying Sane \url{https://www.youtube.com/watch?v=zi0rHwfiX1Q}
+\end{itemize}
+
+
+\section{Learning Outcomes}
+
+After completing this unit you should be able to
+
+\begin{itemize}
+    \item use transients correctly.
+    \item write example-based tests in Clojure.
+    \item write generative tests in Clojure.
+    \item discuss advantages and disadvantages of example-based and generative tests.
+\end{itemize}
+
+\section{Highlights}
+
+\begin{itemize}
+    \item Transients: \verb|transient|, \verb|persistent!|, \verb|conj!|, \verb|disj!|, \verb|assoc!|, \verb|dissoc!|, \verb|disj!|
+    \item Testing: \verb|deftest|, \verb|is|, \verb|are|
+    \item test.check: generator-namespace, \verb|for-all|, \verb|quick-check|
+\end{itemize}
+
+
+
+\section{Exercises}
+
+\begin{exercise}[\texttt{test.check}]
+
+In the files for the exercise you will find the namespace \verb|unit09.edit-distance|.
+Have a look at the functions \verb|levenshtein| and \verb|levenschtein|.
+
+\begin{enumerate}[label=\alph*)]
+    \item
+    	Create a namespace in the test directory,
+    	that can access both functions.
+
+    \item
+    	Write a \verb|test.check| property,
+        which fails if two non-empty
+        input-strings return different output for both functions.
+        Which implementation is faulty?
+        What is the error?
+        
+        Note: You do not need to repair the faulty implementation.
+
+    \item
+    	Write a generator \verb|user-generator|, which generates users at a university.
+        A user is represented by a map,
+        containing the first- and last name as well as the ID of the user.
+        The ID consists of the first two characters of the first name,
+        the first three characters of the last name and three digits.
+        An example of a generated user is:
+        
+        \verb|{:first-name "John", :last-name "Wayne", :id "joway142"}|.
+
+		If a name is not long enough, as many characters as possible are used in the ID,
+		for example one possible ID of \enquote{Rich X} would be \verb|rix666|
+
+
+		You can choose from a fixed set of names.
+        For this purpose, you can use the name lists from
+        \url{https://github.com/dominictarr/random-name}.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Shortest path problem]
+Given a triangle in the form of a vector of vectors we want to find the shortest possible path from the top of the triangle to the bottom, such that the sum of the weights is minimized. In each step, only one adjacent field in the next lower row may be selected.
+
+\enlargethispage{2\baselineskip}
+\begin{verbatim}
+user=> (path [   [1]
+                [2 4]
+               [5 1 4]
+              [2 3 4 5]])
+7 ;; 1 + 2 + 1 + 3
+user=> (path [    [3]
+                 [2 4]
+                [1 9 3]
+               [9 9 2 4]
+              [4 6 6 7 8]
+             [5 7 3 5 1 4]])
+20 ;; ; 3 + 4 + 3 + 2 + 7 + 1
+
+\end{verbatim}
+\end{exercise}
+
+\begin{exercise}[Trampoline (4clojure No. 78) and recursion]
+We have already seen that self-recursion in tail position
+using \verb|recur| ensures that no additional stack frames are used per recursion step.
+This approach does not work if two (or more) functions call each other.
+
+The higher-order function \verb|trampoline| receives a function
+and an arbitrary amount of values.
+The function is then called with the given values as parameters.
+If the return value itself is a function again, it is called without parameters.
+As long as the resulting return values are functions, they will continue to be called,
+otherwise the value is returned by \verb|trampoline|.
+
+\begin{enumerate}[label=\alph*)]
+    \item
+    	Implement a function that behaves like \verb|trampoline|.
+    	In particular, the recursion should not use any more stack frames.
+
+\begin{verbatim}
+(letfn [(triple [x] (fn [] (sub-two (* 3 x))))
+        (sub-two [x] (fn [] (stop? (- x 2))))
+        (stop? [x] (if (> x 50) x (fn [] (triple x))))]
+  (my-trampoline triple 2))
+=> 82
+
+(letfn [(my-even? [x] (if (zero? x) true (fn [] (my-odd? (dec x)))))
+        (my-odd? [x] (if (zero? x) false (fn [] (my-even? (dec x)))))]
+  (map (partial my-trampoline my-even?) (range 6)))
+=> [true false true false true false]
+\end{verbatim}
+
+Note:
+You can use \verb|fn?| to check if a value is a function or not.
+
+Additonal note: \verb|partial| is a higher order function,
+which receives a function \verb|f| and a part of its arguments $a_1$, \dots, $a_i$
+and returns a function which accepts further parameters $a_{i+1}, \dots, a_n$ ($i \leq n$)
+and then calls \verb|f| with parameters $a_1$ to $a_n$.
+\verb|letfn| is a special \verb|let| for functions.
+
+\item What do you have to do if the result of the entire calculation happens to be a function itself?
+\end{enumerate}
+
+\end{exercise}
+
+\section*{Questions}
+If you have any questions, please contact Philipp K"orner (\texttt{p.koerner@hhu.de}).
+\end{document}
+

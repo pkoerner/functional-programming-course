@@ -1,0 +1,127 @@
+\documentclass[11pt,a4paper]{article}
+\input{header.tex}
+\setcounter{numb}{2}
+
+
+\begin{document}
+
+\begin{minipage}[b]{\textwidth}
+	\parbox[t]{5cm}{%
+		\includegraphics[width=4cm]{unilogo}
+		\hfill
+	}
+	\parbox[b]{11cm}{%
+		%\scshape%
+		Heinrich-Heine-University D\"usseldorf\\
+		Computer Science Department\\
+		Software Engineering and Programming Languages\\
+		%Professor Dr.\ M.\ Leuschel
+		Philipp K\"orner \\
+        Jens Bendisposto
+	}
+\end{minipage}
+\begin{center}
+	\bf
+	Functional Programming -- ST 2022\\
+	Reading Guide 02: clojure.spec
+\end{center}
+
+\pagestyle{empty}
+
+\paragraph{Timeline:} This unit should be completed by 26.04.2022.
+
+\section{Material} 
+
+\begin{itemize}
+    \item Getting Clojure, chapter 15
+	\item Material/repl2022-vertiefung/src/repl/14\_spec.clj
+	\item Clojure Guide: spec \url{https://clojure.org/guides/spec}
+	\item Rich Hickey: clojure.spec \url{https://vimeo.com/195711510}
+	\item Stuart Halloway: Agility \& Robustness: clojure.spec \url{https://www.youtube.com/watch?v=VNTQ-M_uSo8}
+\end{itemize}
+
+
+\section{Learning Outcomes}
+
+After completing this unit you should be able to
+
+\begin{itemize}
+    \item discuss advantages and disadvantages of the clojure.spec library.
+    \item read specs and give example values that meet the given spec.
+    \item write specs yourself.
+\end{itemize}
+
+\section{Highlights}
+
+\begin{itemize}
+    \item spec: \verb|def|, \verb|fdef|, \verb|valid?|,
+    \item spec regex: \verb|cat|, \verb|alt|, \verb|+|, \verb|*|, \verb|?|, \verb|&|, \verb|spec|
+    \item combining specs: \verb|and|, \verb|or|, \verb|map-of|, \verb|coll-of|, \verb|keys|
+    \item conformed/unformed values
+\end{itemize}
+
+
+
+\section{Exercises}
+
+\begin{exercise}[Specs]
+\begin{enumerate}[label=\alph*)]
+\item
+Specify a spec for a player in a card game,
+who should look something like this:
+
+\begin{verbatim}
+{:cards/name "Philipp"
+ :cards/hand [[3 :clubs] [:ace :spades]]} 
+\end{verbatim}
+
+Any arbitrary string is allowed as a name.
+A non-empty sequence of 2-tuples is associated under \verb|:cards/hand|.
+The first entry is the value of the card, the second is the suit.
+
+\item
+Write a function \verb|discard|,
+which receives a set of players
+as well as a name and a playing card.
+If this playing card is currently in the hand
+of the named player, it is discarded.
+
+\item
+Annotate \verb|discard| with specs, which ensure
+that if called correctly, a set of players
+is returned by the function.
+
+\item
+Is it possible to detect a problem with generated tests?
+
+Note: you can limit the size of the generated values with\\
+\verb|(stest/check `discard {:clojure.spec.test.check/opts {:max-elements 4 :max-size 3}})|
+Otherwise, testing can take a very long time..
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Specs II]
+    In exercise 9.2, a test.check generator was used to generate users with identifiers.
+    Write a spec for a user.
+
+    A user is represented by a map
+    containing their first- and last name and an identifier.
+    The identifier consists of the first two characters of the first name,
+    the first three characters of the last name, and three digits.
+    An example of a valid user is 
+    
+    \verb|{:first-name "John", :last-name "Wayne", :id "joway142"}|.
+
+    Some invalid values are:
+    \begin{itemize}
+        \item \verb|42|
+        \item \verb|{:first-name "John", :last-name "Wayne", :id "cowboystud69"} ; incorrect identifier|
+        \item \verb|{:first-name "John", :surname "Wayne", :id "joway142"} ; :surname is invalid|
+    \end{itemize}
+\end{exercise}
+
+
+\section*{Questions}
+If you have any questions, please contact Philipp K"orner (\texttt{p.koerner@hhu.de}).
+\end{document}
+

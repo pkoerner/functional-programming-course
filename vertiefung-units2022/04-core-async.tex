@@ -1,0 +1,205 @@
+\documentclass[11pt,a4paper]{article}
+\input{header.tex}
+\setcounter{numb}{4}
+\usepackage{csquotes}
+
+\begin{document}
+
+\begin{minipage}[b]{\textwidth}
+	\parbox[t]{5cm}{%
+		\includegraphics[width=4cm]{unilogo}
+		\hfill
+	}
+	\parbox[b]{11cm}{%
+		%\scshape%
+		Heinrich-Heine-University D\"usseldorf\\
+		Computer Science Department\\
+		Software Engineering and Programming Languages\\
+		%Professor Dr.\ M.\ Leuschel
+		Philipp K\"orner \\
+        Jens Bendisposto
+	}
+\end{minipage}
+\begin{center}
+	\bf
+	Functional Programming -- ST 2022\\
+    Reading Guide 04: core.async\footnote{This reading guide was originally created by Florian Mager and was kindly made available under a CC BY-SA 4.0 licence.}
+\end{center}
+
+\pagestyle{empty}
+
+\paragraph{Timeline:} This unit should be completed by 10.05.2022.
+
+\section{Material} 
+
+\renewcommand{\labelenumi}{\Alph{enumi}}
+\begin{itemize}    
+	
+	\item Rick Hickey: Clojure core.async \url{https://www.youtube.com/watch?v=yJxFPoxqzWE}
+    (Talk containing the motivation, backgrounds, application areas and implementation ideas.) 
+	
+	\item Timothy Baldridge: core.async \url{https://www.youtube.com/watch?v=enwIIGzhahw} \\
+    (or work through the REPL session presented in the video): \url{https://github.com/halgari/clojure-conj-2013-core.async-examples/blob/master/src/clojure_conj_talk/core.clj}
+	
+    \item Clojure for the Brave and True, Chapter 11: Mastering Concurrent Processes with core.async
+        (This is an alternative to the material above. It provides another perspective on core.async. Further, a hot dog vending machine is created, which definitely is a plus.)
+    
+    \item Rich Hickey: Implementation details of core.async Channels \url{https://github.com/matthiasn/talk-transcripts/blob/master/Hickey_Rich/ImplementationDetails.md} (transcript),\\
+        \url{https://www.youtube.com/watch?v=hMEX6lfBeRM} (video)
+        (Though we do not care about most implementation details too much, the video provides information about channels and interaction with them. The first 16 minutes are the most relevant.)
+    
+    \item Blogpost announcing core.async: \\
+    \url{https://clojure.org/news/2013/06/28/clojure-clore-async-channels}
+        (A summary to wrap up.)
+    
+\end{itemize} 
+
+Useful resources:
+
+\begin{itemize}
+	
+	\item GitHub/Source Repo: \url{https://github.com/clojure/core.async}
+	
+	\item API docs: \url{https://clojure.github.io/core.async/}
+\end{itemize}
+
+
+\section{Learning Outcomes}
+
+After completing this unit you should be able to
+
+\begin{itemize}
+	\item explain and implement communication using core.async channels.
+	\item name and explain different buffer strategies and the rationale for buffers.
+	\item describe the anatomy of a channel.
+	\item explain what happens when a channel is closed.
+	\item decide when to use the core.async library.
+\end{itemize}
+
+\section{API}
+You should be able to use the following API:
+\begin{itemize}
+	\item Creating channels: \verb|(chan) / (chan buf-or-n)|
+	\item Creating buffers: \verb|(buffer n) / (dropping-buffer n) / (sliding-buffer n)|
+	\item Creating processes: \verb|(thread & body) / (go & body)|
+	\item Put: \verb|(>! port val) / (>!! port val)|
+	\item Take: \verb|(<! port val) / (<!! port val)|
+	\item Alt: \verb|(alt! & clauses) / (alt!! & clauses)|
+	\item Alts:\verb|(alts! & ports & {:as opts}) / (alts!! & ports & {:as opts})| 
+	\item Timeout channel: \verb|(timeout msecs)|
+	\item Closing channels: \verb|(close! chan)|
+\end{itemize}
+
+
+
+%\section{Aufgaben}
+%
+%\begin{aufgabe}[Philosophenproblem]
+%Implementieren Sie eine leichte Abwandlung des Philosophenproblems. \\
+%\url{https://de.wikipedia.org/wiki/Philosophenproblem} 
+%
+%\begin{enumerate}[label=\alph*)]
+%	\item Schreiben Sei eine Funktion \verb|(dining-philosophers n)|, die das Philosophenproblem für \verb|n| Philosophen implementiert. Die Philosophen sollen gleichzeitig versuchen folgendes Verhalten durchzuführen: \\
+%	\textit{sits down, picks up left fork, picks up right fork, eats, puts down left fork, puts down right fork, gets up.} \\
+%	Zwischen dem Aufheben der linken Gabel und rechten Gabel sollte kurz gewartet werden. Um das Essen der Philoshopen zu simulieren, sollte dort auch etwas länger gewartet werden. \\
+%	\\
+%	Hinweis: Benutzen Sie für die Ausgabe einen logging-channel.\\
+%	(Zeile 232: \ \  \url{https://github.com/halgari/clojure-conj-2013-core.async-examples/blob/master/src/clojure_conj_talk/core.clj}) \\
+%	\clearpage
+%	Beispielaufruf: 
+%	\begin{verbatim}
+%	(dining-philosophers 3) 
+%	=> nil 
+%	Phil 0 sits down. 
+%	Phil 1 sits down. 
+%	Phil 2 sits down. 
+%	Phil 2 picks up his left fork. 
+%	Phil 1 picks up his left fork. 
+%	Phil 0 picks up his left fork. 
+%	\end{verbatim} 
+%	
+%	\item Schreiben Sie eine Funktion \verb|(dining-philosophers-solution n)|, die eine Lösung für das Philosophenproblem implementiert. Die Idee ist, dass nach einem zufälligen Zeitraum die Philosophen ihre linke Gabel wieder hinlegen, wenn sie ihre rechte Gabel nicht bekommen haben. Nachdem sie ihre linke Gabel wieder hingelegt habe, denken sie kurz nach, bevor sie mit ihrem Verhalten die linke Gabel zu nehmen wieder anfangen. Beispielaufruf: 
+%	\begin{verbatim}
+%	(dining-philosophers-solution 3) 
+%	=> nil 
+%	Phil 2 sits down. 
+%	Phil 1 sits down.
+%	Phil 0 sits down. 
+%	Phil 2 picks up his left fork. 
+%	Phil 0 picks up his left fork. 
+%	Phil 1 picks up his left fork. 
+%	(some time goes by) 
+%	Phil 2 puts down his left fork. 
+%	Phil 2 thinks. 
+%	Phil 1 picks up his right fork. 
+%	Phil 1 eats. 
+%	(some time goes by) 
+%	Phil 1 puts down his right fork. 
+%	Phil 2 picks up his left fork. 
+%	Phil 1 puts down his left fork. 
+%	Phil 1 gets up. 
+%	Phil 0 picks up his right fork. 
+%	Phil 0 eats.
+%	(some time goes by) 
+%	Phil 0 puts down his right fork. 
+%	Phil 0 puts down his left fork. 
+%	Phil 0 gets up. 
+%	Phil 2 picks up his right fork. 
+%	Phil 2 eats. 
+%	(some time goes by) 
+%	Phil 2 puts down his right fork. 
+%	Phil 2 puts down his left fork. 
+%	Phil 2 gets up. 
+%	\end{verbatim} 
+%	
+%\end{enumerate}
+%\end{aufgabe}
+%
+%\begin{aufgabe}[Paralleles Sieb des Eratosthenes]
+%
+%\begin{enumerate}[label=\alph*)]
+%
+%\item Schreiben Sie eine Funktion \verb|(primes n)|, die eine (naive) Version des Sieb des Eratosthenes implementiert.\\ \url{https://de.wikipedia.org/wiki/Sieb_des_Eratosthenes}
+%
+%Beispielaufruf:
+%\begin{verbatim}
+%user=> (prime 100)
+%[2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97]
+%\end{verbatim} 
+%  
+%\item Schreiben Sie eine Funktion \verb|(primes-parallel n)|, die eine parallele Version des Sieb des Eratosthenes implementiert. Die Idee ist, das Streichen/Filtern aller Vielfachen einer Primzahl parallel durchzuführen. Dazu wird die Sequenz der Zahlen von 2 bis \verb|n| in mehrere gleich große Blöcke aufgeteilt. 
+%Die Suche der Primzahlen startet im ersten Block und verläuft fast genau wie in Teilaufgabe (a).
+%Der Unterschied ist, dass beim Streichen/Filtern der Vielfachen einer Primzahl dies parallel auch in allen folgenden Blöcken erfolgt. Nachdem im ersten Block alle Primzahlen gefunden wurden, werden im zweiten Block auf die gleiche Weise alle Primzahlen gesucht usw. bis alle Blöcke abgearbeitet sind. 
+%
+%Beispiel für \verb|n|=15 und Blockgröße 5: \\
+%(Damit sich der zeitliche Aufwand für die Parallelisierung lohnt, muss \verb|n| und die Blockgröße um einiges größer sein.)
+%\begin{verbatim}
+%[2 3 4 5 6] [7 8 9 10 11] [12 13 14 15] 
+%=> 2 wird im ersten Block gefunden.
+%   Gleichzeitiges streichen/filtern von 4, 6, 8, 10, 12 und 14.
+%[3 5] [7 9 11] [13 15] 
+%=> 3 wird im ersten Block gefunden.
+%   Gleichzeitiges streichen/filtern von 9 und 15.
+%[5] [7 11] [13] 
+%=> 5 wird im ersten Block gefunden. 
+%[7 11] [13] 
+%=> 7 wird im zweiten Block gefunden.
+%[11] [13] 
+%=> 11 wird im zweiten Block gefunden.
+%[13] 
+%=> 13 wird im dritten Block gefunden.
+%Fertig.
+%\end{verbatim} 
+%
+%
+%\item Vergleichen Sie die Laufzeit von \verb|(primes n)| und \verb|(primes-parallel n)| für n = 100000. \\ 
+%Ist \verb|(primes-parallel n)| schneller? \\ 
+%Falls nicht, probieren Sie unterschiedliche Block und Buffergrößen aus.
+%
+%\end{enumerate}
+%
+%\end{aufgabe} 
+
+
+\end{document}
+
