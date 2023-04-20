@@ -1,0 +1,99 @@
+\documentclass[11pt,a4paper]{article}
+\input{header.tex}
+\setcounter{numb}{5}
+\usepackage{csquotes}
+
+\begin{document}
+
+\begin{minipage}[b]{\textwidth}
+	\parbox[t]{5cm}{%
+		\includegraphics[width=4cm]{unilogo}
+		\hfill
+	}
+	\parbox[b]{11cm}{%
+		%\scshape%
+		Heinrich-Heine-University D\"usseldorf\\
+		Computer Science Department\\
+		Software Engineering and Programming Languages\\
+		%Professor Dr.\ M.\ Leuschel
+		Philipp K\"orner \\
+        Jens Bendisposto
+	}
+\end{minipage}
+\begin{center}
+	\bf
+	Functional Programming -- ST 2023\\
+    Reading Guide 05: Databases
+\end{center}
+
+\pagestyle{empty}
+
+\paragraph{Timeline:} This unit should be completed by 12.05.2023.
+
+\section{Material} 
+
+\renewcommand{\labelenumi}{\Alph{enumi}}
+\begin{itemize}    
+	
+	\item Rick Hickey: Datomic \url{https://www.youtube.com/watch?v=9TYfcyvSpEQ}
+    (until 21:50: how can a data base be embedded into the epochal time model?)
+	
+	\item Rich Hickey: Writing Datomic in Clojure \url{https://www.youtube.com/watch?v=7Fi-UvrRpyI}
+    (architecture of Datomic, in particular compared to other database systems)
+	
+    \item Datomic Datalog: \url{https://www.youtube.com/watch?v=bAilFQdaiHk}
+    (brief introduction to the query language)
+\end{itemize} 
+
+Useful resources:
+
+\begin{itemize}
+	
+	\item Interactive Datomic Tutorial: \url{https://max-datom.com/}
+	
+    \item Datahike (open-source alternative to Datomic for smaller projects): \url{https://github.com/replikativ/datahike}
+\end{itemize}
+
+
+\section{Learning Outcomes}
+
+After completing this unit you should be able to
+
+\begin{itemize}
+    \item compare the architecture of Datomic to \enquote{traditional} data bases.
+    \item describe unique features of a data base that conforms to the epochal time model.
+    \item retrieve data using Datalog-style queries.
+\end{itemize}
+
+
+
+\section{Exercises}
+
+\begin{exercise}[myMDB]
+
+    For this task, you may use the \verb|05-skeleton.clj| you will find in ILIAS.
+    Additionally, we use two data sets IMDb provides at \url{https://datasets.imdbws.com/}.
+    We'll need to download and extract \verb|title.basics.tsv.gz| as well as \verb|title.ratings.tsv.gz|.
+
+    \begin{enumerate}
+        \item Feed the data into a Datehike data base.
+            \verb|05-skeleton.clj| already contains code
+            that parses the .tsv-file,
+            sets up a data base and provides a schema.
+            Your task here is to transform the data into a transaction.
+
+        \item Query the data base and retrieve the following information:
+            \begin{itemize}
+                \item In what year was \enquote{Beverly Hills Cop} released?
+                \item What is the IMDb score for \enquote{The Matrix}?
+                \item Which movies from the 80s has a score of at least 9.0?
+                \item What is the average score of all movies released in 1914?
+            \end{itemize}
+    \end{enumerate}
+
+
+\end{exercise}
+
+
+\end{document}
+

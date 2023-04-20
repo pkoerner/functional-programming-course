@@ -1,0 +1,151 @@
+\documentclass[11pt,a4paper]{article}
+\input{header.tex}
+\setcounter{numb}{03}
+\usepackage{mathtools}
+
+
+\begin{document}
+
+\begin{minipage}[b]{\textwidth}
+	\parbox[t]{5cm}{%
+		\includegraphics[width=4cm]{unilogo}
+		\hfill
+	}
+	\parbox[b]{11cm}{%
+		%\scshape%
+		Heinrich-Heine-University D\"usseldorf\\
+		Computer Science Department\\
+		Software Engineering and Programming Languages\\
+		%Professor Dr.\ M.\ Leuschel
+		Philipp K\"orner %\\
+        %Jens Bendisposto
+	}
+\end{minipage}
+\begin{center}
+	\bf
+	Functional Programming -- ST 2023 \\
+	Reading Guide 03: Transducer
+\end{center}
+
+\pagestyle{empty}
+
+\paragraph{Timeline:} This unit should be completed by 28.05.2023.
+
+\section{Material} 
+
+\begin{itemize}
+    \item Rich Hickey: Transducers \url{https://www.youtube.com/watch?v=6mTbuzafcII} --- context, overview
+    \item Material/repl2022-vertiefung/src/repl/16\_transducer.clj --- material we compiled
+    \item Rich Hickey: Inside Transducers \url{https://www.youtube.com/watch?v=4KqUvG8HPYo} --- optional, maybe a bit more advanced
+\end{itemize}
+
+
+\section{Learning Outcomes}
+
+After completing this unit you should be able to
+
+\begin{itemize}
+    \item describe the idea behind transducers.
+    \item understand and correctly use existing transducers.
+    \item write basic (non-stateful) transducers yourself.
+\end{itemize}
+
+\section{Highlights}
+
+\begin{itemize}
+    \item reduce vs. transduce
+    \item pass-through of step-functions
+    \item state-flushing
+\end{itemize}
+
+
+
+\section{Exercises}
+
+\begin{exercise}[Transducer]
+
+Implement a function \verb|(transplace m)|,
+which receives a map \verb|m| as argument and returns a transducer.
+If an element is present as a key in \verb|m|,
+it is replaced by the associated value,
+otherwise the original element is retained.
+
+The function \texttt{replace} must not be used for this.
+
+\vspace{8px}
+Example calls:
+\begin{verbatim}
+user=> (transduce (transplace {:y :a}) conj [:x :y :z])
+[:x :a :z]
+user=> (transduce (comp (transplace {nil 0}) (map inc))
+                  conj
+                  [42 nil 3])
+[43 1 4]
+user=> (transduce (comp (transplace {nil -1}) (partition-by pos?)) 
+                  conj
+                  [1 2 3 0 5 6])
+[[1 2 3] [0] [5 6]]
+\end{verbatim} 
+\end{exercise} 
+
+%\begin{exercise}[Square-and-Multiply]
+%
+%Powers of natural numbers can be calculated via $b^e = \underbrace{b * b * ... * b}_{e\text{ times}}$.
+%However, multiplications of two numbers are relatively slow on the CPU.
+%
+%The idea behind exponentiation by squaring is to save multiplications by first calculating $b^{2^i}$ for $0 < 2^i \leq e$ and then multiplying the appropriate terms. These result from the binary representation of the exponent, for example $27 = 16 + 8 + 2 + 1$.
+%
+%Consequently, $30^{27}$ is calculated using $30^{16} * 30^8 * 30^2 * 30^1 = 30^{2^4} * 30^{2^3} * 30^{2^1} * 30^{2^0}$.
+%
+%Implement the algorithm. In the following section, a possible approach to one solution is described:
+%
+%\begin{enumerate}[label=\alph*)]
+%\item
+%  Write a function \texttt{(defn to-bits [n] ...)} that takes a natural number and returns a list of 0s and 1s that is the binary representation of n.
+%\item 
+%    Write a function \texttt{(defn squares [b e] ...)} that, given a natural number b, computes the sequence \texttt{[$b^{2^0}$ $b^{2^1}$ $b^{2^2}$ ... $b^{2^j}$]} for $j \coloneqq \max\limits_{k} (2^k \leq e)$.
+%\item
+%  Combine the previous two functions suitably into one function \texttt{(defn square-and-multiply [b e] ...)}.
+%\end{enumerate}
+%\end{exercise}
+%
+%\begin{exercise}[Hamiltonian path]
+%    A Hamiltonian path is a particular path through a graph:
+%    each vertex in the graph is visited exactly once.
+%    You are to implement a variant of a search for a Hamiltonian path.
+%    For simplicity, it is assumed that the starting vertex is known.
+%
+%	The function \verb|hamilton| receives as its first argument
+%	a list of (directed) edges of the form \verb|[tail head]|,
+%	as its second argument the list of vertices in the graph,
+%	and as its third argument the vertex
+%	from which to start searching for a Hamiltonian path.
+%    For example, calls should look like this:
+%
+%    \begin{verbatim}
+%    user=> (hamilton [[:a :b] [:b :c] [:c :d]]
+%                     #{:a :b :c} 
+%                     :a)
+%    (:a :b :c)
+%    user=> (hamilton [[:a :a] [:a :b] [:b :c] [:c :d]] 
+%                     #{:a :b :c}
+%                     :a) 
+%    (:a :b :c) ;; with loop [:a :a]
+%    user=> (hamilton (shuffle [[:a :a] [:a :d] [:b :c] [:a :b] [:c :d]])
+%                     #{:a :b :c :d} 
+%                     :a)
+%    (:a :b :c :d)
+%    user=> (hamilton [[:a :a] [:a :d] [:b :c] [:a :b] [:c :d]]
+%                     #{:a :b :c :d} 
+%                     :b)
+%    nil ;; no path
+%    \end{verbatim}
+%
+%    Implement the function \verb|hamilton|.
+%    Do not naively enumerate all permutations of the vertices.
+%\end{exercise}
+
+\section*{Questions}
+If you have any questions, please contact Philipp K"orner (\texttt{p.koerner@hhu.de}).
+\end{document}
+
