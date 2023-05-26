@@ -1,0 +1,69 @@
+\documentclass[11pt,a4paper]{article}
+\input{header.tex}
+\setcounter{numb}{6}
+\usepackage{csquotes}
+
+\begin{document}
+
+\begin{minipage}[b]{\textwidth}
+	\parbox[t]{5cm}{%
+		\includegraphics[width=4cm]{unilogo}
+		\hfill
+	}
+	\parbox[b]{11cm}{%
+		%\scshape%
+		Heinrich-Heine-University D\"usseldorf\\
+		Computer Science Department\\
+		Software Engineering and Programming Languages\\
+		%Professor Dr.\ M.\ Leuschel
+		Philipp K\"orner \\
+        Jens Bendisposto
+	}
+\end{minipage}
+\begin{center}
+	\bf
+	Functional Programming -- ST 2023\\
+    Reading Guide 06: Intro to Clojurescript / re-frame
+\end{center}
+
+\pagestyle{empty}
+
+\paragraph{Timeline:} This unit should be completed by 02.06.2023.
+
+\section{Material} 
+
+\renewcommand{\labelenumi}{\Alph{enumi}}
+\begin{itemize}    
+    \item Shaun Mahood: re-frame your ClojureScript applications \url{https://www.youtube.com/watch?v=cDzjlx6otCU}
+        or, alternatively,  the re-frame documentation (at least THE BASICS and MENTAL MODEL OMNIBUS of \url{https://day8.github.io/re-frame/re-frame/})
+    \item (optional) Bruce Hauman - Developing ClojureScript With Figwheel \url{https://www.youtube.com/watch?v=j-kj2qwJa_E} (first 30 minutes)
+        or, alternatively,  the Figwheel tutorial (\url{https://figwheel.org/tutorial}
+\end{itemize} 
+
+\section{Learning Outcomes}
+
+After completing this unit you should be able to
+
+\begin{itemize}
+    \item know how to interact with a ClojureScript REPL.
+    \item use Figwheel in production.
+    \item describe the basic state concept of re-frame.
+\end{itemize}
+
+
+
+\section{Exercises}
+
+\begin{exercise}[Tooling]
+
+    In the ILIAS, you will find Jan Ro\ss{}bachs unit on re-frame (06-reframe.zip).
+    Work through the example/README.md file and ensure that all tools are installed.
+    Then, you should be able to interact with the Clojurescript file (example/src/reframe/example/core.cljs).
+    Try some change while the application runs and see whether it has an effect.
+
+
+\end{exercise}
+
+
+\end{document}
+
