@@ -1,0 +1,103 @@
+\documentclass[11pt,a4paper]{article}
+\input{header.tex}
+\setcounter{numb}{9}
+
+
+\begin{document}
+
+\begin{minipage}[b]{\textwidth}
+	\parbox[t]{5cm}{%
+		\includegraphics[width=4cm]{unilogo}
+		\hfill
+	}
+	\parbox[b]{11cm}{%
+		%\scshape%
+		Heinrich-Heine-University D\"usseldorf\\
+		Computer Science Department\\
+		Software Engineering and Programming Languages\\
+		%Professor Dr.\ M.\ Leuschel
+		Philipp K\"orner
+	}
+\end{minipage}
+\begin{center}
+	\bf
+	Functional Programming -- WT 2022 / 2023\\
+	Reading Guide 8: Time and Value (Praxis) --- Atoms and Agents
+\end{center}
+
+\pagestyle{empty}
+
+\paragraph{Timeline:} This unit should be completed by 12.12.2022.
+
+\section{Material} 
+
+\begin{itemize}
+    \item Alternatives:
+        \begin{itemize}
+            \item \begin{itemize}
+                \item 24\_atoms.clj
+                \item 25\_agents.clj
+            \end{itemize}
+            \item The Joy of Clojure, chapter 10.4 + 10.3
+            \item Clojure for the Brave and True, chapter 10 (covers most of refs as well): Object-Oriented Metaphysics, Clojure Metaphysics, Atoms, Watches and Validators
+        \end{itemize}
+    \item Reference Pages:
+        \begin{itemize}
+    \item Clojure Reference: Atoms \url{https://clojure.org/reference/atoms}
+    \item Clojure Reference: Agents \url{https://clojure.org/reference/agents}
+        \end{itemize}
+\end{itemize}
+
+
+\section{Learning Outcomes}
+
+After completing this unit you should be able to
+
+\begin{itemize}
+	\item describe and compare the semantics of atoms and agents constructs.
+    \item explain the conflict behaviour of atoms and agents constructs.
+    \item identify incorrect usage of atoms and agents constructs.
+    \item identify use cases for atoms and agents.
+    \item use atoms and agents in a consistent manner.
+\end{itemize}
+
+\section{Highlights}
+
+\begin{itemize}
+    \item Atoms, agents
+    \item Macros: \verb|dosync|
+    \item Functions: \verb|swap!|, \verb|reset!|, \verb|deref|, \verb|send|, \verb|send-off|, \verb|await|
+\end{itemize}
+
+
+
+\section{Exercises}
+
+\begin{exercise}[Minesweeper]
+Implement Minesweeper (see \url{https://de.wikipedia.org/wiki/Minesweeper}, \url{https://www.youtube.com/watch?v=LHY8NKj3RKs}). 
+
+At least the following functions shall be available on the REPL:
+
+\begin{itemize}
+\item \texttt{(init! height width amount-of-mines)} should initialize the playing field with corresponding height, width and number of mines.
+Additionally \texttt{(init!)} should use 30 as default value for the height, 16 for the width and 99 for the number of mines.
+\emph{Note:} the function \verb|shuffle| could be useful.
+\item \texttt{(reveal! x y)} uncovers the field at coordinate (x,y). If a mine happens to be there, the game is lost.
+If there is no mine in the surrounding area of this field, all fields around it should be uncovered automatically.
+(and analogously for the neighbours of those fields, if there are also no mines in the surrounding area).
+\item \texttt{(flag! x y)} should mark the field at (x,y) as mine or remove this mark if it already was marked.
+Marked fields cannot be uncovered by \texttt{reveal!}.
+\item \texttt{(print-board!)} should output the board in an appropriate format.
+\end{itemize}
+
+\emph{Note:} This requires the use of time management construct. Make sure that no inconsistent state can occur.
+
+\emph{Note:} Yes, it is somewhat ugly to extract the fields surrounding a given field.
+
+\end{exercise}
+
+
+	\section*{Questions}
+	If you have any questions, please contact Philipp K"orner (\texttt{p.koerner@hhu.de}) or post it to the Rocket.Chat group.
+\end{document}
+
