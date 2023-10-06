@@ -3,7 +3,7 @@
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.8.0"]
+  :dependencies [[org.clojure/clojure "1.11.0"]
 
                  ;; 05 Rekursion
                  [org.clojure/tools.trace "0.7.9"]
@@ -17,7 +17,8 @@
                  ;; 15 test.check
                  ;; braucht älteres leiningen (<= 2.8.1)
                  ;;[org.clojure/clojure "1.5.1"]
-                 ;;[org.clojure/test.check "0.7.0"] ;; aktuelle Version: [org.clojure/test.check "0.9.0"]
+                 ;;[org.clojure/test.check "0.7.0"] ;; aktuelle Version:
+                 [org.clojure/test.check "0.9.0"]
                  ; [criterium "0.4.3"]
 
                  ;; 14 clojure.spec
