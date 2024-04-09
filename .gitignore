@@ -3,3 +3,5 @@
 **/*.aux
 **/*.log
 **/.lein-repl-history
+*.fls
+*.fdb_latexmk
