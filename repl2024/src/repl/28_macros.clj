@@ -4,18 +4,33 @@
 ;; Look behind you, a three headed monkey!
 ;; Don't pay attention to what is defined here (but evaluate it)
                                                                                                                                                                                                                    (def x -3)
+
+
+;; 1 Introduction
+;; 2 Quoting 2: Electric Boogalo - The Syntax Quote `
+;;   - rules for scalar values
+;;   - rules for compound values
+;; 3 The gensym #
+;; 4 Don't Quote Me on That - Unquote ~
+;; 5 Unquote-Splice ~@
+;; 6 Practicing the Syntax Quote
+;; 7 Writing a Macro and Staying Sane
+;; 8 and now?
+;;   - debugging with macroexpand and its variants 
+;;   - letting intermediate results to avoid double evaluation
+;;   - comparison: fn vs macro (evaluation and side effects)
+
 ;; new today:
 ;; `, ~, ~@, #
 
 
 (comment
 
-  ;; --------------------------------------------------------------------------------------
-  ;; Macros
+;; 1 Introduction and Revision
+;; ---------------------------
 
+  ;; What does it take to understand the true power of Lisp?
 
-  ;; The power of Lisp
-  ;; -----------------------------------------------------------------------------------------------
 
 
   ;; Revision:
@@ -30,7 +45,7 @@
   ;; Syntax Quoting & Reader Experiments
 
   ;; Helper function that gives us input,
-  ;; the result from the reader and the evaluated result.
+  ;; the result from the reader and the evaluated result (as before).
   (defn my-read [foo]
     (let [data (read-string foo)
           result (try (eval data) (catch Throwable t (.getMessage t)))]
@@ -54,8 +69,8 @@
 
   (my-readable "'my-readable")
 
-  ;; Quoting 2: Electric Boogalo
-  ;; the syntax quote `
+
+;; 2 Quoting 2: Electric Boogalo - The Syntax Quote `
 
   ;; Rule #1 of the syntax quote:
   ;; - symbols receive the matching or current namespace
@@ -84,8 +99,10 @@
   ;; functions.
 
 
-  ;; ---
-  ;; gensym:
+;; 3 The gensym #
+;; --------------
+
+
   ;; where we had to call (gensym) ourselves last time,
   ;; we can make use of syntax (in scope of the syntax quote) instead:
   (my-readable "`a#")
@@ -96,7 +113,6 @@
   (let [x0 15
         y1 2]
     (+ x0 y1))
-  ;; 
 
   ;; Yes, you can generate collisions with existing identifiers.
   ;; No, that's not a good idea.
@@ -115,7 +131,9 @@
 
 
 
-  ;; stop quoting -  Unquote ~
+;; 4 Don't Quote Me on That - Unquote ~
+;; ------------------------------------
+
   (def foo 42)
   (my-readable "`foo")
   (my-readable "`~foo")
@@ -170,7 +188,9 @@
 
 
 
-  ;; Splicing
+;; 5 Unquote-Splice ~@
+;; -------------------
+
   ;; Sometimes you receive a list and you want to pass the content to a function.
   ;; In those cases you can use apply...
   (my-readable "`(+ [1 2 3])")
@@ -188,9 +208,10 @@
 
 
 
-  ;; Unquoting symbols
 
-  ;; practicing the syntax quote ` a little bit....
+;; 6 Practicing the Syntax Quote
+;; -----------------------------
+
   (defn mk-adder [x]
     (eval `(fn [x#] (+ x x#))))
   ;; the function receives a fresh parameter so no collision is caused
@@ -232,8 +253,12 @@
 
 
 
-  ;; --------------------------------------------------------------------------------------
-  ;; Writing Macros - Rule of thumb
+;; 7 Writing a Macro and Staying Sane
+;; -----------------------------------
+
+
+  ;; "Be reasonable. Do it my way." 
+  ;;   - Coach Ralph Maughan
 
 
   ;; So you want to write a macro?
@@ -291,6 +316,10 @@
   (source when)
   ;; this was probably written when the template syntax did not exist yet...
 
+
+
+;; 8 and now?
+;; ----------
 
   ;; NOT a revision: the same thing as last week, but this time with templating syntax!
   ;; observe the same issues:
