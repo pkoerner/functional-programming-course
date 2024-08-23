@@ -1,5 +1,15 @@
 (ns repl.02-data)
 
+;; 1 Reminder: apply
+;; 2 Reminder: Higher Order Function
+;; 3 map and filter as reduce
+;; 4 Homemade Laziness
+;; 5 Laziness in Practice: Pitfalls
+;;   - side effects
+;;   - infinite loops
+
+
+
 (comment
 ;; Especially important if we work with infinite data structures
 
@@ -8,12 +18,9 @@
 ;; Data structures in Clojure
 
 
-;; ---------------------------------------------------------
-;; Functions / Higher Order Functions
-;; ---------------------------------------------------------
 
-
-;; Revision: apply
+;; 1 Reminder: apply
+;; -----------------
 
 ;; does not work: Type error (List instead of Integer)
 (+ 4 [1 2 3])
@@ -29,7 +36,10 @@
 (apply + 4 1 2 3)
 
 
-;; Revision: Higher Order Function - A function that takes a function as a parameter and/or returns one
+;; 2 Reminder: Higher Order Function
+;; ---------------------------------
+
+;; Higher Order Function - A function that takes a function as a parameter and/or returns one
 
 ;; Standard examples (already seen): map filter reduce
 
@@ -42,8 +52,14 @@
 (reduce * (range 2 7))
 
 
+;; apply also is a higher order function!
+
 ;; reduce is described as 'the mother of all HOF'
 ;; and can be used to define a version of map and filter
+
+
+;; 3 map and filter as reduce
+;; --------------------------
 
 (defn mymap [f c]
   (reduce (fn [a e] ;; a stands for accumulator, e for element
@@ -94,9 +110,10 @@
 ;; What is the proper mental concept of laziness?
 ;; Cue A-Team's "B.A. builds" music.
 
-;; ---------------------------------------------------------
-;; Homemade Laziness
-;; ---------------------------------------------------------
+;; 4 Homemade Laziness
+;; -------------------
+
+;; This section should give you an idea how laziness can be implemented.
 
 ;; Range with data structures
 
@@ -148,6 +165,9 @@
 ;; A lazy data structure keeps a pointer to the rest of the sequence and knows
 ;; which functions have to be applied to those elements
 
+
+;; 5 Laziness in Practice: Pitfalls
+;; --------------------------------
 
 ;; Some programming advice when working with laziness:
 
