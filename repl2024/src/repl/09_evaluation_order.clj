@@ -1,16 +1,28 @@
 (ns repl.09-evaluation-order)
 
 
-  ;; Evaluation of symbols
-  ;; ------------------------------------------------------------------------------------
+;; A closer look at Symbol Evaluation
+
+;; 1 Basic Mechanism
+;; 2 The Weird #' thing: var
+;; 3 Var Aliasing and Chaining
+;; 4 Order of Evaluation Attempts for Symbols
+;; 5 Special Delivery: Extra Rules
+;; 6 Closing Remarks
+
 (comment
-  ;; Literals are evaluated directly
+
+;; 1 Basic Mechanism
+;; -----------------
+
+  ;; We know that literals are evaluated directly
   1
   :a
-  ;; in data structure literals the elements are evaluated from left to right
+
+  ;; in data structures, literals the elements are evaluated from left to right (though this might not be the case for maps and sets)
   [:a 1]
-  {:a 1}
   [(println 1) (println 2)]
+
   ;; Function calls: first the expression that the function returns, then that of the first argument (and recursively the same pattern), the second argument, and so on.
   (+ 1 2)
 
@@ -20,6 +32,10 @@
   ;; ...unless they are defined
   (def ding 1)
   ding
+
+
+;; 2 The Weird #' thing: var
+;; -------------------------
 
   ;; Let us define a function.
   ;; The return value is some weird #'repl.09-evaluation-order/foo thing
@@ -71,6 +87,13 @@
 
   ;; Var:
   ;; Var -> The function object
+
+
+;; 3 Var Aliasing and Chaining
+;; ---------------------------
+
+;; It is okay not to understand all the details in this section.
+;; Simply don't do this. Please.
 
 
   ;; what happens with multiple vars (aliasing)?
@@ -137,8 +160,8 @@
 
 
 
-  ;; Order of evaluation of symbols
-  ;; ------------------------------------------------------------------------------------
+;; 4 Order of Evaluation Attempts for Symbols
+;; ------------------------------------------
 
   ;; 1) fully qualified symbols, i.e. with namespace, trump everything else
   ;; java.io.Writer is a Java class
@@ -170,7 +193,11 @@
 
 
 
-  ;; special exception: special forms are... special
+
+;; 5 Special Delivery: Extra Rules
+;; -------------------------------
+
+
   ;; special forms are the basis of Clojure. There are only very few of them
   ;; (depending on how you count, there are 13). Then there are some for Java Interop.
   ;; Examples are def, fn, if, do, let and loop/recur.
@@ -198,7 +225,11 @@
   ;; special forms are not prepended with a namespace by the syntax quote!
   `do
   `if
+  ;; They do not live in any namespace but are actually part of the language.
 
+
+;; 6 Closing Remarks
+;; -----------------
 
   ;; lessons learned today:
   ;; - def(n) is for constants and functions.
