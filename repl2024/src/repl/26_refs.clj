@@ -12,10 +12,9 @@
 ;;   - alter
 ;; 4 Interlude: Many Atoms to One
 ;; 5 Commuting Through Heavy Traffic
-;; 6 Ref-Set, Dosync and Derefs ;; TODO: merge with Sec 3
-;; 7 The Write Skew Problem
+;; 6 The Write Skew Problem
 ;;   - ensure
-;; 8 Composing Agents and Refs
+;; 7 Composing Agents and Refs
 
 
 ;; 1 Introduction
@@ -68,14 +67,30 @@
 
 
 ;; 3 Vocabulary of Refs
+;; --------------------
 
   ;; now the same shtick with refs
-  (def account1 (ref 100))
+  (def account1 (ref 99))
   (def account2 (ref 0))
+
+  ;; 'reset!' is called 'ref-set' for refs
+  (dosync (ref-set account1 100))
 
   ;; dereferencing works as before:
   account1
   @account1
+
+  ;; The following is correct for refs (but would be wrong for atoms!)
+
+  (dosync
+   (println @account1 @account2))
+
+  ;; Derefs on **refs** inside a dosync-block are consistent.
+  ;; You can also deref atoms in a dosync-block;
+  ;; but this changes absolutely nothing about the
+  ;; problem with inconsistency
+
+
 
 
   ;; 'alter' is the 'swap!' for refs
@@ -195,36 +210,8 @@
 
 
 
-;; 6 Ref-Set, Dosync and Derefs
-;; ----------------------------
 
-  ;; 'reset!' is called 'ref-set' for refs
-  (dosync (ref-set account1 100))
-
-  ;; The following is correct for refs (but would be wrong for atoms!)
-
-  (dosync
-   (println @account1 @account2))
-
-  ;; Derefs on **refs** inside a dosync-block are consistent.
-  ;; You can also deref atoms in a dosync-block;
-  ;; but this changes absolutely nothing about the
-  ;; problem with inconsistency
-
-
-
-
-  ;; Note: We now know what a transaction is.
-  ;; The 
-  ;; The exclamation mark (or bang) on a function like swap! means
-  ;; that you cannot use it safely inside a transaction.
-  ;; Side effects (may) get triggered multiple times because of conflicts
-  ;; depending on how far a transaction progressed before the conflict occurred.
-  ;; This is quite the unpleasant combination.
-  ;; Therefore we should only use pure functions in transactions if possible!
-
-
-;; 7 The Write Skew Problem
+;; 6 The Write Skew Problem
 ;; ------------------------
 
   ;; Lets define two more refs
@@ -303,10 +290,19 @@
 
 
 
-;; 8 Composing Agents and Refs
+;; 7 Composing Agents and Refs
 ;; ---------------------------
 
-  ;; Agents & Refs work well together
+  ;; Note: We now know what a transaction is.
+  ;; The exclamation mark (or bang) on a function like swap! means
+  ;; that you cannot use it safely inside a transaction.
+  ;; Side effects (may) get triggered multiple times because of conflicts
+  ;; depending on how far a transaction progressed before the conflict occurred.
+  ;; This is quite the unpleasant combination.
+  ;; Therefore we should only use pure functions in transactions if possible!
+
+  ;; Thus, *atoms* are *not* safe to use in combination with refs.
+  ;; However, *agents* & refs work well together
 
   ;; first a version without agent
   (def k1 (ref 100000))
