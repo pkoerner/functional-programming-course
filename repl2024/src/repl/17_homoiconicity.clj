@@ -1,5 +1,15 @@
 (ns repl.17-homoiconicity)
 
+;; 1 Code is data
+;; 2 The REPL, deconstructed: Read - Eval - Print - Loop
+;; 3 Macro examples
+;;   - defn
+;;   - threading macros
+;;   - for
+
+;; 1 Code is data
+-----------------
+
 ;; Precondition
 (defn myfunction-please-provide-int [x]
   {:pre [(integer? x)]}
@@ -18,7 +28,7 @@
 ;; Another homoiconic language is Prolog.
 
 ;; ---------------------------------------------------------
-;; REPL - Read - Eval - Print - Loop
+;; 2 The REPL, deconstructed: Read - Eval - Print - Loop
 ;; ---------------------------------------------------------
 
 
@@ -45,16 +55,18 @@
 (type (read-string "5"))
 
 
+;; 3 Macro examples
+;; ----------------
+
 ;; Homoiconicty allows simple implementations of a REPL.
 ;; Additionally, we get macros:
 ;; Macros in Clojure are not text-replacement (à la C-preprocessor),
 ;; but rather source-to-source transformations
 ;; that are calculcated via functions (data to data).
 ;; Such functions can be really simple (e.g. if-not)
-;; oder really sophisticated and involved (e.g. clojure.core.async/go).
+;; or really sophisticated and involved (e.g. clojure.core.async/go).
 
 
-;; Macro examples:
 
 ;; (defn ...) is expanded to (def ... (fn ...))
 (macroexpand '(defn foo [x] x))

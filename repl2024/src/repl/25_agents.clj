@@ -1,11 +1,29 @@
 (ns repl.25-agents)
 
+;; 1 Introduction
+;; 2 Case Study: Atoms for Logging
+;; 3 Introducing Agents
+;;   - agent
+;;   - deref
+;;   - await
+;;   - send vs. send-off
+;; 4 When Things go Wrong
+;;   - restart-agent
+
+
+;; 1 Introduction
+;; --------------
+
   ;; agents
 
   ;; agents are uncoordinated and asynchronous.
   ;; - asynchronous: calls return immediately; action may still have to take place.
   ;; - uncoordinated: you cannot read or write two agents consistently. So do not even try.
+  ;;   (we hopefully learned it the hard way in the atom unit)
 
+
+;; 2 Case Study: Atoms for Logging
+;; -------------------------------
 
   ;; First an atom
 
@@ -34,6 +52,10 @@
 
 
   ;; For atoms, Functions are executed in the caller's thread
+
+
+;; 3 Introducing Agents
+;; --------------------
 
   ;; now onto agents
 
@@ -96,6 +118,10 @@
      (doseq [a ag] (send-off a (fn [_] (Thread/sleep 1000))))
      (doseq [a ag] (await a))))
 
+
+
+;; 4 When Things go Wrong
+;; ----------------------
 
   ;; When exceptions are thrown in functions executed by agents, they go into hiding
   ;; and do accept any more tasks

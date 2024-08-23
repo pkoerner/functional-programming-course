@@ -1,5 +1,23 @@
 (ns repl.24-atoms)
 
+
+;; 1 Introduction
+;; 2 Creation and Interaction
+;;   - atom
+;;   - deref
+;;   - swap!, reset!
+;; 3 Introducing Concurrency 
+;; 4 Watchers 
+;; 5 Frequent Mistakes
+;;   5.1 Double Deref
+;;   5.2 Double Atom
+;;   5.3 Double Deref, the Second
+
+
+;; 1 Introduction
+;; --------------
+
+
   ;; Atoms
 
   ;; atoms are synchronous and uncoordinated.
@@ -10,6 +28,12 @@
   ;; *(terms and conditions may apply)
 
 
+  ;; Note: depending on your setup, you might not see prints that happen in a thread that is not the main thread.
+  ;; You can always execute the expressions directly on the leiningen REPL to get the full picture.
+
+
+;; 2 Creation and Interaction
+;; --------------------------
 
   ;; You get an atom by calling the function 'atom'. An initial value has to be specified.
   (def foo (atom {}))
@@ -25,6 +49,10 @@
   @foo
   ;; the proof
   (read-string "@foo")
+
+  ;; Atoms are not recursively dereferenced by the way
+  (deref (atom [(atom :a) (atom :b)]))
+  ;; this is a bad idea anyway.
 
   ;; Manipulating atoms:
   ;; (swap! atom function arg1 arg2 ...)
@@ -98,6 +126,9 @@
   @foo
 
 
+;; 3 Introducing Concurrency 
+;; --------------------------
+
   ;; What happens now, when the atom is used concurrently?
 
   ;; compare-and-swap (CAS) semantics:
@@ -162,7 +193,10 @@
 
   @counter
 
-  ;; watcher
+
+;; 4 Watchers 
+;; -----------
+
   ;; (add-watch reference name fn-of-4-args)
   ;; fn arguments: name reference old-value new-value
 
@@ -180,10 +214,20 @@
   (tease)
 
 
+;; 5 Frequent Mistakes
+;; -------------------
+
+  ;; Most mistakes stem from having more than one.
+  ;; What is that, Mr. Physics teacher? One what? Apple? Potato?
+  ;; Yes, indeed. More than one! More than one atom, more than one action, more than one deref, ...
+
   ;; Things to watch out for!
 
   (def mouse-position (atom {:x 12 :y 100}))
 
+
+;;   5.1 Double Deref
+;; ------------------
 
   ;; Incorrect:
   (println
@@ -206,6 +250,8 @@
 
 
 
+;;   5.2 Double Atom
+;; -----------------
 
   ;; If you cannot read a single atom multiple times consistently,
   ;; than you cannot dereference multiple atoms consistently!
@@ -224,6 +270,9 @@
   ;; that two states cannot influence each other.
   ;; But who wants to bother with that?
 
+
+;;   5.3 Double Deref, the Second
+;;  -----------------------------
 
   ;; Incorrect:
   (def screen-width 1024) ; px
@@ -246,6 +295,4 @@
   ;; or using refs (correctly) (next week)
 
 
-  ;; Atoms are not recursively dereferenced by the way
-  (deref (atom [(atom :a) (atom :b)]))
 

@@ -1,10 +1,36 @@
 (ns repl.26-refs)
-  ;; Refs
+
+;; Refs
+
+
+;; 1 Introduction
+;; 2 What is the problem with multiple atoms?
+;; 3 Vocabulary of Refs
+;;   - ref
+;;   - dosync
+;;   - deref
+;;   - alter
+;; 4 Interlude: Many Atoms to One
+;; 5 Commuting Through Heavy Traffic
+;; 6 Ref-Set, Dosync and Derefs ;; TODO: merge with Sec 3
+;; 7 The Write Skew Problem
+;;   - ensure
+;; 8 Composing Agents and Refs
+
+
+;; 1 Introduction
+;; --------------
+
   ;; refs are synchronous and coordinated.
   ;; - synchronous: calls return to us, once the operation was completed.
   ;; - coordinated: we may finally use (read from / write to) several refs at the same time!
 
-  ;; What is the problem with multiple atoms?
+  ;; Note: depending on your setup, you might not see prints that happen in a thread that is not the main thread.
+  ;; You can always execute the expressions directly on the leiningen REPL to get the full picture.
+
+
+;; 2 What is the problem with multiple atoms?
+;; ------------------------------------------
 
   ;; Case study: A banking system with accounts that does not allow overdrafts.
   (def account1 (atom 100))
@@ -40,6 +66,8 @@
   ;; the other action can always fire in between the check in the 'when' and the 'swap!'
   ;; The example above simply increases the window for this to occur
 
+
+;; 3 Vocabulary of Refs
 
   ;; now the same shtick with refs
   (def account1 (ref 100))
@@ -84,7 +112,11 @@
   ;; and the money transfer is rejected.
 
 
-  ;; a correct solution with a single (!) atom would be a map à la:
+
+;; 4 Interlude: Many atoms to one
+;; ------------------------------
+
+  ;; a correct solution with a single (!) atom would be a map (or vector, or ...) à la:
   (def bank (atom {:account1 100 :account2 0}))
 
   (defn transfer-money2 [from-name to-name amount]
@@ -117,7 +149,9 @@
   ;; occur even if different transactions do not influence each other
 
 
-  ;; commute
+;; 5 Commuting Through Heavy Traffic
+;; ---------------------------------
+
   ;; once again
   (def account1 (ref 10000))
   (def account2 (ref 10000))
@@ -161,6 +195,9 @@
 
 
 
+;; 6 Ref-Set, Dosync and Derefs
+;; ----------------------------
+
   ;; 'reset!' is called 'ref-set' for refs
   (dosync (ref-set account1 100))
 
@@ -187,7 +224,8 @@
   ;; Therefore we should only use pure functions in transactions if possible!
 
 
-  ;; Problem: Write Skew
+;; 7 The Write Skew Problem
+;; ------------------------
 
   ;; Lets define two more refs
   (def r1 (ref 0))
@@ -264,6 +302,9 @@
   (dosync [@r1 @r2])
 
 
+
+;; 8 Composing Agents and Refs
+;; ---------------------------
 
   ;; Agents & Refs work well together
 

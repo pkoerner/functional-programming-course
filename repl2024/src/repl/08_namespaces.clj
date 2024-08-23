@@ -1,3 +1,15 @@
+;; 1 Namespace Declaration
+;;   - import
+;; 2 Importing Namespaces  
+;;   - refer-clojure
+;;   - require as, refer
+;;   - use
+;; 3 What is a namespace?
+
+
+;; 1 Namespace Declaration
+;; -----------------------
+
 ;; A namespace declaration in (nearly) all its glory:
 ;; You can put even more stuff there in combination with host interop.
 ;; Parts of the explanations follow in more detail below.
@@ -23,6 +35,8 @@
 
 
 (comment
+
+;; 2 Importing Namespaces  
 
   ;; We require clojure.repl for 'source'
   (source source)
@@ -118,7 +132,8 @@
 
 
 
-  ;; What is a namespace?
+;; 3 What is a namespace?
+;; ----------------------
 
 
   (def v 4)
