@@ -4,6 +4,22 @@
 ;; requires the instaparse library (cf. project.clj)
 
 
+
+;; 1 Revision: defrecord
+;; I. Multimethods
+;;   2 multimethod = multi + method
+;;   3 Dispatching on multiple inputs 
+;;   4 Supporting Existing Classes
+;;   5 Performance Considerations
+;;   6 Case Study: Interpreter
+;;   7 Multimethods and Hierarchies (optional) 
+;; II. Protocols
+;;   8 Defining and Extending Protocols
+;;   9 Performance Comparison: Multimethods vs. regular Functions vs. Protocols
+;;   10 Concluding Thoughts
+;; 11 Type Hints (optional)
+
+
 ;; new content in this session
 ;; Multimethods defmulti, defmethod
 ;; Libraries: instaparse (generates parsers)
@@ -14,6 +30,9 @@
 
 
 (comment
+
+;; 1 Revision: defrecord
+;; ---------------------
 
   ;; we will see two solutions for the expression problem
 
@@ -38,9 +57,11 @@
 
 
 
+;; I. Multimethods
 
+;; 2 multimethod = multi + method
+;; ------------------------------
 
-  ;; multimethod = multi + method
   (defmulti get-columns class) ;; "Interface"-ish
   (defmulti get-columns ;; function name (arbitrary)
             class)      ;; dispatch function
@@ -115,7 +136,10 @@
   (cred [1])
 
 
-  ;; Dispatching on multiple inputs (https://clojure.org/about/runtime_polymorphism)
+;; 3 Dispatching on multiple inputs 
+;; --------------------------------
+
+;; (see also https://clojure.org/about/runtime_polymorphism)
 
   (def simba {:species :lion})
   (def clarence {:species :lion})
@@ -139,6 +163,9 @@
 
 
 
+
+;; 4 Supporting Existing Classes
+;; ------------------------------
 
   ;; adding a "Reversible" interface to Strings:
   (defn reverse-a-string-java-style [s]
@@ -170,7 +197,8 @@
 
 
 
-  ;; Performance
+;; 5 Performance Considerations
+;; ----------------------------
 
   (defmulti m1 class)
   (defmethod m1 clojure.lang.PersistentVector [k] (count k))
@@ -189,9 +217,10 @@
 
 
 
-  ;; case study:
+;; 6 Case Study: Interpreter
+;; -------------------------
+
   ;; Let's write an interpreter for Squarejure
-  ;; related: Clochure (http://clochure.org/)
 
   ;; the language should look like this:
   [:add [:int 4] [:int 9]]
@@ -224,6 +253,8 @@
                     [:int 77]
                     [:int -4]])
 
+  ;; Welcome to theoretical computer science. 
+  ;; Let's write a grammar:
 
   (def ebnf "
     S = add
@@ -234,7 +265,7 @@
 
   ;; parser is part of the Instaparse-library
   ;; This library is pretty awesome - it generates parsers for pretty much any type of grammars,
-  ;; in particular non-deterministic ones (it generatres all parse trees)
+  ;; in particular non-deterministic ones (it generates all parse trees)
   (def parse (parser ebnf))
 
 
@@ -275,6 +306,10 @@
   ;; that's very little code for an entire, extensible interpreter!
 
 
+
+;; 7 Multimethods and Hierarchies (optional) 
+;; -----------------------------------------
+
   ;; Multimethods can handle hierarchies.
   ;; A default hierarchy is the superclass-relationship:
 
@@ -312,14 +347,19 @@
 
 
 
+;; -------------
+;; II. Protocols
+;; -------------
 
 
-  ;; ----------------------------------------------------------------------------------------------
+;; 8 Defining and Extending Protocols
+;; ----------------------------------
+
   ;; defprotocol - Expression Problem, Haskell Style
 
 
   ;; Definition of an interface. A protocol describes a set of functions:
-  (defprotocol TheCount ;; ahh, ahh, ahh!
+  (defprotocol TheCount ;; ahh, ahh, ahh! 
     (cnt [v]))
 
 
@@ -400,7 +440,9 @@
 
 
 
-  ;; Performance: Multimethods vs. regular Functions vs. Protocols
+;; 9 Performance Comparison: Multimethods vs. regular Functions vs. Protocols
+;; --------------------------------------------------------------------------
+  
 
   (defmulti m1 class)
   (defmethod m1 clojure.lang.PersistentVector [k] (count k))
@@ -420,6 +462,11 @@
   (time (dotimes [i 10000000] (m2 [1])))
   (time (dotimes [i 10000000] (m3 [1])))
 
+
+;; 10 Concluding Thoughts
+;; ---------------------
+
+
   ;; Protocols vs. Multimethods
 
   ;; 1) Multimethods are way more flexible!
@@ -435,8 +482,12 @@
 
 
 
+;; 11 Type Hints (optional)
+;; ------------------------
+
+  ;; This is not relevant for the exam but for real life applications.
+
   ;; a propos types and performance:
-  ;; type hints
 
   ;; if we set this flag to true, the compiler will warn us
   ;; if reflection is used to resolve Java methods oder fields.
