@@ -1,5 +1,5 @@
 (ns repl.11-macros
-  (:use [clojure.repl]))
+(:use [clojure.repl]))
 
 ;; new today:
 ;; defmacro
@@ -7,67 +7,90 @@
 ;; macroexpand-1, clojure.walk/macroexpand-all
 
 
+;; 1 Functions are not Enough: Side effects
+;; 2 REPL: the macroexpansion step
+;; 3 Macros and Their Evaluation
+;; 4 Reader Experiments
+;;   - my-read
+;;   - the #_ reader macro
+;; 5 Implementing 'and'
+;;   - debugging with macroexpand and its variants 
+;;   - letting intermediate results to avoid double evaluation
+;;   - comparison: fn vs macro (evaluation and side effects)
+;; 6 Macro Puzzles
+;;   - when are macros evaluated?
+;;   - run-time vs compile-time
+;;   - byte code limit
+;; 7 What is defmacro?
+
+
 (comment
 
-  ;; --------------------------------------------------------------------------------------
-  ;; Macros
+;; --------------------------------------------------------------------------------------
+;; Macros
 
 
 
 
+;; 1 Functions are not Enough: Side effects
+;; ----------------------------------------
 
 
 
+;; What if 'if-not' did not exist?
 
-  ;; What if 'if-not' did not exist?
+;; we simply implement it!
 
-  ;; we simply implement it!
+(defn if-not2 [test then else]
+  (if (not test) then else))
 
-  (defn if-not2 [test then else]
-    (if (not test) then else))
+;; it does what it is supposed to...
+(if-not2 (= 1 1) :then :else)
+(if-not2 (= 1 2) :then :else)
 
-  ;; it does what it is supposed to...
-  (if-not2 (= 1 1) :then :else)
-  (if-not2 (= 1 2) :then :else)
+;; but evaluates both cases, which can give performance problems,
+;; and is potentially dangerous when used with side effects:
 
-  ;; but evaluates both cases, which can give performance problems,
-  ;; and is potentially dangerous when used with side effects:
+(if-not2 (= 1 2) (println :then) (println :else))
 
-  (if-not2 (= 1 2) (println :then) (println :else))
+;; Evaluation rule: to evaluate a function ... evaluate all parameters and apply the function to them
 
-  ;; Evaluation rule: to evaluate a function ... evaluate all parameters and apply the function to them
+;; we can do that ourselves!
 
-  ;; we can do that ourselves!
+(defn if-not2 [test then else]
+  (if (not test) (eval then) (eval else)))
 
-  (defn if-not2 [test then else]
-    (if (not test) (eval then) (eval else)))
+;; we just have to quote the expressions....
+(if-not2 (= 1 2) '(println :then) '(println :else))
+(if-not2 (= 1 1) '(println :then) '(println :else))
 
-  ;; we just have to quota the expressions....
-  (if-not2 (= 1 2) '(println :then) '(println :else))
-  (if-not2 (= 1 1) '(println :then) '(println :else))
-
-  ;; That's not pretty.
-  ;; We won't get anywhere like this with regular functions.
-
+;; That's not pretty.
+;; We won't get anywhere like this with regular functions.
 
 
-  ;; The full truth - evaluation in Clojure
 
-  ;; Reader: text -> AST data structure
-  (type (read-string "(cond :foo :bar)"))
+;; 2 REPL: the macroexpansion step
+;; -------------------------------
 
-  ;; Macroexpansion: AST -> AST
-  ;; This is the new step here!
-  ;; If the first element of a list is a macro, it will be expanded
-  ;; (until it is not anymore).
-  (macroexpand-1 '(cond :foo :bar))
+;; The full truth - evaluation in Clojure
 
-  ;; Evaluation: AST -> data structure
-  (type (eval '(if :foo :bar (cond))))
+;; Reader: text -> AST data structure
+(type (read-string "(cond :foo :bar)"))
 
-  ;; and this finally ends with the print: data structure -> text
+;; Macroexpansion: AST -> AST
+;; This is the new step here!
+;; If the first element of a list is a macro, it will be expanded
+;; (until it is not anymore).
+(macroexpand-1 '(cond :foo :bar))
+
+;; Evaluation: AST -> data structure
+(type (eval '(if :foo :bar (cond))))
+
+;; and this finally ends with the print: data structure -> text
 
 
+;; 3 Macros and Their Evaluation
+;; -----------------------------
 
   ;; Macros
   ;; Macros are special functions:
@@ -120,7 +143,13 @@
 
 
 
-  ;; Syntax Quoting & Reader Experiments
+;; 4 Reader Experiments
+;; --------------------
+
+;; We want to understand better:
+;; - what is the original input
+;; - what the reader gives us
+;; - what the return value after evaluation is
 
   ;; Helper function that gives us input,
   ;; the result from the reader and the evaluated result.
@@ -185,7 +214,8 @@
 
 
 
-
+;; 5 Implementing 'and'
+;; --------------------
 
   ;; How do you recreate 'and'?
   (and true false true)
@@ -288,10 +318,14 @@
 
 
 
-  ;; Macro Puzzles
+;; 6 Macro Puzzles
+;; ---------------
 
   ;; check your understanding of the evaluation rules of macros and functions
   ;; with the following
+
+  ;; note: yes, this is hard and it gets progressively even harder
+  ;; take notes on paper to keep track.
 
   ;; Function that outputs the first argument of a collection
   (defn f1 [c]
@@ -437,6 +471,9 @@
   (println (list a b c d e f g h))))
  
 
+
+;; 7 What is defmacro?
+;; -------------------
 
 
   ;; as said before:

@@ -1,12 +1,22 @@
 (ns repl.05-recursion
   (:use [clojure.tools.trace]))
 
+
+;; 1 Debugging Tool: deftrace
+;; 2 Special Form: recur
+;; 3 Special Form: loop
+;; 4 Mutual Recursion via trampoline
+
+
 ;; requires tools.trace in project.clj
 ;; new today:
 ;; debugging library: clojure.tools.trace: deftrace
 ;; clojure.core: recur, loop
 
 (comment
+
+;; 1 Debugging Tool: deftrace
+;; --------------------------
 
   ;; deftrace is a defn, which outputs debug-informationen for calls
   (deftrace ! [n]
@@ -49,6 +59,9 @@
 
   (! 8)
 
+;; 2 Special Form: recur
+;; ---------------------
+
   ;; A version without trace!
   ;; fn / defn create a recursion point:
   ;; if the number of arguments passed to recur matches the ones
@@ -69,6 +82,9 @@
       n
       (*' n (recur (dec n)))))
 
+;; 3 Special Form: loop
+;; --------------------
+
   ;; loop marks another recursion point for recur,
   ;; which is used instead of the one provided by the function itself:
   ;; recur then sets the bindings of the symbols defined by loop
@@ -84,7 +100,8 @@
 
 
 
-  ;; mutual recursion
+;; 4 Mutual Recursion via trampoline
+;; ---------------------------------
 
 
   ;; all symbols have to be defined before their use à la C
