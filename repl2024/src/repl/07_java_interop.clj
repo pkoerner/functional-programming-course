@@ -39,6 +39,7 @@
   ;; static function call
   (Math/floor 102.3)
 
+
   ;; Attributes
   (deftype Foo [x]) ;; generates a Java class with field x
 
@@ -183,6 +184,22 @@
   ;;      }
 
 
+  ;; Note: until Clojure 1.11, one had to wrap Java static method calls in an anonymous function like this
+    (every? #(Character/isWhitespace %) "1 2 3") 
+  ;; since Clojure 1.12, this is not necessary anymore
+    (every? Character/isWhitespace "1 2 3") 
+
+  ;; instance methods:
+  ;; old (< Clojure 1.12)
+  (map #(.hashCode %) ["1" "2" "3"])
+  ;; new (Clojure 1.12)
+  (map String/.hashCode ["1" "2" "3"])
+
+  ;; and constructors
+  ;; old (< Clojure 1.12)
+  (map #(BigInteger. %) ["123" "456" "789"])
+  ;; new (Clojure 1.12)
+  (map BigInteger/new  ["123" "456" "789"])
 
 
   ;; Records introduce new classes that have certain fixed immutable fields.
