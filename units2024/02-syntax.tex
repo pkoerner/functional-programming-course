@@ -1,0 +1,105 @@
+\documentclass[11pt,a4paper]{article}
+\input{header.tex}
+\setcounter{numb}{2}
+
+\begin{document}
+
+\header{First Steps at Programming}{21.10.2024}
+
+\section{Material} 
+
+\begin{itemize}
+    \item Learning Videos: 
+        \begin{itemize}
+            \item Lambda Calculus: \url{https://mediathek.hhu.de/watch/6cfddfc9-6d92-494f-90a0-8637b8b7f698}
+            \item Syntax: \url{https://mediathek.hhu.de/watch/4aa60c78-23e5-48be-a5f6-b676dd7f2013}
+            \item Coding Guidelines: \url{https://mediathek.hhu.de/watch/9b42cb61-e871-48c3-8ec8-0aca1f30a730}
+        \end{itemize}
+    \item Rich Hickey: Clojure for Java Programmers \url{https://www.youtube.com/watch?v=P76Vbsk_3J0} (until 1:35:38 --- introduction to the Clojure language and its motiviation --- optional revision and introduction)
+    \item Alternative material:
+        \begin{itemize}
+            \item Clojure for the Brave and True, chapter 3 (covers all material)
+            \item 01\_intro.clj (covers all material)
+        \end{itemize}
+    \item Please be aware of \url{https://clojure.org/api/cheatsheet} and that there are many useful functions.
+        Especially the blocks ``Sequences'', ``Primitives'' and ``Collections'' are worth knowing.
+        You do not have to learn everything by heart now, but go ahead and find out, what some functions do.
+%\item Rich Hickey: Clojure for Java Programmers Part 2 \url{https://www.youtube.com/watch?v=hb3rurFxrZ8} (Overview over further topics of the lecture)
+\end{itemize}
+
+\section{Learning Outcomes}
+
+After completing this unit you should be able to
+
+\begin{itemize}
+	\item determine the evaluation order of elements in a function call.
+    \item define functions with local bindings.
+    \item use the fundamental control structures in small functions.
+%    \item use built-in higher-order functions.
+    %\item write higher-order functions.
+    \item recall fundamental sequence operations provided by the standard library.
+\end{itemize}
+
+\section{Highlights}
+
+\begin{itemize}
+    \item $\beta$-reduction as evaluation-mechanism
+    \item Lists and sequences
+    %\item Higher-Order functions: concept, \verb|map|, \verb|filter|, \verb|reduce|, \verb|apply|
+    \item Special forms: \verb|def|, \verb|fn|, \verb|if|, \verb|let|, \verb|do|
+    \item Sequence operations: \verb|first|, \verb|rest|, \verb|range|, \verb|cons|, \verb|conj|, \verb|assoc|, \verb|dissoc|, \verb|disj|
+    \item Macros: \verb|ns|, \verb|for|, \verb|cond|, \verb|and|, \verb|or|
+\end{itemize}
+
+
+
+\section{Exercises}
+
+\paragraph{Notes}
+Solving the exercises is voluntary.
+Admission to the exam is solely based on passing the tests in the ILIAS.
+Since programming is required in the exam
+it is highly recommended to work on the exercises.
+
+%In the ILIAS you can find templates for leiningen projects under Lerneinheiten > projektskelette.zip.
+%Included there you will find functionality tests, which you can execute with \verb|lein test|\footnote{The Plug-in \url{https://github.com/weavejester/lein-auto} is useful in combination with this.}.
+%
+%You can initially define symbols with \verb|(declare seq-e fibonacci remove-duplicates)|
+%to get rid of exceptions which are caused by the tests trying to reference undefined global variables and functions.
+%Alternatively you can execute tests individually (see \verb|lein help test|).
+
+\begin{exercise}[4clojure Exercise Unlocks --- Recommended!]
+    After completing this unit, you gained the knowledge to solve the following exercises (\url{https://4clojure.oxal.org/} --- please bookmark for future reference):
+
+    \begin{itemize}
+        \item elementary: 4--13, 15--16, 35, 37, 57, 134, 145, 156, 161
+    \end{itemize}
+\end{exercise}
+
+\begin{exercise}[Sequences]
+
+In the following exercise simply define the described sequences. As Example: If you are to define the sequence of numbers between -100 and 100, a valid solution is: \texttt{(def example-seq (range -100 101))}
+  
+
+\begin{enumerate}[label=\alph*)]
+  \item Define the sequence \verb|seq-a|, containing all integers from 100 to -100 in descending order.
+  \item Define the sequence \verb|seq-b|, containing all square integers between 0 and 1000.
+  \item Define the sequence \verb|seq-c|, containing all integers between 0 and 1000, which are not evenly divisible by 3.
+  \item Define the sequence \verb|seq-d|, containing all tuples [n, m] of integers for which the following holds: $0 < n < 1000 \wedge n^2 < m \wedge \text{m is minimal}$.  The sequence begins with tuples [1,2], [2,5], [3,10].
+  \item Define the sequence \verb|seq-e|, containing all integers with 5 digits (represented as 5 tuple), which are palindromes. Additionally the digits should be strictly ascending up to the middle digit. [0 2 3 2 0] is part of the sequence, but [0 3 2 3 0] is not, neither is [1 1 1 1 1].
+  
+    
+  \end{enumerate}
+
+    \paragraph{Hint} \verb|for| is a useful macro that is similar to list-comprehensions in Python. 
+
+\end{exercise}
+
+
+
+
+
+	\section*{Questions}
+	If you have any questions, please contact Philipp K"orner (\texttt{p.koerner@hhu.de}) or post it to the Rocket.Chat group.
+\end{document}
+

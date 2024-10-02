@@ -1,0 +1,135 @@
+\documentclass[11pt,a4paper]{article}
+\input{header.tex}
+\setcounter{numb}{13}
+
+
+\begin{document}
+
+\header{Polymorphismus}{20.01.2025}
+
+
+\section{Material} 
+
+\begin{itemize}
+    \item Alternatives:
+        \begin{itemize}
+\item Clojure for the Brave and True, chapter 13
+\item 06\_polymorphism.clj
+        \end{itemize}
+    \item Reference:
+        \begin{itemize}
+\item Clojure Reference: Multimethods \url{https://clojure.org/reference/multimethods}
+\item Clojure Reference: Protocols \url{https://clojure.org/reference/protocols}
+        \end{itemize}
+    \item Learning Videos:
+        \begin{itemize}
+            \item Multimethoden: \url{https://mediathek.hhu.de/watch/2de0f875-d2aa-4062-84a6-fbcde4856edd}
+            \item Protokolle: \url{https://mediathek.hhu.de/watch/e3f13cc5-ae7b-460a-abed-094acb34e679}
+        \end{itemize}
+\end{itemize}
+
+\paragraph{Timeline:} This unit should be completed by 22.01.2024.
+
+
+\section{Learning Outcomes}
+
+After completing this unit you should be able to
+
+\begin{itemize}
+    \item explain how multimethods and protocols solve the expression problem.
+    \item use multimethods and protocols.
+    \item compare the expressiveness of multimethods and protocols.
+    \item recall and compare the performance of multimethods and protocols.
+\end{itemize}
+
+\section{Highlights}
+
+\begin{itemize}
+    \item Multimethods
+    \item Protocols
+    \item Functions / Macros: \verb|defmulti|, \verb|defmethod|, \verb|defprotocol|, \verb|extend-protocol|, \verb|extend-type|, \verb|extend|
+\end{itemize}
+
+
+
+\section{Exercises}
+
+
+\begin{exercise}[Marsrover]
+	In this task you are asked to implement a simplified version of the Marsrover-kata.
+	For this, you are to write the control software for a robot that has landed on Mars.
+	The robot has already scanned a rectangular area for this purpose, which unfortunately is surrounded by obstacles so that the robot cannot leave it.
+	The requirements are as follows:
+
+\begin{itemize}
+    \item A surface area is given, e.g.
+        \begin{verbatim}
+      [["x" "x" "x" "x"]
+       ["x" " " " " "x"]
+       ["x" " " " " "x"]
+       ["x" "x" "x" "x"]]
+\end{verbatim}
+
+	The data structure is a sequence of sequences that specifies the map with obstacles.
+  	The first sequence (or line) is the northernmost line of the surface, the leftmost entry corresponds to the westernmost coordinate.
+  	Entries that are the string ''x'' are obstacles, strings with whitespace are free (accessible) fields.
+    \item An initial position of the rover and its orientation (\verb|:north|, \verb|:south|, \verb|:east|, \verb|:west|) is given.
+    \item The signature for initialization is thus: \verb|(init! x y orientation surface)|
+    \item Implement commands to move the rover forwards (f) and backwards (b).
+    \item Implement command to rotate the rover by 90 degrees left and right (l, r).
+    \item The rover is controlled via a string of commands (e.g. ''flffr'').
+    \item The state of the rover is manipulated by \verb|(execute! string-sequence)|.
+    \item If there is an obstacle in the way, the rover should abort further execution of the command sequence and report the position of the obstacle.
+    \item The function \verb|rover-status| should return the tuple \verb|[x y direction]| with current information about the rover.
+    \item Your solution must allow the addition of further commands,
+        \emph{without the need to modify existing code}.
+\end{itemize}
+
+        Note: Use multimethods.
+\end{exercise}
+
+
+\begin{exercise}[Operator Overloading]
+
+    Define a new protocol \verb|Multipliable| with a single function \verb|mult| that takes two arguments.
+    The function \verb|mult| shall dispatch on the type of the first argument
+    and ``multiply'' it with the second arguments.
+    Calls and results may, for example, look like the following:
+
+\begin{verbatim}
+user=> (mult 3 4)
+12
+user=> (mult "foo" 4)
+"foofoofoofoo"
+user=> (mult '(1 2 3) 4)
+(1 2 3 1 2 3 1 2 3 1 2 3)
+\end{verbatim}
+
+    Implement the protocol for at least these three types.
+\end{exercise}
+
+%\begin{exercise}[Lazy Searching - 4clojure Nr. 108]
+%
+%Implement a function that receives any number of ascending sequences
+%as input and returns the smallest element that occurs in all sequences.
+%The inputs can be infinite sequences.
+%
+%\begin{verbatim}
+%(common-min [3 4 5])
+%=> 3
+%(common-min [1 2 3 4 5 6 7] [0.5 3/2 4 19])
+%=> 4
+%(common-min (range) (range 0 100 7/6) [2 3 5 7 11 13])
+%=> 7
+%(common-min (map (fn [x] (* x x x)) (range)) ;; Cubic numbers
+%            (filter (fn [x] (zero? (bit-and x (dec x)))) (range)) ;; Powers of two
+%            (iterate inc 20)) ;; Numbers greater than/equal to 20
+%=> 64
+%\end{verbatim}
+%
+%\end{exercise}
+
+	\section*{Questions}
+	If you have any questions, please contact Philipp K"orner (\texttt{p.koerner@hhu.de}) or post it to the Rocket.Chat group.
+\end{document}
+
