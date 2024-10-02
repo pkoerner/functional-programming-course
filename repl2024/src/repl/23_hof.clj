@@ -1,5 +1,8 @@
 (ns repl.23-hof)
 
+;; This session defines the term "higher-order function" 
+;; and takes a closer look at prominent examples.
+
 ;; 1 Reminder: factorial function
 ;; 2 Reminder: stack overflow
 ;; 3 Concept: Higher-Order Function (HOF)

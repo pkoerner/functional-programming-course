@@ -1,6 +1,8 @@
 (ns repl.05-recursion
   (:use [clojure.tools.trace]))
 
+;; This section takes a deeper look at how one can write *efficient* recursive code.
+;; In particular, we are interested in avoiding stack overflows.
 
 ;; 1 Debugging Tool: deftrace
 ;; 2 Special Form: recur

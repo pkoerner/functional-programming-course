@@ -1,5 +1,15 @@
 (ns repl.04-destructuring)
 
+;; This section takes a look at destructuring:
+;; Basically, it is syntax to take a complex data structure apart and give names to (some) elements.
+
+;; 1 Revision: Bindings
+;; 2 Destructuring Sequentials
+;; 3 Destructuring Maps
+;; 4 Nesting Destructuring
+;; 5 Named Arguments and Default values
+
+
 (comment
   ;; Destructuring
 
@@ -9,6 +19,9 @@
   ;; same with maps: (get m :foo) (get m :bar 42), ...
   ;; especially if you need those values more often
 
+
+;; 1 Revision: Bindings
+;; --------------------
 
   ;; first the concept of bindings:
 
@@ -36,7 +49,9 @@
   ;; Destructuring is possible wherever there is a binding.
   ;; We will primarily focus on destructuring within let:
 
-  ;; sequential objects:
+
+;; 2 Destructuring Sequentials
+;; ---------------------------
 
   ;; we destructure the vector [1 2] into its first two elements x and y
   (let [a [1 2]
@@ -84,11 +99,17 @@
   (let [[a b c d] 55555 ]
     (println a b c d))
 
+
+
+;; 2 Destructuring Maps
+;; ---------------------------
+
+
   ;; maps are basically just some key-value tuples
   (map identity {:x 100 :y 200})
 
   ;; but there is no reasonable ordering for a map,
-  ;; so destructuring them makes no sense!
+  ;; so destructuring them in some order makes no sense!
   (let [point {:x 100 :y 200}
         [x y] point]
     (println x y))
@@ -157,6 +178,9 @@
     (println kw string missing symb xx))
 
 
+;; 4 Nesting Destructuring
+;; -----------------------
+
 
   ;; and nest them, too
   (let [db [{:name "Bendisposto" :first-name "Jens"}
@@ -168,6 +192,10 @@
 
   ;; An example of destructuring of function arguments
   ;; added bonus: Since there is no static typing: You can see from the destructuring how the passed data structure should look
+
+;; 5 Named Arguments and Default values
+;; ------------------------------------
+
   (defn run-tool [{tool :tool,
                  {:keys [host username port]
                   :or {username "anonymous" port 22}} :arguments}]

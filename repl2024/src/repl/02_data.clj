@@ -1,5 +1,7 @@
 (ns repl.02-data)
 
+;; This session looks at laziness and how it can be implemented.
+
 ;; 1 Reminder: apply
 ;; 2 Reminder: Higher Order Function
 ;; 3 map and filter as reduce

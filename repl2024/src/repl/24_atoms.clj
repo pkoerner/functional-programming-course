@@ -1,5 +1,6 @@
 (ns repl.24-atoms)
 
+;; This session covers an implementation of the epochal time model.
 
 ;; 1 Introduction
 ;; 2 Creation and Interaction

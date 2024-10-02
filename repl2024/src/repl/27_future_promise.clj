@@ -1,6 +1,8 @@
 (ns repl.27-future-promise)
 
-  ;; future & promise
+  ;; This session gives an overview over two concurrency mechanisms from Java,
+  ;; which are actually sane.
+  ;; They are called future & promise and are also available in Clojure.
 
 
   ;; Future: Container for the value of a calculation

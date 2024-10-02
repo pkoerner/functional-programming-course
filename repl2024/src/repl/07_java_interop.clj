@@ -2,11 +2,25 @@
   (:require [clojure.repl :refer [doc]]))
 
 
+;; This session can be read quickly
+
+;; 1 Instantiating Java Classes
+;; 2 Accessing Fields
+;; 3 Calling Java methods
+;; 4 Transforming Java to Clojure Code: An Example
+;; 5 New Syntax Support for Java Functions in Clojure 1.12
+;; 6 Records and Types
+
+
 (comment
 
 
   ;; Clojure - Java Interop
   ;; ------------------------------------------------------------------------------------
+
+
+;; 1 Instantiating Java Classes
+;; ----------------------------
 
   ;; these are ordinary Java classes
   (type java.util.ArrayList)
@@ -30,6 +44,9 @@
   (ArrayList.)
   (macroexpand-1 '(ArrayList.))
 
+
+;; 2 Accessing Fields
+;; --------------------
 
   ;; static fields can be accessed via '/'
 
@@ -57,6 +74,10 @@
   ;; to distinguish functions from other values.
   (. (Foo. 122) -x)
   (.-x (Foo. 123))
+
+
+;; 3 Calling Java methods
+;; ----------------------
 
 
   ;; Call instance methods with '.'
@@ -93,6 +114,8 @@
   ;; It requires mutable objects to make sense!
 
 
+;; 4 Transforming Java to Clojure Code: An Example
+;; -----------------------------------------------
 
 
 
@@ -184,6 +207,9 @@
   ;;      }
 
 
+;; 5 New Syntax Support for Java Functions in Clojure 1.12
+;; -------------------------------------------------------
+
   ;; Note: until Clojure 1.11, one had to wrap Java static method calls in an anonymous function like this
     (every? #(Character/isWhitespace %) "1 2 3") 
   ;; since Clojure 1.12, this is not necessary anymore
@@ -201,6 +227,12 @@
   ;; new (Clojure 1.12)
   (map BigInteger/new  ["123" "456" "789"])
 
+
+
+;; 6 Records and Types
+;; -------------------
+
+  ;; Sometimes, you need new classes to pass data back to Java.
 
   ;; Records introduce new classes that have certain fixed immutable fields.
   ;; Nevertheless, the classes are still flexible,
